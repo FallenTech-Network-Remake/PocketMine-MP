@@ -25,7 +25,10 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockTypeNames;
+use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\Utils;
@@ -183,18 +186,40 @@ final class BlockStateDictionary{
 			}
 		}
 
-		foreach(self::loadPaletteFromString($blockPaletteContents) as $i => $state){
+		foreach(self::loadBlocksFromString($blockPaletteContents) as $i => $blockTag){
+			if(!($blockTag instanceof CompoundTag)){
+				throw new \InvalidArgumentException("Invalid block palette entry at offset $i, expected TAG_Compound, got " . get_debug_type($blockTag));
+			}
 			$meta = $metaMap[$i] ?? null;
 			if($meta === null){
-				throw new \InvalidArgumentException("Missing associated meta value for state $i (" . $state->toNbt() . ")");
+				throw new \InvalidArgumentException("Missing associated meta value for state $i (" . $blockTag . ")");
 			}
 			if(!is_int($meta)){
 				throw new \InvalidArgumentException("Invalid metaMap offset $i, expected int, got " . get_debug_type($meta));
 			}
-			$uniqueName = $uniqueNames[$state->getName()] ??= $state->getName();
-			$entries[$i] = new BlockStateDictionaryEntry($uniqueName, $state->getStates(), $meta);
+			//Altay-style hashed network runtime IDs: the palette entry carries its own network_id
+			//(fnv1 state hash). Keying the dictionary by it makes block runtime IDs identical on
+			//every server regardless of registered custom blocks - REQUIRED for proxy transfers.
+			$networkId = $blockTag->getInt("network_id");
+			$name = $blockTag->getString(BlockStateData::TAG_NAME);
+			$states = $blockTag->getCompoundTag(BlockStateData::TAG_STATES) ??
+				throw new \InvalidArgumentException("Missing states for palette entry $i");
+			$uniqueName = $uniqueNames[$name] ??= $name;
+			$entries[$networkId] = new BlockStateDictionaryEntry($uniqueName, $states->getValue(), $meta);
 		}
 
 		return new self($entries);
+	}
+	/**
+	 * Decompresses the gzipped big-endian NBT block palette (block_palette.nbt) and returns its
+	 * raw "blocks" list. Each entry carries its hashed network runtime ID (network_id).
+	 */
+	private static function loadBlocksFromString(string $blockPaletteContents) : ListTag{
+		$paletteRaw = zlib_decode($blockPaletteContents);
+		if($paletteRaw === false){
+			throw new \InvalidArgumentException("Failed to decompress block palette");
+		}
+		return (new BigEndianNbtSerializer())->read($paletteRaw)->mustGetCompoundTag()->getListTag("blocks") ??
+			throw new \InvalidArgumentException("Missing \"blocks\" list in block palette");
 	}
 }

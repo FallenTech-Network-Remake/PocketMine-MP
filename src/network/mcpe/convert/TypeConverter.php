@@ -82,8 +82,8 @@ class TypeConverter{
 		//TODO: inject stuff via constructor
 		$this->blockItemIdMap = BlockItemIdMap::getInstance();
 
-		$canonicalBlockStatesRaw = Filesystem::fileGetContents(BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT);
-		$metaMappingRaw = Filesystem::fileGetContents(BedrockDataFiles::BLOCK_STATE_META_MAP_JSON);
+		$canonicalBlockStatesRaw = Filesystem::fileGetContents(dirname(BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT) . "/block_palette.nbt");
+		$metaMappingRaw = Filesystem::fileGetContents(dirname(BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT) . "/block_state_meta_map_hashed.json");
 		$this->blockTranslator = new BlockTranslator(
 			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
 			GlobalBlockStateHandlers::getSerializer()

@@ -111,7 +111,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 				sprintf("%s %s", VersionInfo::NAME, VersionInfo::VERSION()->getFullVersion(true)),
 				Uuid::fromString(Uuid::NIL),
 				false,
-				false,
+				true, //blockNetworkIdsAreHashes - hashed dictionary (FT transfer fix, Altay parity)
 				new NetworkPermissions(disableClientSounds: true),
 				null,
 				new ServerTelemetryData("", "", "", ""),
