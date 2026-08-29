@@ -499,6 +499,11 @@ class InGamePacketHandler extends PacketHandler{
 					if(!$this->player->consumeHeldItem()){
 						$hungerAttr = $this->player->getAttributeMap()->get(Attribute::HUNGER) ?? throw new AssumptionFailedError();
 						$hungerAttr->markSynchronized(false);
+						if($this->player->ftEatStillArmed){
+							// Refused only for being too early - leave the action running so
+							// the eat continues instead of restarting on every held repeat.
+							return true;
+						}
 					}
 					//TODO: workaround goat horns getting stuck in the "using item" state
 					//this timed-trigger behaviour is also used for other items apart from food

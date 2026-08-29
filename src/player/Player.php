@@ -735,12 +735,35 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	/**
 	 * Returns whether the player is currently using an item (right-click and hold).
 	 */
+	/** True when the last consume was refused only because it was too early. */
+	public bool $ftEatStillArmed = false;
+
 	public function isUsingItem() : bool{
 		return $this->startAction > -1;
 	}
 
 	public function setUsingItem(bool $value) : void{
-		$this->startAction = $value ? $this->server->getTick() : -1;
+		/*
+		 * FT 2026-08-25: only stamp startAction on a FRESH action.
+		 *
+		 * Upstream resets it on every call, but Bedrock clients re-arm a held action
+		 * repeatedly while it is still in progress - measured at every ~12-14 ticks, and
+		 * more often while walking. That wiped the true start, so getItemUseDuration()
+		 * reported "time since the last re-arm" (4-7 ticks) instead of time actually spent
+		 * eating, and a 32-tick eat looked like a 6-tick one.
+		 *
+		 * A genuinely new action always calls setUsingItem(false) first (item switch,
+		 * inventory change, consume, release), which resets to -1, so a real start still
+		 * stamps correctly. This only stops a re-arm from clobbering an action already
+		 * underway. Also fixes bow draw force being under-measured for the same reason.
+		 */
+		if($value){
+			if($this->startAction === -1){
+				$this->startAction = $this->server->getTick();
+			}
+		}else{
+			$this->startAction = -1;
+		}
 		$this->networkPropertiesDirty = true;
 	}
 
@@ -1729,7 +1752,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 
 		$this->resetItemCooldown($oldItem);
 		$this->returnItemsFromAction($oldItem, $item, $returnedItems);
-
 		$this->setUsingItem($item instanceof Releasable && $item->canStartUsingItem($this));
 
 		return true;
@@ -1743,6 +1765,33 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	public function consumeHeldItem() : bool{
 		$slot = $this->inventory->getItemInHand();
 		if($slot instanceof ConsumableItem){
+			/*
+			 * FT eat-duration floor (2026-08-25). Vanilla PMMP validates NOTHING about how
+			 * long food was held: a client may send ACTION_CLICK_AIR at any time and the
+			 * eat is accepted. getItemUseDuration() is server-measured (serverTick -
+			 * startAction) so it cannot be forged, and refusing here happens BEFORE
+			 * PlayerItemConsumeEvent - which is why every plugin-level attempt failed:
+			 * that event fires after the engine has already accepted the eat, so
+			 * cancelling could not un-eat it on the client.
+			 *
+			 * Returning false makes InGamePacketHandler mark HUNGER unsynchronized, which
+			 * resyncs the client and corrects its optimistic state.
+			 *
+			 * Scoped to Food so MilkBucket / potions (separate classes, different
+			 * durations) are untouched. 28 < vanilla 32 to stay latency-forgiving.
+			 */
+			$this->ftEatStillArmed = false;
+			if($slot instanceof \pocketmine\item\Food){
+				$ftUseTicks = $this->getItemUseDuration();
+				if($ftUseTicks >= 0 && $ftUseTicks < 28){
+					// Too early. Keep the action ARMED - Bedrock clients repeat CLICK_AIR
+					// while the button is held (~every 6 ticks), and PMMP alternates
+					// arm/consume on those repeats, so the 2nd repeat consumes instantly.
+					// Cancelling here instead would clear startAction and loop forever.
+					$this->ftEatStillArmed = true;
+					return false;
+				}
+			}
 			$oldItem = clone $slot;
 
 			$residue = $slot->getResidue();
