@@ -56,6 +56,7 @@ use pocketmine\network\mcpe\protocol\types\recipe\TagItemDescriptor;
 use pocketmine\player\GameMode;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
+use Symfony\Component\Filesystem\Path;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
@@ -82,8 +83,11 @@ class TypeConverter{
 		//TODO: inject stuff via constructor
 		$this->blockItemIdMap = BlockItemIdMap::getInstance();
 
-		$canonicalBlockStatesRaw = Filesystem::fileGetContents(dirname(BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT) . "/block_palette.nbt");
-		$metaMappingRaw = Filesystem::fileGetContents(dirname(BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT) . "/block_state_meta_map_hashed.json");
+		//FALLENTECH: these two files ship in resources/, NOT in the vendored bedrock-data
+		//package. vendor/ is gitignored and composer-managed, so files placed there do not
+		//survive a fresh install and the build is not reproducible from the repo.
+		$canonicalBlockStatesRaw = Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, "block_palette.nbt"));
+		$metaMappingRaw = Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, "block_state_meta_map_hashed.json"));
 		$this->blockTranslator = new BlockTranslator(
 			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
 			GlobalBlockStateHandlers::getSerializer()
