@@ -45,6 +45,23 @@ final class ResinClump extends Transparent implements MultiAnyFacing{
 	/**
 	 * @return int[]
 	 */
+	/**
+	 * FALLENTECH PATCH (kqg 2026-08-26): "resin cant be placed on leaves".
+	 *
+	 * Leaves::getSupportType() returns NONE, and the trait demanded FULL, so a resin clump
+	 * could never attach - even though in vanilla it generates ON leaves near a creaking
+	 * heart. Widened for THIS block only; GlowLichen (the trait's only other user) keeps the
+	 * strict rule, and Leaves itself is untouched so torches/rails/doors are unaffected.
+	 */
+	protected function isValidMultiAnySupport(int $face) : bool{
+		// NOT parent::: this method comes from MultiAnySupportTrait, and a class's own method
+		// takes precedence over a trait's - parent:: would resolve to Transparent, which has
+		// no such method, and fatal at runtime while linting clean. The default rule is
+		// restated inline instead.
+		return $this->getAdjacentSupportType($face) === SupportType::FULL
+			|| $this->getSide($face) instanceof Leaves;
+	}
+
 	protected function getInitialPlaceFaces(Block $blockReplace) : array{
 		return $blockReplace instanceof ResinClump ? $blockReplace->faces : [];
 	}
