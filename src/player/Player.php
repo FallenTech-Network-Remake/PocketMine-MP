@@ -802,6 +802,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		}
 	}
 
+	/**
+	 * Removes the player's cooldown time for the given item.
+	 */
+	public function removeItemCooldown(Item $item) : void{
+		if($this->hasItemCooldown($item)){
+			unset($this->usedItemsCooldown[$item->getCooldownTag() ?? $item->getStateId()]);
+			$this->getNetworkSession()->onItemCooldownChanged($item, 0);
+		}
+	}
+
 	protected function checkItemCooldowns() : void{
 		$serverTick = $this->server->getTick();
 		foreach($this->usedItemsCooldown as $itemId => $cooldownUntil){
