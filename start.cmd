@@ -18,12 +18,18 @@ if exist bin\php\php.exe (
 if "%PHP_BINARY%"=="" (
 	echo Couldn't find a PHP binary in system PATH or "%~dp0bin\php"
 	echo Please refer to the installation instructions at https://doc.pmmp.io/en/rtfd/installation.html
-	pause
 	exit 1
+)
+
+where /q wsl.exe
+if %ERRORLEVEL%==0 (
+	wsl.exe -u root -d Ubuntu -e bash -c "service mariadb start; service redis-server start" >nul 2>&1
 )
 
 if exist PocketMine-MP.phar (
 	set POCKETMINE_FILE=PocketMine-MP.phar
+) else if exist src\PocketMine.php (
+	set POCKETMINE_FILE=src\PocketMine.php
 ) else (
 	echo PocketMine-MP.phar not found
 	echo Downloads can be found at https://github.com/pmmp/PocketMine-MP/releases

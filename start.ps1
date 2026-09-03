@@ -1,4 +1,4 @@
-﻿[CmdletBinding(PositionalBinding=$false)]
+[CmdletBinding(PositionalBinding=$false)]
 param (
 	[string]$php = "",
 	[switch]$Loop = $false,
@@ -15,16 +15,23 @@ if($php -ne ""){
 	$binary = "php"
 }else{
 	echo "Couldn't find a PHP binary in system PATH or $pwd\bin\php"
-	echo "Please refer to the installation instructions at https://doc.pmmp.io/en/rtfd/installation.html"
-	pause
 	exit 1
+}
+
+# Ensure background DB services (MariaDB / MySQL & Redis) are active
+if (Get-Command wsl -ErrorAction SilentlyContinue) {
+	try {
+		wsl -u root -d Ubuntu -e bash -c "service mariadb start; service redis-server start" *>$null
+	} catch {}
 }
 
 if($file -eq ""){
 	if(Test-Path "PocketMine-MP.phar"){
 	    $file = "PocketMine-MP.phar"
+	}elseif(Test-Path "src\PocketMine.php"){
+	    $file = "src\PocketMine.php"
 	}else{
-	    echo "PocketMine-MP.phar not found"
+	    echo "PocketMine-MP.phar or src\PocketMine.php not found"
 	    echo "Downloads can be found at https://github.com/pmmp/PocketMine-MP/releases"
 	    pause
 	    exit 1
