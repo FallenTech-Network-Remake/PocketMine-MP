@@ -21,7 +21,7 @@ if($php -ne ""){
 # Ensure background DB services (MariaDB / MySQL & Redis) are active
 if (Get-Command wsl -ErrorAction SilentlyContinue) {
 	try {
-		wsl -u root -d Ubuntu -e bash -c "service mariadb start; service redis-server start" *>$null
+		Start-Process wsl -ArgumentList "-u root -d Ubuntu -e bash -c `"systemctl start mariadb redis-server; sleep infinity`"" -WindowStyle Hidden
 	} catch {}
 }
 

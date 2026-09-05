@@ -23,7 +23,7 @@ if "%PHP_BINARY%"=="" (
 
 where /q wsl.exe
 if %ERRORLEVEL%==0 (
-	wsl.exe -u root -d Ubuntu -e bash -c "service mariadb start; service redis-server start" >nul 2>&1
+	start /B "" wsl.exe -u root -d Ubuntu -e bash -c "systemctl start mariadb redis-server; sleep infinity" >nul 2>&1
 )
 
 if exist PocketMine-MP.phar (
