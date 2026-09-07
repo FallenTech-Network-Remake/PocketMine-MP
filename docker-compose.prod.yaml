@@ -1,0 +1,193 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # DATABASE & CACHE
+  # ==========================================
+  mysql:
+    image: mariadb:10.11
+    container_name: fallentech-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "fallentech"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - mc-internal
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  redis:
+    image: redis:alpine
+    container_name: fallentech-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - mc-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ==========================================
+  # WATERDOGPE PROXY (Public Gateway)
+  # ==========================================
+  proxy:
+    image: eclipse-temurin:21-jre
+    container_name: mc-proxy
+    working_dir: /server
+    volumes:
+      - ./proxy:/server
+    ports:
+      - "19132:19132/udp"
+    networks:
+      - mc-internal
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    command: [ "java", "-Xms1G", "-Xmx2G", "-jar", "waterdogpe.jar" ]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ==========================================
+  # POCKETMINE BACKEND NODES
+  # ==========================================
+  hub:
+    image: ghcr.io/axolotl-pm/pocketmine-mp:latest
+    container_name: mc-hub
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./servers/hub/data:/data
+      - ./servers/hub/plugins:/plugins
+    networks:
+      - mc-internal
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  factions:
+    image: ghcr.io/axolotl-pm/pocketmine-mp:latest
+    container_name: mc-factions
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./servers/factions/data:/data
+      - ./servers/factions/plugins:/plugins
+    networks:
+      - mc-internal
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 6G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  practice:
+    image: ghcr.io/axolotl-pm/pocketmine-mp:latest
+    container_name: mc-practice
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./servers/practice/data:/data
+      - ./servers/practice/plugins:/plugins
+    networks:
+      - mc-internal
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 3G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  skyblock:
+    image: ghcr.io/axolotl-pm/pocketmine-mp:latest
+    container_name: mc-skyblock
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./servers/skyblock/data:/data
+      - ./servers/skyblock/plugins:/plugins
+    networks:
+      - mc-internal
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 6G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  mc-internal:
+    driver: bridge
