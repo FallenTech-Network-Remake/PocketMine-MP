@@ -83,7 +83,9 @@ services:
     tty: true
     volumes:
       - ./servers/hub/data:/data
+      - ./servers/hub/worlds:/data/worlds
       - ./servers/hub/plugins:/plugins
+      - ./servers/hub/resource_packs:/data/resource_packs
     networks:
       - mc-internal
     restart: unless-stopped
@@ -110,7 +112,9 @@ services:
     tty: true
     volumes:
       - ./servers/factions/data:/data
+      - ./servers/factions/worlds:/data/worlds
       - ./servers/factions/plugins:/plugins
+      - ./servers/factions/resource_packs:/data/resource_packs
     networks:
       - mc-internal
     restart: unless-stopped
@@ -137,7 +141,9 @@ services:
     tty: true
     volumes:
       - ./servers/practice/data:/data
+      - ./servers/practice/worlds:/data/worlds
       - ./servers/practice/plugins:/plugins
+      - ./servers/practice/resource_packs:/data/resource_packs
     networks:
       - mc-internal
     restart: unless-stopped
@@ -164,7 +170,9 @@ services:
     tty: true
     volumes:
       - ./servers/skyblock/data:/data
+      - ./servers/skyblock/worlds:/data/worlds
       - ./servers/skyblock/plugins:/plugins
+      - ./servers/skyblock/resource_packs:/data/resource_packs
     networks:
       - mc-internal
     restart: unless-stopped
