@@ -33,9 +33,9 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
  * This should NOT be used for items which are merely *associated* with blocks (e.g. seeds are not wheat crops; they
  * just place wheat crops when used on the ground).
  */
-final class ItemBlock extends Item{
+class ItemBlock extends Item{
 	public function __construct(
-		private Block $block
+		protected Block $block
 	){
 		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName(), $block->getEnchantmentTags());
 	}
