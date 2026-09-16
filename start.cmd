@@ -22,10 +22,17 @@ if "%PHP_BINARY%"=="" (
 	exit 1
 )
 
-if exist PocketMine-MP.phar (
+where /q wsl.exe
+if %ERRORLEVEL%==0 (
+	start /B "" wsl.exe -u root -d Ubuntu -e bash -c "systemctl start mariadb redis-server; sleep infinity" >nul 2>&1
+)
+
+if exist src\PocketMine.php (
+	set POCKETMINE_FILE=src\PocketMine.php
+) else if exist PocketMine-MP.phar (
 	set POCKETMINE_FILE=PocketMine-MP.phar
 ) else (
-	echo PocketMine-MP.phar not found
+	echo PocketMine-MP.phar or src\PocketMine.php not found
 	echo Downloads can be found at https://github.com/pmmp/PocketMine-MP/releases
 	pause
 	exit 1
