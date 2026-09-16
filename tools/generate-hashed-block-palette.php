@@ -66,7 +66,7 @@ declare(strict_types=1);
  * palette from bedrock-data ref e2d2332 reproduces the palette kqg committed in dcce603
  * byte-for-byte, 3247894 bytes of payload:
  *
- *   php tools/generate-hashed-block-palette.php <bedrock-data@e2d2332> <scratch> \
+ *   php tools/generate-hashed-block-palette.php <bedrock-data@e2d2332> <scratch> --palette-only \
  *       --expect-payload-sha256=55cbb7dc3dbfec3b71d33e7ea37d195b83a625f406a89ebf9a6bdae4d8c39d39
  *
  * e2d2332, NOT the 7db37fe that composer.lock pinned at the time - and that is the whole
@@ -76,6 +76,17 @@ declare(strict_types=1);
  * the *_shelf families and straw_bed). Those 402 states have carried the WRONG legacy meta
  * on prod ever since. Taking both files from one directory in one pass is what stops that
  * happening again - do not hand-edit either output.
+ *
+ * e2d2332 IS AN ORACLE FOR THE PALETTE BYTES ONLY. NEVER REGENERATE resources/ FROM IT
+ * (kqg 2026-09-16). "One ref in one pass" gives you whatever that ref ships, correct or not,
+ * and this one ships a meta map that does not line up with its OWN canonical_block_states.nbt:
+ * building (name,states) -> meta from each revision's own pair, e2d2332 disagrees with 7db37fe
+ * on 10979 of 17499 states, while 7db37fe and the pinned 7e6aee3 (1.26.50) disagree on 0 of
+ * their 16906 shared states. So the 402-position bug above is only the half of the provenance
+ * failure that was visible in the palette. That is why the command above passes --palette-only,
+ * and why --expect-payload-sha256 refuses to write into a directory that already holds a
+ * block_palette.nbt: a run whose job is to check the hash must never be able to emit a meta map
+ * over a good one and still print "MATCHES expected sha256".
  *
  * Only the NBT PAYLOAD is reproducible. The gzip CONTAINER is not: the committed file was
  * deflated by Go (XFL=0/OS=255 in its header) and zlib will not emit those bytes. That is
@@ -106,11 +117,14 @@ use function json_decode;
 use function json_encode;
 use function mkdir;
 use function ord;
+use function preg_match;
+use function rename;
 use function sprintf;
 use function strlen;
 use function strtolower;
 use function str_starts_with;
 use function substr;
+use function unlink;
 use function zlib_encode;
 use const JSON_THROW_ON_ERROR;
 use const PHP_EOL;
@@ -165,11 +179,23 @@ function main(array $argv) : void{
 	$positional = [];
 	$expectSha = null;
 	$gzipLevel = 9;
+	$paletteOnly = false;
 	foreach($argv as $arg){
 		if(str_starts_with($arg, "--expect-payload-sha256=")){
 			$expectSha = strtolower(substr($arg, 24));
 		}elseif(str_starts_with($arg, "--gzip-level=")){
-			$gzipLevel = (int) substr($arg, 13);
+			$raw = substr($arg, 13);
+			//validated here rather than at zlib_encode(), which throws a ValueError only AFTER the
+			//output directory has been created
+			if(preg_match('/^-?[0-9]+$/', $raw) !== 1){
+				fail("--gzip-level must be an integer, got '$raw'");
+			}
+			$gzipLevel = (int) $raw;
+			if($gzipLevel < -1 || $gzipLevel > 9){
+				fail("--gzip-level must be between -1 and 9, got $gzipLevel");
+			}
+		}elseif($arg === "--palette-only"){
+			$paletteOnly = true;
 		}elseif(str_starts_with($arg, "--")){
 			fail("unknown option $arg");
 		}else{
@@ -177,9 +203,14 @@ function main(array $argv) : void{
 		}
 	}
 	if(count($positional) !== 2){
-		fail("usage: php " . __FILE__ . " <bedrock-data-dir> <output-dir> [--expect-payload-sha256=HEX] [--gzip-level=N]");
+		fail("usage: php " . __FILE__ . " <bedrock-data-dir> <output-dir> [--palette-only] [--expect-payload-sha256=HEX] [--gzip-level=N]");
 	}
 	[$dataDir, $outDir] = $positional;
+
+	//a verification run must not be able to overwrite a good pair - see the e2d2332 note at the top
+	if($expectSha !== null && is_file($outDir . "/block_palette.nbt")){
+		fail("--expect-payload-sha256 is a verification run and $outDir already holds a block_palette.nbt - point it at an empty scratch dir instead");
+	}
 
 	$canonicalPath = $dataDir . "/canonical_block_states.nbt";
 	$metaMapPath = $dataDir . "/block_state_meta_map.json";
@@ -260,8 +291,33 @@ function main(array $argv) : void{
 	}
 	$palettePath = $outDir . "/block_palette.nbt";
 	$metaMapOutPath = $outDir . "/block_state_meta_map_hashed.json";
-	file_put_contents($palettePath, zlib_encode($payload, ZLIB_ENCODING_GZIP, $gzipLevel));
-	file_put_contents($metaMapOutPath, json_encode($metaMap, JSON_THROW_ON_ERROR));
+
+	//both outputs are staged and only then renamed into place. A half-written pair is exactly the
+	//misalignment this script exists to prevent, and a disk-full between two plain writes would
+	//otherwise leave a new palette next to the old meta map and still exit 0.
+	$staged = [
+		$palettePath => zlib_encode($payload, ZLIB_ENCODING_GZIP, $gzipLevel)
+	];
+	if(!$paletteOnly){
+		$staged[$metaMapOutPath] = json_encode($metaMap, JSON_THROW_ON_ERROR);
+	}
+	$tmpPaths = [];
+	foreach($staged as $path => $contents){
+		$tmp = $path . ".tmp";
+		$written = file_put_contents($tmp, $contents);
+		if($written !== strlen($contents)){
+			foreach($tmpPaths as $cleanup){
+				unlink($cleanup);
+			}
+			fail("short or failed write to $tmp - nothing was moved into place");
+		}
+		$tmpPaths[$path] = $tmp;
+	}
+	foreach($tmpPaths as $path => $tmp){
+		if(!rename($tmp, $path)){
+			fail("could not move $tmp into place as $path");
+		}
+	}
 
 	echo sprintf("states:      %d (0 hash collisions)" . PHP_EOL, count($entries));
 	echo sprintf("payload:     %d bytes sha256=%s" . PHP_EOL, strlen($payload), $payloadSha);
@@ -269,7 +325,11 @@ function main(array $argv) : void{
 		echo "payload:     MATCHES expected sha256" . PHP_EOL;
 	}
 	echo sprintf("wrote:       %s" . PHP_EOL, $palettePath);
-	echo sprintf("wrote:       %s (%d entries)" . PHP_EOL, $metaMapOutPath, count($metaMap));
+	if($paletteOnly){
+		echo sprintf("skipped:     %s (--palette-only)" . PHP_EOL, $metaMapOutPath);
+	}else{
+		echo sprintf("wrote:       %s (%d entries)" . PHP_EOL, $metaMapOutPath, count($metaMap));
+	}
 }
 
 main(array_slice($argv, 1));
