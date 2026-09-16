@@ -42,26 +42,57 @@ class Stair extends Transparent implements HorizontalFacing{
 	protected bool $upsideDown = false;
 	protected StairShape $shape = StairShape::STRAIGHT;
 
+	/**
+	 * Set when the shape saved in the world disagreed with the one recomputed on read, so that the next neighbour
+	 * update writes the corrected state back instead of deciding nothing changed.
+	 */
+	private bool $shapeStaleInWorld = false;
+
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->upsideDown);
+		$w->enum($this->shape);
 	}
 
+	//Since 1.26.50 the corner is a real serialized blockstate the client renders from, so shape must be part of the
+	//state id and persisted, rather than derived on read. It is (re)calculated on placement and neighbour changes.
+	private function recalculateShape() : StairShape{
+		$clockwise = Facing::rotateY($this->facing, true);
+		if(($backFacing = $this->getPossibleCornerFacing(false)) !== null){
+			return $backFacing === $clockwise ? StairShape::OUTER_RIGHT : StairShape::OUTER_LEFT;
+		}elseif(($frontFacing = $this->getPossibleCornerFacing(true)) !== null){
+			return $frontFacing === $clockwise ? StairShape::INNER_RIGHT : StairShape::INNER_LEFT;
+		}
+		return StairShape::STRAIGHT;
+	}
+
+	/**
+	 * The shape only became part of the SAVED state in 1.26.50 (kqg 2026-09-16). Chunks written before that bump have
+	 * no shape in them at all, so every corner stair in an existing world would load as STRAIGHT - wrong collision,
+	 * and wrong again on the next save. Recompute on read the way this engine did before the bump, and remember the
+	 * disagreement so the next neighbour update persists the correction for the client. A chunk written by this engine
+	 * recomputes to what it already stored, so this is a no-op there.
+	 */
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
-		$this->collisionBoxes = null;
-
-		$clockwise = Facing::rotateY($this->facing, true);
-		if(($backFacing = $this->getPossibleCornerFacing(false)) !== null){
-			$this->shape = $backFacing === $clockwise ? StairShape::OUTER_RIGHT : StairShape::OUTER_LEFT;
-		}elseif(($frontFacing = $this->getPossibleCornerFacing(true)) !== null){
-			$this->shape = $frontFacing === $clockwise ? StairShape::INNER_RIGHT : StairShape::INNER_LEFT;
-		}else{
-			$this->shape = StairShape::STRAIGHT;
+		$shape = $this->recalculateShape();
+		if($shape !== $this->shape){
+			$this->shape = $shape;
+			$this->collisionBoxes = null;
+			$this->shapeStaleInWorld = true;
 		}
 
 		return $this;
+	}
+
+	public function onNearbyBlockChange() : void{
+		$shape = $this->recalculateShape();
+		if($shape !== $this->shape || $this->shapeStaleInWorld){
+			$this->shape = $shape;
+			$this->shapeStaleInWorld = false;
+			$this->position->getWorld()->setBlock($this->position, $this);
+		}
 	}
 
 	public function isUpsideDown() : bool{ return $this->upsideDown; }
