@@ -23,11 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\block\Block;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 
 trait HorizontalConnectableTrait{
 	/** @var int[] facing => facing */
 	protected array $connections = [];
+
+	/**
+	 * Set when the connections saved in the world disagreed with the ones recomputed on read, so that the next
+	 * neighbour update writes the corrected state back instead of deciding nothing changed.
+	 */
+	private bool $connectionsStaleInWorld = false;
 
 	/**
 	 * @see Block::describeBlockOnlyState()
@@ -49,10 +56,35 @@ trait HorizontalConnectableTrait{
 	}
 
 	/**
+	 * @see Block::readStateFromWorld()
+	 *
+	 * Connections only became part of the SAVED state in 1.26.50 (kqg 2026-09-16). Every chunk written before that
+	 * bump stores them all-false, and nothing runs a block update on chunk load, so the saved value would be taken at
+	 * face value: existing fence rows, glass pane walls and iron bars would load as unconnected centre posts that
+	 * players and mobs walk straight through. Recompute on read - which is what this engine did before the bump - so
+	 * collision is correct the moment the chunk loads, and remember the disagreement so the next neighbour update
+	 * persists the correction for the client. A chunk written by this engine recomputes to what it already stored, so
+	 * this is a no-op there.
+	 */
+	public function readStateFromWorld() : Block{
+		parent::readStateFromWorld();
+
+		if($this->recalculateConnections()){
+			$this->collisionBoxes = null;
+			$this->connectionsStaleInWorld = true;
+		}
+
+		return $this;
+	}
+
+	/**
 	 * @see Block::onNearbyBlockChange()
 	 */
 	public function onNearbyBlockChange() : void{
-		if($this->recalculateConnections()){
+		//$connectionsStaleInWorld is checked second on purpose: recalculateConnections() must run either way, since it
+		//is what brings the in-memory state up to date before it is written back.
+		if($this->recalculateConnections() || $this->connectionsStaleInWorld){
+			$this->connectionsStaleInWorld = false;
 			$this->position->getWorld()->setBlock($this->position, $this);
 		}
 	}
