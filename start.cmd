@@ -31,7 +31,7 @@ if exist PocketMine-MP.phar (
 ) else if exist src\PocketMine.php (
 	set POCKETMINE_FILE=src\PocketMine.php
 ) else (
-	echo PocketMine-MP.phar not found
+	echo PocketMine-MP.phar or src\PocketMine.php not found
 	echo Downloads can be found at https://github.com/pmmp/PocketMine-MP/releases
 	pause
 	exit 1
