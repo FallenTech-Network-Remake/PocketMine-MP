@@ -23,32 +23,35 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\HorizontalConnectable;
-use pocketmine\block\utils\HorizontalConnectableTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use function count;
 
-class Fence extends Transparent implements HorizontalConnectable{
-	use HorizontalConnectableTrait;
+class Fence extends Transparent{
+	/** @var bool[] facing => dummy */
+	protected array $connections = [];
 
 	public function getThickness() : float{
 		return 0.25;
 	}
 
-	protected function recalculateConnections() : bool{
-		$changed = false;
+	public function readStateFromWorld() : Block{
+		parent::readStateFromWorld();
+
+		$this->collisionBoxes = null;
+
 		foreach(Facing::HORIZONTAL as $facing){
 			$block = $this->getSide($facing);
-			$connected = $block instanceof static || $block instanceof FenceGate || $block->getSupportType(Facing::opposite($facing)) === SupportType::FULL;
-			if($connected !== $this->isConnectedAt($facing)){
-				$this->setConnectedAt($facing, $connected);
-				$changed = true;
+			if($block instanceof static || $block instanceof FenceGate || $block->getSupportType(Facing::opposite($facing)) === SupportType::FULL){
+				$this->connections[$facing] = true;
+			}else{
+				unset($this->connections[$facing]);
 			}
 		}
-		return $changed;
+
+		return $this;
 	}
 
 	protected function recalculateCollisionBoxes() : array{

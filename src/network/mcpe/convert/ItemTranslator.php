@@ -55,7 +55,7 @@ final class ItemTranslator{
 	public function toNetworkIdQuiet(Item $item) : ?array{
 		try{
 			return $this->toNetworkId($item);
-		}catch(ItemTypeSerializeException){
+		}catch(ItemTypeSerializeException | AssumptionFailedError){
 			return null;
 		}
 	}

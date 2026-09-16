@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\HorizontalConnectable;
-use pocketmine\block\utils\HorizontalConnectableTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -34,20 +32,25 @@ use function count;
 /**
  * Thin blocks behave like glass panes. They connect to full-cube blocks horizontally adjacent to them if possible.
  */
-class Thin extends Transparent implements HorizontalConnectable{
-	use HorizontalConnectableTrait;
+class Thin extends Transparent{
+	/** @var bool[] facing => dummy */
+	protected array $connections = [];
 
-	protected function recalculateConnections() : bool{
-		$changed = false;
+	public function readStateFromWorld() : Block{
+		parent::readStateFromWorld();
+
+		$this->collisionBoxes = null;
+
 		foreach(Facing::HORIZONTAL as $facing){
 			$side = $this->getSide($facing);
-			$connected = $side instanceof Thin || $side instanceof Wall || $side->getSupportType(Facing::opposite($facing)) === SupportType::FULL;
-			if($connected !== $this->isConnectedAt($facing)){
-				$this->setConnectedAt($facing, $connected);
-				$changed = true;
+			if($side instanceof Thin || $side instanceof Wall || $side->getSupportType(Facing::opposite($facing)) === SupportType::FULL){
+				$this->connections[$facing] = true;
+			}else{
+				unset($this->connections[$facing]);
 			}
 		}
-		return $changed;
+
+		return $this;
 	}
 
 	protected function recalculateCollisionBoxes() : array{
