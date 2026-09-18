@@ -351,7 +351,7 @@ class World implements ChunkManager{
 	 */
 	private array $serverSoundHandleIdMap = [];
 
-	private int $nextSoundHandleId = 0;
+	private static int $nextSoundHandleId = 0;
 
 	private readonly GeneratorExecutor $generatorExecutor;
 
@@ -728,18 +728,27 @@ class World implements ChunkManager{
 		}
 	}
 
+	/**
+	 * @internal This methoud should belong to NetworkSession, but we can't make it because it would be a BC break. So we keep it here for now.
+	 */
 	public function getNextSoundHandleId(Vector3 $pos) : int{
 		$key = self::blockHash($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
-		$selectedId = $this->nextSoundHandleId++;
+		$selectedId = self::$nextSoundHandleId++;
 		$this->serverSoundHandleIdMap[$key] = $selectedId;
 		return $selectedId;
 	}
 
+	/**
+	 * @internal
+	 */
 	public function getSoundHandleId(Vector3 $pos) : ?int{
 		$key = self::blockHash($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
 		return $this->serverSoundHandleIdMap[$key] ?? null;
 	}
 
+	/**
+	 * @internal
+	 */
 	public function removeSoundHandleId(Vector3 $pos) : void{
 		$key = self::blockHash($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
 		unset($this->serverSoundHandleIdMap[$key]);
