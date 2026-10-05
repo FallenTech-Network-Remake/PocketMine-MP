@@ -478,6 +478,20 @@ abstract class Living extends Entity{
 	}
 
 	/**
+	 * Re-prices absorption against the damage as it stands now. applyDamageModifiers() priced it
+	 * before the event ran, so a handler that changed the damage left absorption soaking the old
+	 * amount: hearts drained or kept out of step with the health actually lost (FallenTech
+	 * 2026-10-05, the bug Quark 972f7a7 tried to fix by removing absorption).
+	 */
+	protected function applyDamage(EntityDamageEvent $source) : void{
+		if($this->getAbsorption() > 0 || $source->isApplicable(EntityDamageEvent::MODIFIER_ABSORPTION)){
+			$source->setModifier(0, EntityDamageEvent::MODIFIER_ABSORPTION);
+			$source->setModifier(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
+		}
+		parent::applyDamage($source);
+	}
+
+	/**
 	 * Called after EntityDamageEvent execution to apply post-hurt effects, such as reducing absorption or modifying
 	 * armour durability.
 	 * This will not be called by damage sources causing death.
