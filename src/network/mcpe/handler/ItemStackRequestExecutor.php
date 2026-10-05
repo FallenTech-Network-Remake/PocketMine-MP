@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\inventory\EnchantInventory;
+use pocketmine\block\inventory\LoomInventory;
+use pocketmine\data\bedrock\BannerPatternTypeIdMap;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
@@ -31,6 +33,7 @@ use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\EnchantingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\inventory\transaction\LoomTransaction;
 use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionBuilderInventory;
 use pocketmine\item\Durable;
@@ -45,6 +48,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeAut
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CreativeCreateStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\DeprecatedCraftingResultsStackRequestAction;
+use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\LoomStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\DestroyStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\DropStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequest;
@@ -263,6 +267,33 @@ class ItemStackRequestExecutor{
 	}
 
 	/**
+	 * A loom adds one pattern to the banner in its banner slot, using the dye in its dye slot.
+	 * The inputs are consumed by the CraftingConsumeInput actions that follow, and LoomTransaction
+	 * checks the result against what was actually consumed.
+	 *
+	 * @throws ItemStackRequestProcessException
+	 */
+	protected function beginLoom(string $patternId) : void{
+		if($this->specialTransaction !== null){
+			throw new ItemStackRequestProcessException("Another special transaction is already in progress");
+		}
+		$window = $this->player->getCurrentWindow();
+		if(!$window instanceof LoomInventory){
+			throw new ItemStackRequestProcessException("No loom is open");
+		}
+		$type = BannerPatternTypeIdMap::getInstance()->fromId($patternId);
+		if($type === null){
+			throw new ItemStackRequestProcessException("Unknown banner pattern: $patternId");
+		}
+		$output = LoomTransaction::craft($window->getItem(LoomInventory::SLOT_BANNER), $window->getItem(LoomInventory::SLOT_DYE), $type);
+		if($output === null){
+			throw new ItemStackRequestProcessException("The loom's banner and dye can't make pattern $patternId");
+		}
+		$this->specialTransaction = new LoomTransaction($this->player, $type);
+		$this->setNextCreatedItem($output);
+	}
+
+	/**
 	 * @throws ItemStackRequestProcessException
 	 */
 	protected function takeCreatedItem(int $count) : Item{
@@ -295,7 +326,7 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	private function assertDoingCrafting() : void{
-		if(!$this->specialTransaction instanceof CraftingTransaction && !$this->specialTransaction instanceof EnchantingTransaction){
+		if(!$this->specialTransaction instanceof CraftingTransaction && !$this->specialTransaction instanceof EnchantingTransaction && !$this->specialTransaction instanceof LoomTransaction){
 			if($this->specialTransaction === null){
 				throw new ItemStackRequestProcessException("Expected CraftRecipe or CraftRecipeAuto action to precede this action");
 			}else{
@@ -365,6 +396,8 @@ class ItemStackRequestExecutor{
 				throw new ItemStackRequestProcessException("No such crafting result index: " . $action->getResultIndex());
 			}
 			$this->setNextCreatedItem($nextResultItem);
+		}elseif($action instanceof LoomStackRequestAction){
+			$this->beginLoom($action->getPatternId());
 		}elseif($action instanceof DeprecatedCraftingResultsStackRequestAction){
 			//no obvious use
 		}elseif($action instanceof MineBlockStackRequestAction){
