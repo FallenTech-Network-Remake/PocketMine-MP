@@ -447,7 +447,12 @@ abstract class Living extends Entity{
 	 */
 	public function applyDamageModifiers(EntityDamageEvent $source) : void{
 		if($this->lastDamageCause !== null && $this->attackTime > 0){
-			if($this->lastDamageCause->getBaseDamage() >= $source->getBaseDamage()){
+			//FallenTech (kqg 2026-10-06): inside a window opened by a melee hit, a second melee hit counts for
+			//nothing - no damage, no knockback, no enchant procs - even with a stronger weapon. Upstream let the
+			//stronger "switch" hit through for the difference. Windows opened by anything else stay vanilla.
+			$meleeAgain = $source->getCause() === EntityDamageEvent::CAUSE_ENTITY_ATTACK
+				&& $this->lastDamageCause->getCause() === EntityDamageEvent::CAUSE_ENTITY_ATTACK;
+			if($meleeAgain || $this->lastDamageCause->getBaseDamage() >= $source->getBaseDamage()){
 				$source->cancel();
 			}
 			$source->setModifier(-$this->lastDamageCause->getBaseDamage(), EntityDamageEvent::MODIFIER_PREVIOUS_DAMAGE_COOLDOWN);
