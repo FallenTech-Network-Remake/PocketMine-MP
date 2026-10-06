@@ -594,31 +594,27 @@ abstract class Living extends Entity{
 
 		if($this->attackTime <= 0){
 			//this logic only applies if the entity was cold attacked
+
 			$this->attackTime = $source->getAttackCooldown();
-		}
 
-		//FallenTech: knockback and the hurt animation apply to every hit that lands, not only cold
-		//ones. During the cooldown a hit only lands if it beats the previous hit's base damage
-		//(applyDamageModifiers() cancels the rest), i.e. a weapon switch. Upstream dealt that hit's
-		//damage silently - no flash, no knockback - while knockback enchants still pushed the victim,
-		//so the hit looked unregistered. The cooldown itself stays anchored to the cold hit.
-		if($source instanceof EntityDamageByChildEntityEvent){
-			$e = $source->getChild();
-			if($e !== null){
-				$motion = $e->getMotion();
-				$this->knockBack($motion->x, $motion->z, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
+			if($source instanceof EntityDamageByChildEntityEvent){
+				$e = $source->getChild();
+				if($e !== null){
+					$motion = $e->getMotion();
+					$this->knockBack($motion->x, $motion->z, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
+				}
+			}elseif($source instanceof EntityDamageByEntityEvent){
+				$e = $source->getDamager();
+				if($e !== null){
+					$deltaX = $this->location->x - $e->location->x;
+					$deltaZ = $this->location->z - $e->location->z;
+					$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
+				}
 			}
-		}elseif($source instanceof EntityDamageByEntityEvent){
-			$e = $source->getDamager();
-			if($e !== null){
-				$deltaX = $this->location->x - $e->location->x;
-				$deltaZ = $this->location->z - $e->location->z;
-				$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
-			}
-		}
 
-		if($this->isAlive()){
-			$this->doHitAnimation();
+			if($this->isAlive()){
+				$this->doHitAnimation();
+			}
 		}
 
 		if($this->isAlive()){
