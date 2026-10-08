@@ -447,7 +447,12 @@ abstract class Living extends Entity{
 	 */
 	public function applyDamageModifiers(EntityDamageEvent $source) : void{
 		if($this->lastDamageCause !== null && $this->attackTime > 0){
-			if($this->lastDamageCause->getBaseDamage() >= $source->getBaseDamage()){
+			//FallenTech (kqg 2026-10-06): inside a window opened by a melee hit, a second melee hit counts for
+			//nothing - no damage, no knockback, no enchant procs - even with a stronger weapon. Upstream let the
+			//stronger "switch" hit through for the difference. Windows opened by anything else stay vanilla.
+			$meleeAgain = $source->getCause() === EntityDamageEvent::CAUSE_ENTITY_ATTACK
+				&& $this->lastDamageCause->getCause() === EntityDamageEvent::CAUSE_ENTITY_ATTACK;
+			if($meleeAgain || $this->lastDamageCause->getBaseDamage() >= $source->getBaseDamage()){
 				$source->cancel();
 			}
 			$source->setModifier(-$this->lastDamageCause->getBaseDamage(), EntityDamageEvent::MODIFIER_PREVIOUS_DAMAGE_COOLDOWN);
@@ -475,6 +480,20 @@ abstract class Living extends Entity{
 		if($cause === EntityDamageEvent::CAUSE_FALLING_BLOCK && $this->armorInventory->getHelmet() instanceof Armor){
 			$source->setModifier(-($source->getFinalDamage() / 4), EntityDamageEvent::MODIFIER_ARMOR_HELMET);
 		}
+	}
+
+	/**
+	 * Re-prices absorption against the damage as it stands now. applyDamageModifiers() priced it
+	 * before the event ran, so a handler that changed the damage left absorption soaking the old
+	 * amount: hearts drained or kept out of step with the health actually lost (FallenTech
+	 * 2026-10-05, the bug Quark 972f7a7 tried to fix by removing absorption).
+	 */
+	protected function applyDamage(EntityDamageEvent $source) : void{
+		if($this->getAbsorption() > 0 || $source->isApplicable(EntityDamageEvent::MODIFIER_ABSORPTION)){
+			$source->setModifier(0, EntityDamageEvent::MODIFIER_ABSORPTION);
+			$source->setModifier(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
+		}
+		parent::applyDamage($source);
 	}
 
 	/**
@@ -580,31 +599,27 @@ abstract class Living extends Entity{
 
 		if($this->attackTime <= 0){
 			//this logic only applies if the entity was cold attacked
+
 			$this->attackTime = $source->getAttackCooldown();
-		}
 
-		//FallenTech: knockback and the hurt animation apply to every hit that lands, not only cold
-		//ones. During the cooldown a hit only lands if it beats the previous hit's base damage
-		//(applyDamageModifiers() cancels the rest), i.e. a weapon switch. Upstream dealt that hit's
-		//damage silently - no flash, no knockback - while knockback enchants still pushed the victim,
-		//so the hit looked unregistered. The cooldown itself stays anchored to the cold hit.
-		if($source instanceof EntityDamageByChildEntityEvent){
-			$e = $source->getChild();
-			if($e !== null){
-				$motion = $e->getMotion();
-				$this->knockBack($motion->x, $motion->z, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
+			if($source instanceof EntityDamageByChildEntityEvent){
+				$e = $source->getChild();
+				if($e !== null){
+					$motion = $e->getMotion();
+					$this->knockBack($motion->x, $motion->z, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
+				}
+			}elseif($source instanceof EntityDamageByEntityEvent){
+				$e = $source->getDamager();
+				if($e !== null){
+					$deltaX = $this->location->x - $e->location->x;
+					$deltaZ = $this->location->z - $e->location->z;
+					$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
+				}
 			}
-		}elseif($source instanceof EntityDamageByEntityEvent){
-			$e = $source->getDamager();
-			if($e !== null){
-				$deltaX = $this->location->x - $e->location->x;
-				$deltaZ = $this->location->z - $e->location->z;
-				$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
-			}
-		}
 
-		if($this->isAlive()){
-			$this->doHitAnimation();
+			if($this->isAlive()){
+				$this->doHitAnimation();
+			}
 		}
 
 		if($this->isAlive()){

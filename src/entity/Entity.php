@@ -550,6 +550,13 @@ abstract class Entity{
 
 		$this->setLastDamageCause($source);
 
+		$this->applyDamage($source);
+	}
+
+	/**
+	 * Takes the event's final damage off the entity's health, after every handler has run.
+	 */
+	protected function applyDamage(EntityDamageEvent $source) : void{
 		$this->setHealth($this->getHealth() - $source->getFinalDamage());
 	}
 
