@@ -165,7 +165,10 @@ class ItemFrame extends Flowable implements AnyFacing{
 	}
 
 	private function canBeSupportedAt(Block $block, int $face) : bool{
-		return $block->getAdjacentSupportType($face) !== SupportType::NONE;
+		//FallenTech: frames hang on chests and ender chests as in vanilla Bedrock (storage labels), although
+		//those report no face support for anything else.
+		$support = $block->getSide($face);
+		return $support instanceof Chest || $support instanceof EnderChest || $block->getAdjacentSupportType($face) !== SupportType::NONE;
 	}
 
 	public function onNearbyBlockChange() : void{
