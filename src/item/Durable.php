@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\event\item\ItemBreakEvent;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\Utils;
@@ -63,6 +64,14 @@ abstract class Durable extends Item{
 
 		$this->damage = min($this->damage + $amount, $this->getMaxDurability());
 		if($this->isBroken()){
+			//FallenTech (kqg 2026-10-18): let plugins keep an item before wear destroys it (Insurance). Plugins used
+			//to guard each damage path on its own, and every path they missed deleted the item.
+			$ev = new ItemBreakEvent($this);
+			$ev->call();
+			if($ev->isCancelled()){
+				$this->damage = min($this->damage, $this->getMaxDurability() - 1);
+				return true;
+			}
 			$this->onBroken();
 		}
 
