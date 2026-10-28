@@ -49,6 +49,12 @@ class Fire extends BaseFire implements Ageable, HorizontalConnectable{
 	protected array $connections = [];
 	protected bool $connectedUp = false;
 
+	/**
+	 * Set when the connections saved in the world disagreed with the ones recomputed on read, so that the next
+	 * neighbour update writes the corrected state back instead of deciding nothing changed.
+	 */
+	private bool $connectionsStaleInWorld = false;
+
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedIntAuto(0, self::MAX_AGE, $this->age);
 		$w->horizontalFacingFlags($this->connections);
@@ -100,6 +106,22 @@ class Fire extends BaseFire implements Ageable, HorizontalConnectable{
 		return $changed;
 	}
 
+	/**
+	 * Connections only became part of the SAVED state in 1.26.60. Every chunk written before that bump stores the
+	 * upgrade schema's defaults, and nothing runs a block update on chunk load, so without this the saved value
+	 * would be taken at face value until a neighbour changed. Same fix as HorizontalConnectableTrait (1.26.50
+	 * fences/panes/bars); FTRecipeFix's StaleShapeHealer then writes the correction back for the client.
+	 */
+	public function readStateFromWorld() : Block{
+		parent::readStateFromWorld();
+
+		if($this->recalculateConnections()){
+			$this->connectionsStaleInWorld = true;
+		}
+
+		return $this;
+	}
+
 	public function onNearbyBlockChange() : void{
 		$world = $this->position->getWorld();
 		$down = $this->getSide(Facing::DOWN);
@@ -108,7 +130,9 @@ class Fire extends BaseFire implements Ageable, HorizontalConnectable{
 		}elseif(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->hasAdjacentFlammableBlocks()){
 			$world->setBlock($this->position, VanillaBlocks::AIR());
 		}else{
-			if($this->recalculateConnections()){
+			//$connectionsStaleInWorld is checked second on purpose: recalculateConnections() must run either way.
+			if($this->recalculateConnections() || $this->connectionsStaleInWorld){
+				$this->connectionsStaleInWorld = false;
 				$world->setBlock($this->position, $this);
 			}
 			$world->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
@@ -270,6 +294,7 @@ class Fire extends BaseFire implements Ageable, HorizontalConnectable{
 		//connections depend on the position, so they are recalculated once the fire is placed
 		$fire->connections = [];
 		$fire->connectedUp = false;
+		$fire->connectionsStaleInWorld = false;
 		return $fire;
 	}
 

@@ -39,6 +39,12 @@ final class ChorusPlant extends Flowable implements HorizontalConnectable{
 	/** @var int[] facing => facing */
 	protected array $connections = [];
 
+	/**
+	 * Set when the connections saved in the world disagreed with the ones recomputed on read, so that the next
+	 * neighbour update writes the corrected state back instead of deciding nothing changed.
+	 */
+	private bool $connectionsStaleInWorld = false;
+
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facingFlags($this->connections);
 	}
@@ -90,10 +96,29 @@ final class ChorusPlant extends Flowable implements HorizontalConnectable{
 		return $changed;
 	}
 
+	/**
+	 * Connections only became part of the SAVED state in 1.26.60. Every chunk written before that bump stores the
+	 * upgrade schema's defaults, and nothing runs a block update on chunk load, so without this the saved value
+	 * would be taken at face value until a neighbour changed. Same fix as HorizontalConnectableTrait (1.26.50
+	 * fences/panes/bars); FTRecipeFix's StaleShapeHealer then writes the correction back for the client.
+	 */
+	public function readStateFromWorld() : Block{
+		parent::readStateFromWorld();
+
+		if($this->recalculateConnections()){
+			$this->collisionBoxes = null;
+			$this->connectionsStaleInWorld = true;
+		}
+
+		return $this;
+	}
+
 	public function onNearbyBlockChange() : void{
 		if(!$this->canBeSupportedAt($this)){
 			$this->position->getWorld()->useBreakOn($this->position);
-		}elseif($this->recalculateConnections()){
+		}elseif($this->recalculateConnections() || $this->connectionsStaleInWorld){
+			//$connectionsStaleInWorld is checked second on purpose: recalculateConnections() must run either way.
+			$this->connectionsStaleInWorld = false;
 			$this->position->getWorld()->setBlock($this->position, $this);
 		}
 	}
