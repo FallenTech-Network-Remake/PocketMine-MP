@@ -26,7 +26,9 @@ namespace pocketmine\block;
 use pocketmine\block\utils\Ageable;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\HorizontalConnectable;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\BlockBurnEvent;
 use pocketmine\math\Facing;
 use pocketmine\world\format\Chunk;
@@ -36,17 +38,88 @@ use function max;
 use function min;
 use function mt_rand;
 
-class Fire extends BaseFire implements Ageable{
+class Fire extends BaseFire implements Ageable, HorizontalConnectable{
 	use AgeableTrait;
 
 	public const MAX_AGE = 15;
+
+	private const CONNECTION_FACES = [Facing::UP, Facing::NORTH, Facing::SOUTH, Facing::WEST, Facing::EAST];
+
+	/** @var int[] facing => facing */
+	protected array $connections = [];
+	protected bool $connectedUp = false;
+
+	/**
+	 * Set when the connections saved in the world disagreed with the ones recomputed on read, so that the next
+	 * neighbour update writes the corrected state back instead of deciding nothing changed.
+	 */
+	private bool $connectionsStaleInWorld = false;
+
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedIntAuto(0, self::MAX_AGE, $this->age);
+		$w->horizontalFacingFlags($this->connections);
+		//Fire only has east, west, south, north, up connections (no down connection)
+		$w->bool($this->connectedUp);
+	}
 
 	protected function getFireDamage() : int{
 		return 1;
 	}
 
+	/**
+	 * @param int $facing any of Facing::ALL except DOWN
+	 */
+	public function isConnectedAt(int $facing) : bool{
+		return isset($this->connections[$facing]) || ($facing === Facing::UP && $this->connectedUp);
+	}
+
+	/**
+	 * @param int $facing any of Facing::ALL except DOWN
+	 */
+	public function setConnectedAt(int $facing, bool $connected) : void{
+		Facing::validate($facing);
+		if($facing === Facing::DOWN){
+			throw new \InvalidArgumentException("DOWN is not a valid facing for this block");
+		}
+		if($facing === Facing::UP){
+			$this->connectedUp = $connected;
+		}elseif($connected){
+			$this->connections[$facing] = $facing;
+		}else{
+			unset($this->connections[$facing]);
+		}
+	}
+
 	private function canBeSupportedBy(Block $block) : bool{
 		return $block->getSupportType(Facing::UP) === SupportType::FULL;
+	}
+
+	private function recalculateConnections() : bool{
+		$changed = false;
+		foreach(self::CONNECTION_FACES as $facing){
+			$connected = $this->getSide($facing)->isFlammable();
+			if($connected !== $this->isConnectedAt($facing)){
+				$this->setConnectedAt($facing, $connected);
+				$changed = true;
+			}
+		}
+		return $changed;
+	}
+
+	/**
+	 * Connections only became part of the SAVED state in 1.26.60. Every chunk written before that bump stores the
+	 * upgrade schema's defaults, and nothing runs a block update on chunk load, so without this the saved value
+	 * would be taken at face value until a neighbour changed. Same fix as HorizontalConnectableTrait (1.26.50
+	 * fences/panes/bars); FTRecipeFix's StaleShapeHealer then writes the correction back for the client.
+	 */
+	public function readStateFromWorld() : Block{
+		parent::readStateFromWorld();
+
+		if($this->recalculateConnections()){
+			$this->connectionsStaleInWorld = true;
+		}
+
+		return $this;
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -57,6 +130,11 @@ class Fire extends BaseFire implements Ageable{
 		}elseif(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->hasAdjacentFlammableBlocks()){
 			$world->setBlock($this->position, VanillaBlocks::AIR());
 		}else{
+			//$connectionsStaleInWorld is checked second on purpose: recalculateConnections() must run either way.
+			if($this->recalculateConnections() || $this->connectionsStaleInWorld){
+				$this->connectionsStaleInWorld = false;
+				$world->setBlock($this->position, $this);
+			}
 			$world->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
 		}
 	}
@@ -144,9 +222,7 @@ class Fire extends BaseFire implements Ageable{
 				if($world->getBlock($block->position)->isSameState($block)){
 					$spreadedFire = false;
 					if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
-						$fire = clone $this;
-						$fire->age = min(self::MAX_AGE, $fire->age + (mt_rand(0, 4) >> 2));
-						$spreadedFire = $this->spreadBlock($block, $fire);
+						$spreadedFire = $this->spreadBlock($block, $this->createSpreadState());
 					}
 					if(!$spreadedFire){
 						$world->setBlock($block->position, VanillaBlocks::AIR());
@@ -205,13 +281,21 @@ class Fire extends BaseFire implements Ageable{
 					//TODO: max chance is lowered by half in humid biomes
 
 					if($maxChance > 0 && mt_rand(0, $randomBound - 1) <= $maxChance){
-						$new = clone $this;
-						$new->age = min(self::MAX_AGE, $this->age + (mt_rand(0, 4) >> 2));
-						$this->spreadBlock($block, $new);
+						$this->spreadBlock($block, $this->createSpreadState());
 					}
 				}
 			}
 		}
+	}
+
+	private function createSpreadState() : Fire{
+		$fire = clone $this;
+		$fire->age = min(self::MAX_AGE, $this->age + (mt_rand(0, 4) >> 2));
+		//connections depend on the position, so they are recalculated once the fire is placed
+		$fire->connections = [];
+		$fire->connectedUp = false;
+		$fire->connectionsStaleInWorld = false;
+		return $fire;
 	}
 
 	private function spreadBlock(Block $block, Block $newState) : bool{
