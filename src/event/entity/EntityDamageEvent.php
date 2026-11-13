@@ -47,6 +47,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	public const MODIFIER_WEAPON_ENCHANTMENTS = 9;
 	public const MODIFIER_PREVIOUS_DAMAGE_COOLDOWN = 10;
 	public const MODIFIER_ARMOR_HELMET = 11;
+	public const MODIFIER_PROTECTED_DAMAGE = 12;
 
 	public const CAUSE_CONTACT = 0;
 	public const CAUSE_ENTITY_ATTACK = 1;
@@ -72,6 +73,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	/** @var float[] */
 	private array $originals;
 	private int $attackCooldown = 10;
+	private float $protectedDamage = 0.0;
 
 	/**
 	 * @param float[] $modifiers
@@ -144,8 +146,36 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		return isset($this->modifiers[$type]);
 	}
 
+	/** Adds damage which bypasses armour and resistance, but still consumes absorption. */
+	public function addProtectedDamage(float $damage) : void{
+		$this->protectedDamage += $damage;
+	}
+
+	public function setProtectedDamage(float $damage) : void{
+		$this->protectedDamage = $damage;
+	}
+
+	public function getProtectedDamage() : float{
+		return $this->protectedDamage;
+	}
+
+	public function clearProtectedDamage() : void{
+		$this->protectedDamage = 0.0;
+	}
+
 	public function getFinalDamage() : float{
-		return max(0, $this->baseDamage + array_sum($this->modifiers));
+		$modifiers = $this->modifiers;
+		unset($modifiers[self::MODIFIER_PROTECTED_DAMAGE], $modifiers[self::MODIFIER_ABSORPTION]);
+		$normalDamage = max(0, $this->baseDamage + array_sum($modifiers));
+		$protectedDamage = max(0, $this->protectedDamage + $this->getModifier(self::MODIFIER_PROTECTED_DAMAGE));
+		return max(0, $normalDamage + $protectedDamage + $this->getModifier(self::MODIFIER_ABSORPTION));
+	}
+
+	/** Returns ordinary damage only, for calculating armour and resistance reductions. */
+	public function getFinalDamageWithoutProtected() : float{
+		$modifiers = $this->modifiers;
+		unset($modifiers[self::MODIFIER_PROTECTED_DAMAGE]);
+		return max(0, $this->baseDamage + array_sum($modifiers));
 	}
 
 	/**

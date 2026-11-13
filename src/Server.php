@@ -43,6 +43,7 @@ use pocketmine\event\HandlerListManager;
 use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\player\PlayerLoginEvent;
+use pocketmine\event\server\CrashDumpEvent;
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\lang\KnownTranslationFactory;
@@ -236,6 +237,8 @@ class Server{
 	private Config $whitelist;
 
 	private bool $isRunning = true;
+	private string $lastCrashFingerprint = "";
+	private float $lastCrashReportTime = 0;
 
 	private bool $hasStopped = false;
 
@@ -1134,6 +1137,7 @@ class Server{
 			$this->forceShutdown();
 		}catch(\Throwable $e){
 			$this->exceptionHandler($e);
+			$this->forceShutdown(); // Startup did not complete; there is no running tick loop to resume.
 		}
 	}
 
@@ -1612,6 +1616,14 @@ class Server{
 	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 */
 	public function exceptionHandler(\Throwable $e, ?array $trace = null) : void{
+		$fingerprint = get_class($e) . $e->getFile() . $e->getLine() . $e->getMessage();
+		$now = microtime(true);
+		if($fingerprint === $this->lastCrashFingerprint && $now - $this->lastCrashReportTime < 60){
+			return; // A persistent failure must not generate a dump and Discord upload every tick.
+		}
+		$this->lastCrashFingerprint = $fingerprint;
+		$this->lastCrashReportTime = $now;
+
 		while(@ob_end_flush()){}
 		global $lastError;
 
@@ -1663,7 +1675,7 @@ class Server{
 		if(!is_dir($crashFolder)){
 			mkdir($crashFolder);
 		}
-		$crashDumpPath = Path::join($crashFolder, date("Y-m-d_H.i.s_T", (int) $dump->getData()->time) . ".log");
+		$crashDumpPath = Path::join($crashFolder, date("Y-m-d_H.i.s_T", (int) $dump->getData()->time) . "-" . \bin2hex(\random_bytes(4)) . ".log");
 
 		$fp = @fopen($crashDumpPath, "wb");
 		if(!is_resource($fp)){
@@ -1682,18 +1694,18 @@ class Server{
 		if(!$this->isRunning){
 			return;
 		}
-		if($this->sendUsageTicker > 0){
-			$this->sendUsage(SendUsageTask::TYPE_CLOSE);
-		}
-		$this->hasStopped = false;
-
-		ini_set("error_reporting", '0');
-		ini_set("memory_limit", '-1'); //Fix error dump not dumped on memory problems
+		$previousErrorReporting = ini_set("error_reporting", '0');
+		$previousMemoryLimit = ini_set("memory_limit", '-1'); //Fix error dump not dumped on memory problems
 		try{
 			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_crash_create()));
 			$dump = new CrashDump($this, $this->pluginManager ?? null);
 
 			$crashDumpPath = $this->writeCrashDumpFile($dump);
+			try{
+				(new CrashDumpEvent($crashDumpPath))->call();
+			}catch(\Throwable $e){
+				$this->logger->logException($e);
+			}
 
 			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_crash_submit($crashDumpPath)));
 
@@ -1747,21 +1759,14 @@ class Server{
 			try{
 				$this->logger->critical($this->language->translate(KnownTranslationFactory::pocketmine_crash_error($e->getMessage())));
 			}catch(\Throwable $e){}
+		}finally{
+			if($previousErrorReporting !== false){
+				ini_set("error_reporting", $previousErrorReporting);
+			}
+			if($previousMemoryLimit !== false){
+				ini_set("memory_limit", $previousMemoryLimit);
+			}
 		}
-
-		$this->forceShutdown();
-		$this->isRunning = false;
-
-		//Force minimum uptime to be >= 120 seconds, to reduce the impact of spammy crash loops
-		$uptime = time() - ((int) $this->startTime);
-		$minUptime = 120;
-		$spacing = $minUptime - $uptime;
-		if($spacing > 0){
-			echo "--- Uptime {$uptime}s - waiting {$spacing}s to throttle automatic restart (you can kill the process safely now) ---" . PHP_EOL;
-			sleep($spacing);
-		}
-		@Process::kill(Process::pid());
-		exit(1);
 	}
 
 	/**
@@ -1779,10 +1784,21 @@ class Server{
 		$this->nextTick = microtime(true);
 
 		while($this->isRunning){
-			$this->tick();
+			try{
+				$this->tick();
 
-			//sleeps are self-correcting - if we undersleep 1ms on this tick, we'll sleep an extra ms on the next tick
-			$this->tickSleeper->sleepUntil($this->nextTick);
+				//sleeps are self-correcting - if we undersleep 1ms on this tick, we'll sleep an extra ms on the next tick
+				$this->tickSleeper->sleepUntil($this->nextTick);
+			}catch(\Throwable $e){
+				// An interrupted tick can skip stopTiming(). Reset the profiling session
+				// before reporting/retrying, otherwise later ticks inherit open timers.
+				if(TimingsHandler::isEnabled()){
+					TimingsHandler::reload();
+				}
+				$this->exceptionHandler($e);
+				$this->nextTick = microtime(true) + self::TARGET_SECONDS_PER_TICK;
+				usleep((int) (self::TARGET_SECONDS_PER_TICK * 1_000_000));
+			}
 		}
 	}
 

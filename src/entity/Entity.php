@@ -550,6 +550,11 @@ abstract class Entity{
 
 		$this->setLastDamageCause($source);
 
+		$this->applyDamage($source);
+	}
+
+	/** Applies damage after event listeners have finished. */
+	protected function applyDamage(EntityDamageEvent $source) : void{
 		$this->setHealth($this->getHealth() - $source->getFinalDamage());
 	}
 
