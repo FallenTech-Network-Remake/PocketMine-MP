@@ -95,6 +95,7 @@ final class VanillaItemsInputs extends RegistrySource{
 		self::registerPotterySherds();
 		self::registerBundlesAndHarnesses();
 		self::registerBannerPatterns();
+		self::registerAdditionalEggsAndAnimalItems();
 
 		//this doesn't use the regular register() because it doesn't have an item typeID
 		//in the future we'll probably want to dissociate this from the air block and make a proper null item
@@ -604,6 +605,26 @@ final class VanillaItemsInputs extends RegistrySource{
 		self::register("mojang_banner_pattern", fn(IID $id) => new BannerPattern($id, "Mojang Banner Pattern", BannerPatternType::MOJANG));
 		self::register("piglin_banner_pattern", fn(IID $id) => new BannerPattern($id, "Piglin Banner Pattern", BannerPatternType::PIGLIN));
 		self::register("skull_banner_pattern", fn(IID $id) => new BannerPattern($id, "Skull Banner Pattern", BannerPatternType::SKULL));
+	}
+
+	private function registerAdditionalEggsAndAnimalItems() : void{
+		self::register("armadillo_scute", fn(IID $id) => new Item($id, "Armadillo Scute"));
+		self::register("blue_egg", fn(IID $id) => new Egg($id, "Blue Egg"));
+		self::register("breeze_rod", fn(IID $id) => new Item($id, "Breeze Rod"));
+		self::register("brown_egg", fn(IID $id) => new Egg($id, "Brown Egg"));
+		self::register("copper_horse_armor", fn(IID $id) => new AnimalArmor($id, "Copper Horse Armor"));
+		self::register("copper_nautilus_armor", fn(IID $id) => new AnimalArmor($id, "Copper Nautilus Armor"));
+		self::register("diamond_horse_armor", fn(IID $id) => new AnimalArmor($id, "Diamond Horse Armor"));
+		self::register("diamond_nautilus_armor", fn(IID $id) => new AnimalArmor($id, "Diamond Nautilus Armor"));
+		self::register("golden_horse_armor", fn(IID $id) => new AnimalArmor($id, "Golden Horse Armor"));
+		self::register("golden_nautilus_armor", fn(IID $id) => new AnimalArmor($id, "Golden Nautilus Armor"));
+		self::register("iron_horse_armor", fn(IID $id) => new AnimalArmor($id, "Iron Horse Armor"));
+		self::register("iron_nautilus_armor", fn(IID $id) => new AnimalArmor($id, "Iron Nautilus Armor"));
+		self::register("lead", fn(IID $id) => new Item($id, "Lead"));
+		self::register("leather_horse_armor", fn(IID $id) => new AnimalArmor($id, "Leather Horse Armor"));
+		self::register("netherite_horse_armor", fn(IID $id) => new AnimalArmor($id, "Netherite Horse Armor", true));
+		self::register("netherite_nautilus_armor", fn(IID $id) => new AnimalArmor($id, "Netherite Nautilus Armor", true));
+		self::register("wolf_armor", fn(IID $id) => new WolfArmor($id, "Wolf Armor"));
 	}
 
 }

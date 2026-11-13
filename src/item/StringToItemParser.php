@@ -1397,6 +1397,23 @@ final class StringToItemParser extends StringToTParser{
 
 	private static function registerItems(self $result) : void{
 
+		$result->register("armadillo_scute", fn() => Items::ARMADILLO_SCUTE());
+		$result->register("blue_egg", fn() => Items::BLUE_EGG());
+		$result->register("breeze_rod", fn() => Items::BREEZE_ROD());
+		$result->register("brown_egg", fn() => Items::BROWN_EGG());
+		$result->register("copper_horse_armor", fn() => Items::COPPER_HORSE_ARMOR());
+		$result->register("copper_nautilus_armor", fn() => Items::COPPER_NAUTILUS_ARMOR());
+		$result->register("diamond_horse_armor", fn() => Items::DIAMOND_HORSE_ARMOR());
+		$result->register("diamond_nautilus_armor", fn() => Items::DIAMOND_NAUTILUS_ARMOR());
+		$result->register("golden_horse_armor", fn() => Items::GOLDEN_HORSE_ARMOR());
+		$result->register("golden_nautilus_armor", fn() => Items::GOLDEN_NAUTILUS_ARMOR());
+		$result->register("iron_horse_armor", fn() => Items::IRON_HORSE_ARMOR());
+		$result->register("iron_nautilus_armor", fn() => Items::IRON_NAUTILUS_ARMOR());
+		$result->register("lead", fn() => Items::LEAD());
+		$result->register("leather_horse_armor", fn() => Items::LEATHER_HORSE_ARMOR());
+		$result->register("netherite_horse_armor", fn() => Items::NETHERITE_HORSE_ARMOR());
+		$result->register("netherite_nautilus_armor", fn() => Items::NETHERITE_NAUTILUS_ARMOR());
+		$result->register("wolf_armor", fn() => Items::WOLF_ARMOR());
 		$result->register("angler_pottery_sherd", fn() => Items::ANGLER_POTTERY_SHERD());
 		$result->register("archer_pottery_sherd", fn() => Items::ARCHER_POTTERY_SHERD());
 		$result->register("arms_up_pottery_sherd", fn() => Items::ARMS_UP_POTTERY_SHERD());

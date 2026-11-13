@@ -171,6 +171,23 @@ final class ItemSerializerDeserializerRegistrar{
 	 * Registers mappings for item IDs which directly correspond to PocketMine-MP items.
 	 */
 	private function register1to1ItemMappings() : void{
+		$this->map1to1Item(Ids::ARMADILLO_SCUTE, Items::ARMADILLO_SCUTE());
+		$this->map1to1Item(Ids::BLUE_EGG, Items::BLUE_EGG());
+		$this->map1to1Item(Ids::BREEZE_ROD, Items::BREEZE_ROD());
+		$this->map1to1Item(Ids::BROWN_EGG, Items::BROWN_EGG());
+		$this->map1to1Item(Ids::COPPER_HORSE_ARMOR, Items::COPPER_HORSE_ARMOR());
+		$this->map1to1Item(Ids::COPPER_NAUTILUS_ARMOR, Items::COPPER_NAUTILUS_ARMOR());
+		$this->map1to1Item(Ids::DIAMOND_HORSE_ARMOR, Items::DIAMOND_HORSE_ARMOR());
+		$this->map1to1Item(Ids::DIAMOND_NAUTILUS_ARMOR, Items::DIAMOND_NAUTILUS_ARMOR());
+		$this->map1to1Item(Ids::GOLDEN_HORSE_ARMOR, Items::GOLDEN_HORSE_ARMOR());
+		$this->map1to1Item(Ids::GOLDEN_NAUTILUS_ARMOR, Items::GOLDEN_NAUTILUS_ARMOR());
+		$this->map1to1Item(Ids::IRON_HORSE_ARMOR, Items::IRON_HORSE_ARMOR());
+		$this->map1to1Item(Ids::IRON_NAUTILUS_ARMOR, Items::IRON_NAUTILUS_ARMOR());
+		$this->map1to1Item(Ids::LEAD, Items::LEAD());
+		$this->map1to1Item(Ids::LEATHER_HORSE_ARMOR, Items::LEATHER_HORSE_ARMOR());
+		$this->map1to1Item(Ids::NETHERITE_HORSE_ARMOR, Items::NETHERITE_HORSE_ARMOR());
+		$this->map1to1Item(Ids::NETHERITE_NAUTILUS_ARMOR, Items::NETHERITE_NAUTILUS_ARMOR());
+		$this->map1to1Item(Ids::WOLF_ARMOR, Items::WOLF_ARMOR());
 		$this->map1to1Item(Ids::ANGLER_POTTERY_SHERD, Items::ANGLER_POTTERY_SHERD());
 		$this->map1to1Item(Ids::ARCHER_POTTERY_SHERD, Items::ARCHER_POTTERY_SHERD());
 		$this->map1to1Item(Ids::ARMS_UP_POTTERY_SHERD, Items::ARMS_UP_POTTERY_SHERD());

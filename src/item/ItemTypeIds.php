@@ -538,7 +538,25 @@ final class ItemTypeIds{
 	public const YELLOW_BUNDLE = 20495;
 	public const YELLOW_HARNESS = 20496;
 
-	public const FIRST_UNUSED_ITEM_ID = 20497;
+	public const ARMADILLO_SCUTE = 20497;
+	public const BLUE_EGG = 20498;
+	public const BREEZE_ROD = 20499;
+	public const BROWN_EGG = 20500;
+	public const COPPER_HORSE_ARMOR = 20501;
+	public const COPPER_NAUTILUS_ARMOR = 20502;
+	public const DIAMOND_HORSE_ARMOR = 20503;
+	public const DIAMOND_NAUTILUS_ARMOR = 20504;
+	public const GOLDEN_HORSE_ARMOR = 20505;
+	public const GOLDEN_NAUTILUS_ARMOR = 20506;
+	public const IRON_HORSE_ARMOR = 20507;
+	public const IRON_NAUTILUS_ARMOR = 20508;
+	public const LEAD = 20509;
+	public const LEATHER_HORSE_ARMOR = 20510;
+	public const NETHERITE_HORSE_ARMOR = 20511;
+	public const NETHERITE_NAUTILUS_ARMOR = 20512;
+	public const WOLF_ARMOR = 20513;
+
+	public const FIRST_UNUSED_ITEM_ID = 20514;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 
