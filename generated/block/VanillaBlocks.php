@@ -758,6 +758,7 @@ final class VanillaBlocks{
 	private static PotentSulfur $_mPOTENT_SULFUR;
 	private static PotionCauldron $_mPOTION_CAULDRON;
 	private static PowderSnow $_mPOWDER_SNOW;
+	private static PowderSnowCauldron $_mPOWDER_SNOW_CAULDRON;
 	private static PoweredRail $_mPOWERED_RAIL;
 	private static Opaque $_mPRISMARINE;
 	private static Opaque $_mPRISMARINE_BRICKS;
@@ -1728,6 +1729,7 @@ final class VanillaBlocks{
 			"potent_sulfur" => fn(PotentSulfur $v) => self::$_mPOTENT_SULFUR = $v,
 			"potion_cauldron" => fn(PotionCauldron $v) => self::$_mPOTION_CAULDRON = $v,
 			"powder_snow" => fn(PowderSnow $v) => self::$_mPOWDER_SNOW = $v,
+			"powder_snow_cauldron" => fn(PowderSnowCauldron $v) => self::$_mPOWDER_SNOW_CAULDRON = $v,
 			"powered_rail" => fn(PoweredRail $v) => self::$_mPOWERED_RAIL = $v,
 			"prismarine" => fn(Opaque $v) => self::$_mPRISMARINE = $v,
 			"prismarine_bricks" => fn(Opaque $v) => self::$_mPRISMARINE_BRICKS = $v,
@@ -5580,6 +5582,11 @@ final class VanillaBlocks{
 	public static function POWDER_SNOW() : PowderSnow{
 		if(!isset(self::$_mPOWDER_SNOW)){ self::init(); }
 		return clone self::$_mPOWDER_SNOW;
+	}
+
+	public static function POWDER_SNOW_CAULDRON() : PowderSnowCauldron{
+		if(!isset(self::$_mPOWDER_SNOW_CAULDRON)){ self::init(); }
+		return clone self::$_mPOWDER_SNOW_CAULDRON;
 	}
 
 	public static function POWERED_RAIL() : PoweredRail{

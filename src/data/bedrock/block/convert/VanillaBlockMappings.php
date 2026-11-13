@@ -79,6 +79,7 @@ use pocketmine\block\Lever;
 use pocketmine\block\Light;
 use pocketmine\block\MangrovePropagule;
 use pocketmine\block\MobHead;
+use pocketmine\block\MushroomStem;
 use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
@@ -135,7 +136,6 @@ use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Vault;
 use pocketmine\block\Vine;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
-use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
@@ -757,9 +757,16 @@ final class VanillaBlockMappings{
 			[Blocks::BROWN_MUSHROOM_BLOCK(), Ids::BROWN_MUSHROOM_BLOCK],
 			[Blocks::RED_MUSHROOM_BLOCK(), Ids::RED_MUSHROOM_BLOCK]
 		] as [$block, $id]){
-			$reg->mapModel(Model::create($block, $id)->properties([
+			$model = Model::create($block, $id)->properties([
 				new ValueFromIntProperty(StateNames::HUGE_MUSHROOM_BITS, ValueMappings::getInstance()->mushroomBlockType, fn(RedMushroomBlock $b) => $b->getMushroomBlockType(), fn(RedMushroomBlock $b, MushroomBlockType $v) => $b->setMushroomBlockType($v)),
-			]));
+			]);
+			self::mapAsymmetricSerializer($reg, $model);
+			// Legacy cap blocks with stem textures normalize to the dedicated stem block types.
+			$reg->deserializer->map($id, fn(Reader $in) : Block => match($in->readInt(StateNames::HUGE_MUSHROOM_BITS)){
+				BlockLegacyMetadata::MUSHROOM_BLOCK_STEM => Blocks::MUSHROOM_STEM(),
+				BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM => Blocks::ALL_SIDED_MUSHROOM_STEM(),
+				default => self::deserializeAsymmetric($model, $in)
+			});
 		}
 
 		$reg->mapModel(Model::create(Blocks::GLOW_LICHEN(), Ids::GLOW_LICHEN)->properties([$commonProperties->multiFacingFlags]));
@@ -1841,6 +1848,10 @@ final class VanillaBlockMappings{
 			$fillLevelProperty,
 			new DummyProperty(StateNames::CAULDRON_LIQUID, StringValues::CAULDRON_LIQUID_WATER)
 		]);
+		$powderSnowCauldronModel = Model::create(Blocks::POWDER_SNOW_CAULDRON(), Ids::CAULDRON)->properties([
+			$fillLevelProperty,
+			new DummyProperty(StateNames::CAULDRON_LIQUID, StringValues::CAULDRON_LIQUID_POWDER_SNOW)
+		]);
 		$emptyCauldronModel = Model::create(Blocks::CAULDRON(), Ids::CAULDRON)->properties([
 			new DummyProperty(StateNames::FILL_LEVEL, 0),
 			new DummyProperty(StateNames::CAULDRON_LIQUID, StringValues::CAULDRON_LIQUID_WATER)
@@ -1848,25 +1859,25 @@ final class VanillaBlockMappings{
 		self::mapAsymmetricSerializer($reg, $lavaCauldronModel);
 		self::mapAsymmetricSerializer($reg, $waterCauldronModel);
 		self::mapAsymmetricSerializer($reg, $emptyCauldronModel);
+		self::mapAsymmetricSerializer($reg, $powderSnowCauldronModel);
 		$reg->deserializer->map(Ids::CAULDRON, fn(Reader $in) => $in->readInt(StateNames::FILL_LEVEL) === 0 ?
 			self::deserializeAsymmetric($emptyCauldronModel, $in) :
 			match ($liquid = $in->readString(StateNames::CAULDRON_LIQUID)) {
 				StringValues::CAULDRON_LIQUID_WATER => self::deserializeAsymmetric($waterCauldronModel, $in),
 				StringValues::CAULDRON_LIQUID_LAVA => self::deserializeAsymmetric($lavaCauldronModel, $in),
-				StringValues::CAULDRON_LIQUID_POWDER_SNOW => throw new UnsupportedBlockStateException("Powder snow is not supported yet"),
+				StringValues::CAULDRON_LIQUID_POWDER_SNOW => self::deserializeAsymmetric($powderSnowCauldronModel, $in),
 				default => throw $in->badValueException(StateNames::CAULDRON_LIQUID, $liquid)
 			}
 		);
 
 		//mushroom stems, split for consistency with all-sided logs vs normal logs
 		$allSidedMushroomStemModel = Model::create(Blocks::ALL_SIDED_MUSHROOM_STEM(), Ids::MUSHROOM_STEM)->properties([new DummyProperty(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM)]);
-		$mushroomStemModel = Model::create(Blocks::MUSHROOM_STEM(), Ids::MUSHROOM_STEM)->properties([new DummyProperty(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_STEM)]);
+		$mushroomStemModel = Model::create(Blocks::MUSHROOM_STEM(), Ids::MUSHROOM_STEM)->properties([new IntProperty(StateNames::HUGE_MUSHROOM_BITS, 0, 14, fn(MushroomStem $b) => $b->getMushroomBits(), fn(MushroomStem $b, int $v) => $b->setMushroomBits($v))]);
 		self::mapAsymmetricSerializer($reg, $allSidedMushroomStemModel);
 		self::mapAsymmetricSerializer($reg, $mushroomStemModel);
 		$reg->deserializer->map(Ids::MUSHROOM_STEM, fn(Reader $in) : Block => match ($in->readInt(StateNames::HUGE_MUSHROOM_BITS)) {
 			BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM => self::deserializeAsymmetric($allSidedMushroomStemModel, $in),
-			BlockLegacyMetadata::MUSHROOM_BLOCK_STEM => self::deserializeAsymmetric($mushroomStemModel, $in),
-			default => throw new BlockStateDeserializeException("This state does not exist"),
+			default => self::deserializeAsymmetric($mushroomStemModel, $in),
 		});
 
 		//pitcher crop, split into single and double variants as double has different properties and behaviour

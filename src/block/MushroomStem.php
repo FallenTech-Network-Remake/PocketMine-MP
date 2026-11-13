@@ -23,9 +23,35 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 
 final class MushroomStem extends Opaque{
+	// Runtime value 0 retains the original ordinary stem state (native metadata 10).
+	private int $textureVariant = 0;
+
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		if($this->getTypeId() !== BlockTypeIds::ALL_SIDED_MUSHROOM_STEM){
+			$w->boundedIntAuto(0, 14, $this->textureVariant);
+		}
+	}
+
+	public function getMushroomBits() : int{
+		if($this->getTypeId() === BlockTypeIds::ALL_SIDED_MUSHROOM_STEM){ return 15; }
+		return $this->textureVariant === 0 ? 10 : ($this->textureVariant <= 10 ? $this->textureVariant - 1 : $this->textureVariant);
+	}
+
+	/** @return $this */
+	public function setMushroomBits(int $bits) : self{
+		if($this->getTypeId() === BlockTypeIds::ALL_SIDED_MUSHROOM_STEM){
+			if($bits !== 15){ throw new \InvalidArgumentException("All-sided mushroom stems require metadata 15"); }
+		}elseif($bits < 0 || $bits > 14){
+			throw new \InvalidArgumentException("Ordinary mushroom stem metadata must be in range 0 ... 14");
+		}else{
+			$this->textureVariant = $bits === 10 ? 0 : ($bits < 10 ? $bits + 1 : $bits);
+		}
+		return $this;
+	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{ return []; }
 
