@@ -38,17 +38,17 @@ use pocketmine\block\Block;
 use pocketmine\block\BrewingStand;
 use pocketmine\block\Cactus;
 use pocketmine\block\Cake;
-
 use pocketmine\block\Candle;
 use pocketmine\block\CaveVines;
 use pocketmine\block\ChiseledBookshelf;
-
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\ChorusPlant;
 use pocketmine\block\CocoaBlock;
+
 use pocketmine\block\CommandBlock;
 use pocketmine\block\Copper;
 use pocketmine\block\CopperLantern;
+
 use pocketmine\block\Crafter;
 use pocketmine\block\CyclingPotentSulfur;
 use pocketmine\block\DaylightSensor;
@@ -82,6 +82,7 @@ use pocketmine\block\PaleHangingMoss;
 use pocketmine\block\PaleMossCarpet;
 use pocketmine\block\PinkPetals;
 use pocketmine\block\PitcherCrop;
+use pocketmine\block\PointedDripstone;
 use pocketmine\block\PoweredRail;
 use pocketmine\block\Rail;
 use pocketmine\block\RedMushroomBlock;
@@ -98,12 +99,16 @@ use pocketmine\block\SmallDripleaf;
 use pocketmine\block\SnowLayer;
 use pocketmine\block\Sponge;
 use pocketmine\block\StraightOnlyRail;
+use pocketmine\block\StrawBed;
 use pocketmine\block\Sugarcane;
+use pocketmine\block\SuspiciousSand;
 use pocketmine\block\SweetBerryBush;
 use pocketmine\block\TNT;
 use pocketmine\block\TorchflowerCrop;
+use pocketmine\block\TrialSpawner;
 use pocketmine\block\Tripwire;
 use pocketmine\block\TripwireHook;
+use pocketmine\block\TurtleEgg;
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\ChiseledBookshelfSlot;
@@ -119,6 +124,7 @@ use pocketmine\block\utils\MushroomBlockType;
 use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\block\utils\RedstoneWireConnectionType;
 use pocketmine\block\VanillaBlocks as Blocks;
+use pocketmine\block\Vault;
 use pocketmine\block\Vine;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
@@ -665,6 +671,42 @@ final class VanillaBlockMappings{
 		$reg->mapSimple(Blocks::LODESTONE(), Ids::LODESTONE);
 		$reg->mapSimple(Blocks::TALL_DRY_GRASS(), Ids::TALL_DRY_GRASS);
 		$reg->mapSimple(Blocks::TARGET(), Ids::TARGET);
+
+		$reg->mapModel(Model::create(Blocks::VAULT(), Ids::VAULT)->properties([
+			$commonProperties->horizontalFacingCardinal,
+			new BoolProperty(StateNames::OMINOUS, fn(Vault $b) => $b->isOminous(), fn(Vault $b, bool $v) => $b->setOminous($v)),
+			new DummyProperty(StateNames::VAULT_STATE, "inactive")
+		]));
+		$reg->mapModel(Model::create(Blocks::TRIAL_SPAWNER(), Ids::TRIAL_SPAWNER)->properties([
+			new BoolProperty(StateNames::OMINOUS, fn(TrialSpawner $b) => $b->isOminous(), fn(TrialSpawner $b, bool $v) => $b->setOminous($v)),
+			new DummyProperty(StateNames::TRIAL_SPAWNER_STATE, 0)
+		]));
+		$reg->mapModel(Model::create(Blocks::TURTLE_EGG(), Ids::TURTLE_EGG)->properties([
+			new ValueFromStringProperty(StateNames::TURTLE_EGG_COUNT, IntFromRawStateMap::string([1 => "one_egg", 2 => "two_egg", 3 => "three_egg", 4 => "four_egg"]), fn(TurtleEgg $b) => $b->getCount(), fn(TurtleEgg $b, int $v) => $b->setCount($v)),
+			new ValueFromStringProperty(StateNames::CRACKED_STATE, IntFromRawStateMap::string([0 => "no_cracks", 1 => "cracked", 2 => "max_cracked"]), fn(TurtleEgg $b) => $b->getCracks(), fn(TurtleEgg $b, int $v) => $b->setCracks($v))
+		]));
+		foreach([[Blocks::SUSPICIOUS_SAND(), Ids::SUSPICIOUS_SAND], [Blocks::SUSPICIOUS_GRAVEL(), Ids::SUSPICIOUS_GRAVEL]] as [$block, $id]){
+			$reg->mapModel(Model::create($block, $id)->properties([
+				new IntProperty(StateNames::BRUSHED_PROGRESS, 0, 3, fn(SuspiciousSand $b) => $b->getBrushedProgress(), fn(SuspiciousSand $b, int $v) => $b->setBrushedProgress($v)),
+				new DummyProperty(StateNames::HANGING, false)
+			]));
+		}
+		foreach([[Blocks::POINTED_DRIPSTONE(), Ids::POINTED_DRIPSTONE], [Blocks::SULFUR_SPIKE(), Ids::SULFUR_SPIKE]] as [$block, $id]){
+			$reg->mapModel(Model::create($block, $id)->properties([
+				new BoolProperty(StateNames::HANGING, fn(PointedDripstone $b) => $b->isHanging(), fn(PointedDripstone $b, bool $v) => $b->setHanging($v)),
+				new ValueFromStringProperty(StateNames::DRIPSTONE_THICKNESS, IntFromRawStateMap::string([0 => "tip", 1 => "frustum", 2 => "middle", 3 => "base", 4 => "merge"]), fn(PointedDripstone $b) => $b->getThickness(), fn(PointedDripstone $b, int $v) => $b->setThickness($v))
+			]));
+		}
+		$reg->mapModel(Model::create(Blocks::STRAW_BED(), Ids::STRAW_BED)->properties([
+			$commonProperties->horizontalFacingCardinal,
+			new BoolProperty(StateNames::HEAD_PIECE_BIT, fn(StrawBed $b) => $b->isHeadPart(), fn(StrawBed $b, bool $v) => $b->setHead($v)),
+			new DummyProperty(StateNames::OCCUPIED_BIT, false)
+		]));
+		$reg->mapSimple(Blocks::HONEY(), Ids::HONEY_BLOCK);
+		$reg->mapSimple(Blocks::END_PORTAL(), Ids::END_PORTAL);
+		$reg->mapSimple(Blocks::END_GATEWAY(), Ids::END_GATEWAY);
+		$reg->mapSimple(Blocks::DRIPSTONE_BLOCK(), Ids::DRIPSTONE_BLOCK);
+		$reg->mapSimple(Blocks::CONDUIT(), Ids::CONDUIT);
 		$reg->mapModel(Model::create(Blocks::BEETROOTS(), Ids::BEETROOT)->properties([$commonProperties->cropAgeMax7]));
 		$reg->mapModel(Model::create(Blocks::CARROTS(), Ids::CARROTS)->properties([$commonProperties->cropAgeMax7]));
 		$reg->mapModel(Model::create(Blocks::POTATOES(), Ids::POTATOES)->properties([$commonProperties->cropAgeMax7]));

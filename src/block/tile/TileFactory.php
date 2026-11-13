@@ -64,9 +64,12 @@ final class TileFactory{
 		$this->register(CopperGolemStatue::class, ["CopperGolemStatue", "minecraft:copper_golem_statue"]);
 		$this->register(ChiseledBookshelf::class, ["ChiseledBookshelf", "minecraft:chiseled_bookshelf"]);
 		$this->register(Comparator::class, ["Comparator", "minecraft:comparator"]);
+		$this->register(Conduit::class, ["Conduit", "minecraft:conduit"]);
 		$this->register(DaylightSensor::class, ["DaylightDetector", "minecraft:daylight_detector"]);
 		$this->register(EnchantTable::class, ["EnchantTable", "minecraft:enchanting_table"]);
+		$this->register(EndGateway::class, ["EndGateway", "minecraft:end_gateway"]);
 		$this->register(EnderChest::class, ["EnderChest", "minecraft:ender_chest"]);
+		$this->register(EndPortal::class, ["EndPortal", "minecraft:end_portal"]);
 		$this->register(FlowerPot::class, ["FlowerPot", "minecraft:flower_pot"]);
 		$this->register(NormalFurnace::class, ["Furnace", "minecraft:furnace"]);
 		$this->register(Hopper::class, ["Hopper", "minecraft:hopper"]);
@@ -87,11 +90,8 @@ final class TileFactory{
 		//TODO: ChalkboardBlock
 		//TODO: ChemistryTable
 		//TODO: CommandBlock
-		//TODO: Conduit
 		//TODO: Dispenser
 		//TODO: Dropper
-		//TODO: EndGateway
-		//TODO: EndPortal
 		//TODO: JigsawBlock
 		//TODO: MovingBlock
 		//TODO: NetherReactor

@@ -160,6 +160,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Block(Ids::REPEATER, Blocks::REDSTONE_REPEATER());
 		$this->map1to1Block(Ids::SOUL_CAMPFIRE, Blocks::SOUL_CAMPFIRE());
 		$this->map1to1Block(Ids::SPRUCE_DOOR, Blocks::SPRUCE_DOOR());
+		$this->map1to1Block(Ids::STRAW_BED, Blocks::STRAW_BED());
 		$this->map1to1Block(Ids::SUGAR_CANE, Blocks::SUGARCANE());
 		$this->map1to1Block(Ids::WARPED_DOOR, Blocks::WARPED_DOOR());
 		$this->map1to1Block(Ids::WOODEN_DOOR, Blocks::OAK_DOOR());

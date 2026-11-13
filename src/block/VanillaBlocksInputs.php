@@ -40,11 +40,14 @@ use pocketmine\block\tile\Cauldron as TileCauldron;
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\tile\ChiseledBookshelf as TileChiseledBookshelf;
 use pocketmine\block\tile\Comparator as TileComparator;
+use pocketmine\block\tile\Conduit as TileConduit;
 use pocketmine\block\tile\CopperChest as TileCopperChest;
 use pocketmine\block\tile\CopperGolemStatue as TileCopperGolemStatue;
 use pocketmine\block\tile\DaylightSensor as TileDaylightSensor;
 use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
+use pocketmine\block\tile\EndGateway as TileEndGateway;
+use pocketmine\block\tile\EndPortal as TileEndPortal;
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
 use pocketmine\block\tile\GlowingItemFrame as TileGlowingItemFrame;
 use pocketmine\block\tile\HangingSign as TileHangingSign;
@@ -132,6 +135,20 @@ final class VanillaBlocksInputs extends RegistrySource{
 	}
 
 	protected function setup() : void{
+		self::register("vault", fn(BID $id) => new Vault($id, "Vault", new Info(BreakInfo::pickaxe(50.0, blastResistance: 250.0))));
+		self::register("turtle_egg", fn(BID $id) => new TurtleEgg($id, "Turtle Egg", new Info(new BreakInfo(0.5))));
+		self::register("trial_spawner", fn(BID $id) => new TrialSpawner($id, "Trial Spawner", new Info(BreakInfo::pickaxe(50.0, blastResistance: 250.0))));
+		self::register("suspicious_sand", fn(BID $id) => new SuspiciousSand($id, "Suspicious Sand", new Info(BreakInfo::shovel(0.25))));
+		self::register("suspicious_gravel", fn(BID $id) => new SuspiciousSand($id, "Suspicious Gravel", new Info(BreakInfo::shovel(0.25))));
+		self::register("sulfur_spike", fn(BID $id) => new PointedDripstone($id, "Sulfur Spike", new Info(BreakInfo::pickaxe(1.5, blastResistance: 15.0))));
+		self::register("straw_bed", fn(BID $id) => new StrawBed($id, "Straw Bed", new Info(new BreakInfo(0.2, ToolType::HOE, 0, 1.0))));
+		self::register("pointed_dripstone", fn(BID $id) => new PointedDripstone($id, "Pointed Dripstone", new Info(BreakInfo::pickaxe(1.5, blastResistance: 15.0))));
+		self::register("honey", fn(BID $id) => new Honey($id, "Honey Block", new Info(BreakInfo::instant())));
+		self::register("end_portal", fn(BID $id) => new EndPortal($id, "End Portal", new Info(BreakInfo::indestructible(18000000.0))), TileEndPortal::class);
+		self::register("end_gateway", fn(BID $id) => new EndPortal($id, "End Gateway", new Info(BreakInfo::indestructible(18000000.0))), TileEndGateway::class);
+		self::register("dripstone_block", fn(BID $id) => new Opaque($id, "Dripstone Block", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 5.0))));
+		self::register("conduit", fn(BID $id) => new Conduit($id, "Conduit", new Info(BreakInfo::pickaxe(3.0, blastResistance: 15.0))), TileConduit::class);
+
 		self::register("air", fn(BID $id) => new Air($id, "Air", new Info(BreakInfo::indestructible(-1.0))));
 
 		$railBreakInfo = new Info(new BreakInfo(0.7));

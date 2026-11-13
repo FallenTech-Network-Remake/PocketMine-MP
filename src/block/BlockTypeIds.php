@@ -974,7 +974,21 @@ final class BlockTypeIds{
 	public const TALL_DRY_GRASS = 10934;
 	public const TARGET = 10935;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10936;
+	public const VAULT = 10936;
+	public const TURTLE_EGG = 10937;
+	public const TRIAL_SPAWNER = 10938;
+	public const SUSPICIOUS_SAND = 10939;
+	public const SUSPICIOUS_GRAVEL = 10940;
+	public const SULFUR_SPIKE = 10941;
+	public const STRAW_BED = 10942;
+	public const POINTED_DRIPSTONE = 10943;
+	public const HONEY = 10944;
+	public const END_PORTAL = 10945;
+	public const END_GATEWAY = 10946;
+	public const DRIPSTONE_BLOCK = 10947;
+	public const CONDUIT = 10948;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10949;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
