@@ -171,12 +171,10 @@ class Leaves extends Transparent{
 				LeavesType::AZALEA => VanillaBlocks::AZALEA(),
 				LeavesType::FLOWERING_AZALEA => VanillaBlocks::FLOWERING_AZALEA(),
 				LeavesType::CHERRY => VanillaBlocks::CHERRY_SAPLING(),
-				LeavesType::PALE_OAK => null, //TODO: pale oak
+				LeavesType::PALE_OAK => VanillaBlocks::PALE_OAK_SAPLING(),
 				LeavesType::YELLOW_POPLAR, LeavesType::ORANGE_POPLAR, LeavesType::RED_POPLAR => VanillaBlocks::POPLAR_SAPLING(),
-			})?->asItem();
-			if($sapling !== null){
-				$drops[] = $sapling;
-			}
+			})->asItem();
+			$drops[] = $sapling;
 		}
 		if(
 			($this->leavesType === LeavesType::OAK || $this->leavesType === LeavesType::DARK_OAK) &&

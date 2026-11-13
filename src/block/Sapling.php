@@ -62,7 +62,7 @@ class Sapling extends Flowable{
 
 	private function canBeSupportedAt(Block $block) : bool{
 		$supportBlock = $block->getSide(Facing::DOWN);
-		return $supportBlock->hasTypeTag(BlockTypeTags::DIRT) || $supportBlock->hasTypeTag(BlockTypeTags::MUD);
+		return ($supportBlock instanceof MossBlock || $supportBlock->hasTypeTag(BlockTypeTags::DIRT)) || $supportBlock->hasTypeTag(BlockTypeTags::MUD);
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{

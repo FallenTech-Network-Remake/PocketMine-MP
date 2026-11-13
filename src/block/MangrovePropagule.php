@@ -66,7 +66,7 @@ class MangrovePropagule extends Flowable{
 			return $block->getSide(Facing::UP)->getTypeId() === BlockTypeIds::MANGROVE_LEAVES;
 		}
 		$below = $block->getSide(Facing::DOWN);
-		return $below->hasTypeTag(BlockTypeTags::DIRT) || $below->hasTypeTag(BlockTypeTags::MUD) || $below->getTypeId() === BlockTypeIds::CLAY;
+		return ($below instanceof MossBlock || $below->hasTypeTag(BlockTypeTags::DIRT)) || $below->hasTypeTag(BlockTypeTags::MUD) || $below->getTypeId() === BlockTypeIds::CLAY;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

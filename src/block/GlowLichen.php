@@ -63,7 +63,7 @@ class GlowLichen extends Transparent implements MultiAnyFacing{
 	 * @return int[]
 	 */
 	protected function getInitialPlaceFaces(Block $blockReplace) : array{
-		return $blockReplace instanceof GlowLichen ? $blockReplace->faces : [];
+		return $blockReplace instanceof GlowLichen && $blockReplace->hasSameTypeId($this) ? $blockReplace->faces : [];
 	}
 
 	private function getSpreadBlock(Block $replace, int $spreadFace) : ?Block{

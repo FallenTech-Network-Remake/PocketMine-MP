@@ -67,7 +67,7 @@ class PinkPetals extends Flowable implements HorizontalFacing{
 	protected function canBeSupportedAt(Block $block) : bool{
 		$supportBlock = $block->getSide(Facing::DOWN);
 		//TODO: Moss block
-		return $supportBlock->hasTypeTag(BlockTypeTags::DIRT) || $supportBlock->hasTypeTag(BlockTypeTags::MUD);
+		return ($supportBlock instanceof MossBlock || $supportBlock->hasTypeTag(BlockTypeTags::DIRT)) || $supportBlock->hasTypeTag(BlockTypeTags::MUD);
 	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{

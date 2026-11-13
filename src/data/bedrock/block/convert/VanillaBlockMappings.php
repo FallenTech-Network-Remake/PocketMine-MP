@@ -37,12 +37,14 @@ use pocketmine\block\Block;
 use pocketmine\block\BrewingStand;
 use pocketmine\block\Cactus;
 use pocketmine\block\Cake;
+
 use pocketmine\block\Candle;
 use pocketmine\block\CaveVines;
 use pocketmine\block\ChiseledBookshelf;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\ChorusPlant;
 use pocketmine\block\CocoaBlock;
+use pocketmine\block\CommandBlock;
 use pocketmine\block\Copper;
 use pocketmine\block\CopperLantern;
 use pocketmine\block\CyclingPotentSulfur;
@@ -71,6 +73,8 @@ use pocketmine\block\MobHead;
 use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
+use pocketmine\block\PaleHangingMoss;
+use pocketmine\block\PaleMossCarpet;
 use pocketmine\block\PinkPetals;
 use pocketmine\block\PitcherCrop;
 use pocketmine\block\PoweredRail;
@@ -586,6 +590,7 @@ final class VanillaBlockMappings{
 			Ids::ACACIA_SAPLING => Blocks::ACACIA_SAPLING(),
 			Ids::BIRCH_SAPLING => Blocks::BIRCH_SAPLING(),
 			Ids::CHERRY_SAPLING => Blocks::CHERRY_SAPLING(),
+			Ids::PALE_OAK_SAPLING => Blocks::PALE_OAK_SAPLING(),
 			Ids::DARK_OAK_SAPLING => Blocks::DARK_OAK_SAPLING(),
 			Ids::JUNGLE_SAPLING => Blocks::JUNGLE_SAPLING(),
 			Ids::OAK_SAPLING => Blocks::OAK_SAPLING(),
@@ -630,6 +635,19 @@ final class VanillaBlockMappings{
 				Seagrass::DOUBLE_TOP => StringValues::SEA_GRASS_TYPE_DOUBLE_TOP
 			]), fn(Seagrass $b) => $b->getPart(), fn(Seagrass $b, int $v) => $b->setPart($v))
 		]));
+		$reg->mapSimple(Blocks::MOSS_BLOCK(), Ids::MOSS_BLOCK);
+		$reg->mapSimple(Blocks::MOSS_CARPET(), Ids::MOSS_CARPET);
+		$reg->mapSimple(Blocks::PALE_MOSS_BLOCK(), Ids::PALE_MOSS_BLOCK);
+		$reg->mapModel(Model::create(Blocks::SCULK_CATALYST(), Ids::SCULK_CATALYST)->properties([new DummyProperty(StateNames::BLOOM, false)]));
+		$reg->mapModel(Model::create(Blocks::SCULK_SENSOR(), Ids::SCULK_SENSOR)->properties([new DummyProperty(StateNames::SCULK_SENSOR_PHASE, 0)]));
+		$reg->mapModel(Model::create(Blocks::SCULK_SHRIEKER(), Ids::SCULK_SHRIEKER)->properties([new DummyProperty(StateNames::ACTIVE, false), new DummyProperty(StateNames::CAN_SUMMON, false)]));
+		$reg->mapModel(Model::create(Blocks::CALIBRATED_SCULK_SENSOR(), Ids::CALIBRATED_SCULK_SENSOR)->properties([new DummyProperty(StateNames::SCULK_SENSOR_PHASE, 0), $commonProperties->horizontalFacingCardinal]));
+		$reg->mapModel(Model::create(Blocks::SCULK_VEIN(), Ids::SCULK_VEIN)->properties([$commonProperties->multiFacingFlags]));
+		$reg->mapModel(Model::create(Blocks::PALE_HANGING_MOSS(), Ids::PALE_HANGING_MOSS)->properties([new BoolProperty(StateNames::TIP, fn(PaleHangingMoss $b) => $b->isTip(), fn(PaleHangingMoss $b, bool $v) => $b->setTip($v))]));
+		$reg->mapModel(Model::create(Blocks::COMMAND_BLOCK(), Ids::COMMAND_BLOCK)->properties([$commonProperties->anyFacingClassic, new BoolProperty(StateNames::CONDITIONAL_BIT, fn(CommandBlock $b) => $b->isConditional(), fn(CommandBlock $b, bool $v) => $b->setConditional($v))]));
+		$reg->mapModel(Model::create(Blocks::CHAIN_COMMAND_BLOCK(), Ids::CHAIN_COMMAND_BLOCK)->properties([$commonProperties->anyFacingClassic, new BoolProperty(StateNames::CONDITIONAL_BIT, fn(CommandBlock $b) => $b->isConditional(), fn(CommandBlock $b, bool $v) => $b->setConditional($v))]));
+		$reg->mapModel(Model::create(Blocks::REPEATING_COMMAND_BLOCK(), Ids::REPEATING_COMMAND_BLOCK)->properties([$commonProperties->anyFacingClassic, new BoolProperty(StateNames::CONDITIONAL_BIT, fn(CommandBlock $b) => $b->isConditional(), fn(CommandBlock $b, bool $v) => $b->setConditional($v))]));
+		$reg->mapModel(Model::create(Blocks::PALE_MOSS_CARPET(), Ids::PALE_MOSS_CARPET)->properties([new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(PaleMossCarpet $b) => $b->isUpper(), fn(PaleMossCarpet $b, bool $v) => $b->setUpper($v)),new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_EAST, IntFromRawStateMap::string([0 => "none", 1 => "short", 2 => "tall"]), fn(PaleMossCarpet $b) => $b->getSideHeight(0), fn(PaleMossCarpet $b, int $v) => $b->setSideHeight(0, $v)),new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_NORTH, IntFromRawStateMap::string([0 => "none", 1 => "short", 2 => "tall"]), fn(PaleMossCarpet $b) => $b->getSideHeight(1), fn(PaleMossCarpet $b, int $v) => $b->setSideHeight(1, $v)),new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_SOUTH, IntFromRawStateMap::string([0 => "none", 1 => "short", 2 => "tall"]), fn(PaleMossCarpet $b) => $b->getSideHeight(2), fn(PaleMossCarpet $b, int $v) => $b->setSideHeight(2, $v)),new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_WEST, IntFromRawStateMap::string([0 => "none", 1 => "short", 2 => "tall"]), fn(PaleMossCarpet $b) => $b->getSideHeight(3), fn(PaleMossCarpet $b, int $v) => $b->setSideHeight(3, $v))]));
 		$reg->mapModel(Model::create(Blocks::BEETROOTS(), Ids::BEETROOT)->properties([$commonProperties->cropAgeMax7]));
 		$reg->mapModel(Model::create(Blocks::CARROTS(), Ids::CARROTS)->properties([$commonProperties->cropAgeMax7]));
 		$reg->mapModel(Model::create(Blocks::POTATOES(), Ids::POTATOES)->properties([$commonProperties->cropAgeMax7]));

@@ -946,7 +946,22 @@ final class BlockTypeIds{
 
 	public const BUSH = 10909;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10910;
+	public const SCULK_CATALYST = 10910;
+	public const SCULK_SENSOR = 10911;
+	public const CALIBRATED_SCULK_SENSOR = 10912;
+	public const SCULK_SHRIEKER = 10913;
+	public const SCULK_VEIN = 10914;
+	public const MOSS_BLOCK = 10915;
+	public const MOSS_CARPET = 10916;
+	public const PALE_MOSS_BLOCK = 10917;
+	public const PALE_MOSS_CARPET = 10918;
+	public const PALE_HANGING_MOSS = 10919;
+	public const PALE_OAK_SAPLING = 10920;
+	public const COMMAND_BLOCK = 10921;
+	public const CHAIN_COMMAND_BLOCK = 10922;
+	public const REPEATING_COMMAND_BLOCK = 10923;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10924;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
