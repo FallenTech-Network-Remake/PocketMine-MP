@@ -666,6 +666,15 @@ final class VanillaBlockMappings{
 	}
 
 	private static function registerCopperMappings(BlockSerializerDeserializerRegistrar $reg, CommonProperties $commonProperties) : void{
+		foreach([
+			[Blocks::COPPER_CHEST(), "copper_chest"],
+			[Blocks::COPPER_GOLEM_STATUE(), "copper_golem_statue"]
+		] as [$block, $name]){
+			$reg->mapFlattenedId(FlattenedIdModel::create($block)
+				->idComponents([...$commonProperties->copperIdPrefixes, $name])
+				->properties([$commonProperties->horizontalFacingCardinal])
+			);
+		}
 		$reg->mapFlattenedId(FlattenedIdModel::create(Blocks::COPPER_BULB())
 			->idComponents([...$commonProperties->copperIdPrefixes, "copper_bulb"])
 			->properties([

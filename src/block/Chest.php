@@ -62,12 +62,18 @@ class Chest extends Transparent implements HorizontalFacing{
 						if(!$ev->isCancelled() && $world->getBlock($this->position)->hasSameTypeId($this) && $world->getBlock($c->position)->hasSameTypeId($c)){
 							$pair->pairWith($tile);
 							$tile->pairWith($pair);
+							$this->onPaired($c);
 							break;
 						}
 					}
 				}
 			}
 		}
+	}
+
+	/** Called after a new double chest has been formed. */
+	protected function onPaired(Chest $other) : void{
+
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{

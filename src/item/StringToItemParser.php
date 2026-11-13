@@ -108,6 +108,8 @@ final class StringToItemParser extends StringToTParser{
 				$register("cut_copper_block", fn() => Blocks::CUT_COPPER()->setOxidation($oxidation)->setWaxed($waxed));
 				$register("cut_copper_stairs", fn() => Blocks::CUT_COPPER_STAIRS()->setOxidation($oxidation)->setWaxed($waxed));
 				$register("cut_copper_slab", fn() => Blocks::CUT_COPPER_SLAB()->setOxidation($oxidation)->setWaxed($waxed));
+				$register("copper_chest", fn() => Blocks::COPPER_CHEST()->setOxidation($oxidation)->setWaxed($waxed));
+				$register("copper_golem_statue", fn() => Blocks::COPPER_GOLEM_STATUE()->setOxidation($oxidation)->setWaxed($waxed));
 				$register("copper_bulb", fn() => Blocks::COPPER_BULB()->setOxidation($oxidation)->setWaxed($waxed));
 				$register("copper_door", fn() => Blocks::COPPER_DOOR()->setOxidation($oxidation)->setWaxed($waxed));
 				$register("copper_trapdoor", fn() => Blocks::COPPER_TRAPDOOR()->setOxidation($oxidation)->setWaxed($waxed));
