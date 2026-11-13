@@ -165,7 +165,10 @@ class ItemFrame extends Flowable implements AnyFacing{
 	}
 
 	private function canBeSupportedAt(Block $block, int $face) : bool{
-		return $block->getAdjacentSupportType($face) !== SupportType::NONE;
+		$support = $block->getSide($face);
+		// Chests have inset collision boxes, but can still carry an item frame.
+		return $support instanceof Chest || $support instanceof EnderChest
+			|| $support->getSupportType(Facing::opposite($face)) !== SupportType::NONE;
 	}
 
 	public function onNearbyBlockChange() : void{
