@@ -44,6 +44,7 @@ use pocketmine\block\tile\Conduit as TileConduit;
 use pocketmine\block\tile\CopperChest as TileCopperChest;
 use pocketmine\block\tile\CopperGolemStatue as TileCopperGolemStatue;
 use pocketmine\block\tile\DaylightSensor as TileDaylightSensor;
+use pocketmine\block\tile\DecoratedPot as TileDecoratedPot;
 use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\tile\EndGateway as TileEndGateway;
@@ -59,6 +60,7 @@ use pocketmine\block\tile\MobHead as TileMobHead;
 use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\NormalFurnace as TileNormalFurnace;
 use pocketmine\block\tile\Note as TileNote;
+use pocketmine\block\tile\PistonArm as TilePistonArm;
 use pocketmine\block\tile\PotentSulfur as TilePotentSulfur;
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\tile\Sign as TileSign;
@@ -148,6 +150,18 @@ final class VanillaBlocksInputs extends RegistrySource{
 		self::register("end_gateway", fn(BID $id) => new EndPortal($id, "End Gateway", new Info(BreakInfo::indestructible(18000000.0))), TileEndGateway::class);
 		self::register("dripstone_block", fn(BID $id) => new Opaque($id, "Dripstone Block", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 5.0))));
 		self::register("conduit", fn(BID $id) => new Conduit($id, "Conduit", new Info(BreakInfo::pickaxe(3.0, blastResistance: 15.0))), TileConduit::class);
+
+		self::register("piston", fn(BID $id) => new Piston($id, "Piston", new Info(BreakInfo::pickaxe(1.5, blastResistance: 7.5))), TilePistonArm::class);
+		self::register("sticky_piston", fn(BID $id) => new Piston($id, "Sticky Piston", new Info(BreakInfo::pickaxe(1.5, blastResistance: 7.5))), TilePistonArm::class);
+
+		self::register("decorated_pot", fn(BID $id) => new DecoratedPot($id, "Decorated Pot", new Info(BreakInfo::instant())), TileDecoratedPot::class);
+		self::register("dried_ghast", fn(BID $id) => new DriedGhast($id, "Dried Ghast", new Info(new BreakInfo(0.0, blastResistance: 5.0))));
+		self::register("jigsaw", fn(BID $id) => new Jigsaw($id, "Jigsaw Block", new Info(BreakInfo::indestructible(18000000.0))));
+		self::register("kelp", fn(BID $id) => new Kelp($id, "Kelp", new Info(BreakInfo::instant())));
+		self::register("powder_snow", fn(BID $id) => new PowderSnow($id, "Powder Snow", new Info(new BreakInfo(0.25))));
+		self::register("scaffolding", fn(BID $id) => new Scaffolding($id, "Scaffolding", new Info(BreakInfo::instant())));
+		self::register("sniffer_egg", fn(BID $id) => new SnifferEgg($id, "Sniffer Egg", new Info(new BreakInfo(0.5))));
+		self::register("structure_block", fn(BID $id) => new StructureBlock($id, "Structure Block", new Info(BreakInfo::indestructible(18000000.0))));
 
 		self::register("air", fn(BID $id) => new Air($id, "Air", new Info(BreakInfo::indestructible(-1.0))));
 

@@ -65,6 +65,7 @@ final class TileFactory{
 		$this->register(ChiseledBookshelf::class, ["ChiseledBookshelf", "minecraft:chiseled_bookshelf"]);
 		$this->register(Comparator::class, ["Comparator", "minecraft:comparator"]);
 		$this->register(Conduit::class, ["Conduit", "minecraft:conduit"]);
+		$this->register(DecoratedPot::class, ["DecoratedPot", "minecraft:decorated_pot"]);
 		$this->register(DaylightSensor::class, ["DaylightDetector", "minecraft:daylight_detector"]);
 		$this->register(EnchantTable::class, ["EnchantTable", "minecraft:enchanting_table"]);
 		$this->register(EndGateway::class, ["EndGateway", "minecraft:end_gateway"]);
@@ -78,6 +79,7 @@ final class TileFactory{
 		$this->register(Lectern::class, ["Lectern", "minecraft:lectern"]);
 		$this->register(MonsterSpawner::class, ["MobSpawner", "minecraft:mob_spawner"]);
 		$this->register(Note::class, ["Music", "minecraft:noteblock"]);
+		$this->register(PistonArm::class, ["PistonArm", "minecraft:piston"]);
 		$this->register(PotentSulfur::class, ["PotentSulfurBlock", "minecraft:potent_sulfur"]); //what an inconsistent, mojang. potent sulfur has 'Block' suffix in their name...
 		$this->register(ShulkerBox::class, ["ShulkerBox", "minecraft:shulker_box"]);
 		$this->register(Sign::class, ["Sign", "minecraft:sign"]);
@@ -95,7 +97,6 @@ final class TileFactory{
 		//TODO: JigsawBlock
 		//TODO: MovingBlock
 		//TODO: NetherReactor
-		//TODO: PistonArm
 		//TODO: StructureBlock
 	}
 

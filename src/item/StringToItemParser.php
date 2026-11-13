@@ -162,6 +162,17 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("dripstone_block", fn() => Blocks::DRIPSTONE_BLOCK());
 		$result->registerBlock("conduit", fn() => Blocks::CONDUIT());
 		$result->registerBlock("honey_block", fn() => Blocks::HONEY());
+		$result->registerBlock("piston", fn() => Blocks::PISTON());
+		$result->registerBlock("sticky_piston", fn() => Blocks::STICKY_PISTON());
+		$result->registerBlock("decorated_pot", fn() => Blocks::DECORATED_POT());
+		$result->registerBlock("dried_ghast", fn() => Blocks::DRIED_GHAST());
+		$result->registerBlock("jigsaw", fn() => Blocks::JIGSAW());
+		$result->registerBlock("kelp", fn() => Blocks::KELP());
+		$result->register("powder_snow_bucket", fn() => Items::POWDER_SNOW_BUCKET());
+		$result->registerBlock("powder_snow", fn() => Blocks::POWDER_SNOW());
+		$result->registerBlock("scaffolding", fn() => Blocks::SCAFFOLDING());
+		$result->registerBlock("sniffer_egg", fn() => Blocks::SNIFFER_EGG());
+		$result->registerBlock("structure_block", fn() => Blocks::STRUCTURE_BLOCK());
 		$result->registerBlock("air", fn() => Blocks::AIR());
 		$result->registerBlock("all_sided_mushroom_stem", fn() => Blocks::ALL_SIDED_MUSHROOM_STEM());
 		$result->registerBlock("allium", fn() => Blocks::ALLIUM());

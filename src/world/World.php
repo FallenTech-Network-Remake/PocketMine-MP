@@ -34,6 +34,7 @@ use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
+use pocketmine\block\utils\EntityCollision;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateData;
@@ -1648,13 +1649,19 @@ class World implements ChunkManager{
 	 * @return AxisAlignedBB[]
 	 * @phpstan-return list<AxisAlignedBB>
 	 */
-	private function getBlockCollisionBoxesForCell(int $x, int $y, int $z, array $collisionInfo) : array{
+	private function getBlockCollisionBoxesForCell(int $x, int $y, int $z, array $collisionInfo, ?Entity $entity = null) : array{
 		$stateCollisionInfo = $this->getBlockCollisionInfo($x, $y, $z, $collisionInfo);
 		$boxes = match($stateCollisionInfo){
 			RuntimeBlockStateRegistry::COLLISION_NONE => [],
 			RuntimeBlockStateRegistry::COLLISION_CUBE => [AxisAlignedBB::one()->offset($x, $y, $z)],
 			default => $this->getBlockAt($x, $y, $z)->getCollisionBoxes()
 		};
+
+		if($entity !== null && $stateCollisionInfo === RuntimeBlockStateRegistry::COLLISION_ENTITY){
+			$block = $this->getBlockAt($x, $y, $z);
+			assert($block instanceof EntityCollision);
+			$boxes = $block->getEntityCollisionBoxes($entity);
+		}
 
 		//overlapping AABBs can't make any difference if this is a cube, so we can save some CPU cycles in this common case
 		if($stateCollisionInfo !== RuntimeBlockStateRegistry::COLLISION_CUBE){
@@ -1684,7 +1691,7 @@ class World implements ChunkManager{
 	 * @return AxisAlignedBB[]
 	 * @phpstan-return list<AxisAlignedBB>
 	 */
-	public function getBlockCollisionBoxes(AxisAlignedBB $bb) : array{
+	public function getBlockCollisionBoxes(AxisAlignedBB $bb, ?Entity $entity = null) : array{
 		$minX = (int) floor($bb->minX);
 		$minY = (int) floor($bb->minY);
 		$minZ = (int) floor($bb->minZ);
@@ -1702,7 +1709,9 @@ class World implements ChunkManager{
 				for($y = $minY; $y <= $maxY; ++$y){
 					$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
 
-					$boxes = $this->blockCollisionBoxCache[$chunkPosHash][$relativeBlockHash] ??= $this->getBlockCollisionBoxesForCell($x, $y, $z, $collisionInfo);
+					$boxes = $entity !== null && $this->getBlockCollisionInfo($x, $y, $z, $collisionInfo) === RuntimeBlockStateRegistry::COLLISION_ENTITY ?
+						$this->getBlockCollisionBoxesForCell($x, $y, $z, $collisionInfo, $entity) :
+						($this->blockCollisionBoxCache[$chunkPosHash][$relativeBlockHash] ??= $this->getBlockCollisionBoxesForCell($x, $y, $z, $collisionInfo));
 
 					foreach($boxes as $blockBB){
 						if($blockBB->intersectsWith($bb)){
@@ -1724,7 +1733,7 @@ class World implements ChunkManager{
 	 * @phpstan-return list<AxisAlignedBB>
 	 */
 	public function getCollisionBoxes(Entity $entity, AxisAlignedBB $bb, bool $entities = true) : array{
-		$collides = $this->getBlockCollisionBoxes($bb);
+		$collides = $this->getBlockCollisionBoxes($bb, $entity);
 
 		if($entities){
 			foreach($this->getCollidingEntities($bb->expandedCopy(0.25, 0.25, 0.25), $entity) as $ent){

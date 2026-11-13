@@ -1340,7 +1340,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			//the old and new positions (running down stairs necessitates this)
 			$bb = $bb->addCoord(-$dx, -$dy, -$dz);
 
-			$this->onGround = $this->isCollided = count($this->getWorld()->getCollisionBlocks($bb, true)) > 0;
+			$this->onGround = $this->isCollided = count($this->getWorld()->getBlockCollisionBoxes($bb, $this)) > 0;
 		}
 	}
 

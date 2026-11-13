@@ -44,19 +44,20 @@ use pocketmine\block\ChiseledBookshelf;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\ChorusPlant;
 use pocketmine\block\CocoaBlock;
-
 use pocketmine\block\CommandBlock;
 use pocketmine\block\Copper;
 use pocketmine\block\CopperLantern;
-
 use pocketmine\block\Crafter;
 use pocketmine\block\CyclingPotentSulfur;
 use pocketmine\block\DaylightSensor;
+
 use pocketmine\block\DetectorRail;
 use pocketmine\block\DirectionalUtilityBlock;
 use pocketmine\block\Dirt;
+
 use pocketmine\block\DoublePitcherCrop;
 use pocketmine\block\DoublePlant;
+use pocketmine\block\DriedGhast;
 use pocketmine\block\EndPortalFrame;
 use pocketmine\block\EndRod;
 use pocketmine\block\Farmland;
@@ -68,6 +69,8 @@ use pocketmine\block\FrostedIce;
 use pocketmine\block\GlazedTerracotta;
 use pocketmine\block\Grindstone;
 use pocketmine\block\Hopper;
+use pocketmine\block\Jigsaw;
+use pocketmine\block\Kelp;
 use pocketmine\block\Lantern;
 use pocketmine\block\Leaves;
 use pocketmine\block\Lectern;
@@ -81,6 +84,7 @@ use pocketmine\block\NetherWartPlant;
 use pocketmine\block\PaleHangingMoss;
 use pocketmine\block\PaleMossCarpet;
 use pocketmine\block\PinkPetals;
+use pocketmine\block\Piston;
 use pocketmine\block\PitcherCrop;
 use pocketmine\block\PointedDripstone;
 use pocketmine\block\PoweredRail;
@@ -92,14 +96,17 @@ use pocketmine\block\RedstoneTorch;
 use pocketmine\block\RedstoneWire;
 use pocketmine\block\RespawnAnchor;
 use pocketmine\block\Sapling;
+use pocketmine\block\Scaffolding;
 use pocketmine\block\Seagrass;
 use pocketmine\block\SeaPickle;
 use pocketmine\block\ShelfMushroom;
 use pocketmine\block\SmallDripleaf;
+use pocketmine\block\SnifferEgg;
 use pocketmine\block\SnowLayer;
 use pocketmine\block\Sponge;
 use pocketmine\block\StraightOnlyRail;
 use pocketmine\block\StrawBed;
+use pocketmine\block\StructureBlock;
 use pocketmine\block\Sugarcane;
 use pocketmine\block\SuspiciousSand;
 use pocketmine\block\SweetBerryBush;
@@ -707,6 +714,21 @@ final class VanillaBlockMappings{
 		$reg->mapSimple(Blocks::END_GATEWAY(), Ids::END_GATEWAY);
 		$reg->mapSimple(Blocks::DRIPSTONE_BLOCK(), Ids::DRIPSTONE_BLOCK);
 		$reg->mapSimple(Blocks::CONDUIT(), Ids::CONDUIT);
+		$reg->mapModel(Model::create(Blocks::DECORATED_POT(), Ids::DECORATED_POT)->properties([$commonProperties->horizontalFacingSWNE]));
+		$reg->mapModel(Model::create(Blocks::DRIED_GHAST(), Ids::DRIED_GHAST)->properties([$commonProperties->horizontalFacingCardinal, new IntProperty(StateNames::REHYDRATION_LEVEL, 0, 3, fn(DriedGhast $b) => $b->getRehydrationLevel(), fn(DriedGhast $b, int $v) => $b->setRehydrationLevel($v))]));
+		$reg->mapModel(Model::create(Blocks::JIGSAW(), Ids::JIGSAW)->properties([$commonProperties->anyFacingClassic, new IntProperty(StateNames::ROTATION, 0, 3, fn(Jigsaw $b) => $b->getRotation(), fn(Jigsaw $b, int $v) => $b->setRotation($v))]));
+		$reg->mapModel(Model::create(Blocks::KELP(), Ids::KELP)->properties([new IntProperty(StateNames::KELP_AGE, 0, 25, fn(Kelp $b) => $b->getAge(), fn(Kelp $b, int $v) => $b->setAge($v))]));
+		$reg->mapSimple(Blocks::POWDER_SNOW(), Ids::POWDER_SNOW);
+		$reg->mapModel(Model::create(Blocks::SCAFFOLDING(), Ids::SCAFFOLDING)->properties([new IntProperty(StateNames::STABILITY, 0, 7, fn(Scaffolding $b) => $b->getStability(), fn(Scaffolding $b, int $v) => $b->setStability($v)), new BoolProperty(StateNames::STABILITY_CHECK, fn(Scaffolding $b) => $b->isStabilityChecked(), fn(Scaffolding $b, bool $v) => $b->setStabilityChecked($v))]));
+		$reg->mapModel(Model::create(Blocks::SNIFFER_EGG(), Ids::SNIFFER_EGG)->properties([new ValueFromStringProperty(StateNames::CRACKED_STATE, IntFromRawStateMap::string([0 => "no_cracks", 1 => "cracked", 2 => "max_cracked"]), fn(SnifferEgg $b) => $b->getCracks(), fn(SnifferEgg $b, int $v) => $b->setCracks($v))]));
+		$reg->mapModel(Model::create(Blocks::STRUCTURE_BLOCK(), Ids::STRUCTURE_BLOCK)->properties([new ValueFromStringProperty(StateNames::STRUCTURE_BLOCK_TYPE, IntFromRawStateMap::string([0 => "data", 1 => "save", 2 => "load", 3 => "corner", 4 => "invalid", 5 => "export"]), fn(StructureBlock $b) => $b->getMode(), fn(StructureBlock $b, int $v) => $b->setMode($v))]));
+		foreach([[Blocks::PISTON(), Ids::PISTON], [Blocks::STICKY_PISTON(), Ids::STICKY_PISTON]] as [$block, $id]){
+			$reg->mapModel(Model::create($block, $id)->properties([
+				new ValueFromIntProperty(StateNames::FACING_DIRECTION, IntFromRawStateMap::int([
+					Facing::DOWN => 0, Facing::UP => 1, Facing::SOUTH => 2, Facing::NORTH => 3, Facing::EAST => 4, Facing::WEST => 5
+				]), fn(Piston $b) => $b->getFacing(), fn(Piston $b, int $v) => $b->setFacing($v))
+			]));
+		}
 		$reg->mapModel(Model::create(Blocks::BEETROOTS(), Ids::BEETROOT)->properties([$commonProperties->cropAgeMax7]));
 		$reg->mapModel(Model::create(Blocks::CARROTS(), Ids::CARROTS)->properties([$commonProperties->cropAgeMax7]));
 		$reg->mapModel(Model::create(Blocks::POTATOES(), Ids::POTATOES)->properties([$commonProperties->cropAgeMax7]));

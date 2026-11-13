@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\BlockBreakInfo as BreakInfo;
 use pocketmine\block\BlockIdentifier as BID;
+use pocketmine\block\utils\EntityCollision;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\light\LightUpdate;
@@ -45,6 +46,7 @@ class RuntimeBlockStateRegistry{
 	public const COLLISION_CUBE = 1;
 	public const COLLISION_NONE = 2;
 	public const COLLISION_MAY_OVERFLOW = 3;
+	public const COLLISION_ENTITY = 4;
 
 	/**
 	 * @var Block[]
@@ -134,6 +136,10 @@ class RuntimeBlockStateRegistry{
 	 * major version. For now, this hack nets major performance wins.
 	 */
 	private static function calculateCollisionInfo(Block $block) : int{
+		if($block instanceof EntityCollision){
+			return self::COLLISION_ENTITY;
+		}
+
 		if(
 			self::overridesBlockMethod($block->getModelPositionOffset(...)) ||
 			self::overridesBlockMethod($block->readStateFromWorld(...))

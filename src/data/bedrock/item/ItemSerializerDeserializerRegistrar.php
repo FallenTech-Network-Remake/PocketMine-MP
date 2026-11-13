@@ -151,6 +151,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Block(Ids::GLOW_FRAME, Blocks::GLOWING_ITEM_FRAME());
 		$this->map1to1Block(Ids::HOPPER, Blocks::HOPPER());
 		$this->map1to1Block(Ids::IRON_DOOR, Blocks::IRON_DOOR());
+		$this->map1to1Block(Ids::KELP, Blocks::KELP());
 		$this->map1to1Block(Ids::JUNGLE_DOOR, Blocks::JUNGLE_DOOR());
 		$this->map1to1Block(Ids::MANGROVE_DOOR, Blocks::MANGROVE_DOOR());
 		$this->map1to1Block(Ids::NETHER_SPROUTS, Blocks::NETHER_SPROUTS());
@@ -374,6 +375,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::POISONOUS_POTATO, Items::POISONOUS_POTATO());
 		$this->map1to1Item(Ids::POPPED_CHORUS_FRUIT, Items::POPPED_CHORUS_FRUIT());
 		$this->map1to1Item(Ids::PORKCHOP, Items::RAW_PORKCHOP());
+		$this->map1to1Item(Ids::POWDER_SNOW_BUCKET, Items::POWDER_SNOW_BUCKET());
 		$this->map1to1Item(Ids::POTATO, Items::POTATO());
 		$this->map1to1Item(Ids::PRISMARINE_CRYSTALS, Items::PRISMARINE_CRYSTALS());
 		$this->map1to1Item(Ids::PRISMARINE_SHARD, Items::PRISMARINE_SHARD());
