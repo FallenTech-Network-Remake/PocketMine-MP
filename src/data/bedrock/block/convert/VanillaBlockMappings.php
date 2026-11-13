@@ -1200,6 +1200,29 @@ final class VanillaBlockMappings{
 			$reg->mapModel(Model::create($block, $id)->properties($commonProperties->simplePressurePlateProperties));
 		}
 
+		// Decorative shelves always serialize as unpowered and unconnected.
+		foreach([
+			[Blocks::ACACIA_SHELF(), Ids::ACACIA_SHELF],
+			[Blocks::BAMBOO_SHELF(), Ids::BAMBOO_SHELF],
+			[Blocks::BIRCH_SHELF(), Ids::BIRCH_SHELF],
+			[Blocks::CHERRY_SHELF(), Ids::CHERRY_SHELF],
+			[Blocks::CRIMSON_SHELF(), Ids::CRIMSON_SHELF],
+			[Blocks::DARK_OAK_SHELF(), Ids::DARK_OAK_SHELF],
+			[Blocks::JUNGLE_SHELF(), Ids::JUNGLE_SHELF],
+			[Blocks::MANGROVE_SHELF(), Ids::MANGROVE_SHELF],
+			[Blocks::OAK_SHELF(), Ids::OAK_SHELF],
+			[Blocks::PALE_OAK_SHELF(), Ids::PALE_OAK_SHELF],
+			[Blocks::POPLAR_SHELF(), Ids::POPLAR_SHELF],
+			[Blocks::SPRUCE_SHELF(), Ids::SPRUCE_SHELF],
+			[Blocks::WARPED_SHELF(), Ids::WARPED_SHELF]
+		] as [$block, $id]){
+			$reg->mapModel(Model::create($block, $id)->properties([
+				$commonProperties->horizontalFacingCardinal,
+				new DummyProperty(StateNames::POWERED_BIT, false),
+				new DummyProperty(StateNames::POWERED_SHELF_TYPE, 0)
+			]));
+		}
+
 		//slabs
 		foreach([
 			[Blocks::ACACIA_SLAB(), "acacia"],

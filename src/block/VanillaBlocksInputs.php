@@ -722,6 +722,8 @@ final class VanillaBlocksInputs extends RegistrySource{
 		$woodenButtonBreakInfo = new Info(BreakInfo::axe(0.5));
 		$woodenPressurePlateBreakInfo = new Info(BreakInfo::axe(0.5));
 
+		self::register("poplar_shelf", fn(BID $id) => new Shelf($id, "Poplar Shelf", $planksBreakInfo));
+
 		foreach(WoodType::cases() as $woodType){
 			$name = $woodType->getDisplayName();
 			$idName = fn(string $suffix) => strtolower($woodType->name) . "_" . $suffix;
@@ -734,6 +736,7 @@ final class VanillaBlocksInputs extends RegistrySource{
 				self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), fn(BID $id) => new Wood($id, $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
 			}
 
+			self::register($idName("shelf"), fn(BID $id) => new Shelf($id, $name . " Shelf", $planksBreakInfo, $woodType->isFlammable()));
 			self::register($idName("planks"), fn(BID $id) => new Planks($id, $name . " Planks", $planksBreakInfo, $woodType));
 			self::register($idName("fence"), fn(BID $id) => new WoodenFence($id, $name . " Fence", $planksBreakInfo, $woodType));
 			self::register($idName("slab"), fn(BID $id) => new WoodenSlab($id, $name, $planksBreakInfo, $woodType));
