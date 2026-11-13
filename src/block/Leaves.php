@@ -23,11 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\LeavesDecayEvent;
+use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
@@ -139,6 +141,17 @@ class Leaves extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if($this->leavesType === LeavesType::MANGROVE && $item instanceof Fertilizer){
+			$below = $this->getSide(Facing::DOWN);
+			if($below instanceof Air && BlockEventHelper::grow($below, VanillaBlocks::MANGROVE_PROPAGULE()->setHanging(true), $player)){
+				$item->pop();
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public function getDropsForCompatibleTool(Item $item) : array{
 		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
 			return parent::getDropsForCompatibleTool($item);
@@ -154,10 +167,10 @@ class Leaves extends Transparent{
 				LeavesType::JUNGLE => VanillaBlocks::JUNGLE_SAPLING(),
 				LeavesType::OAK => VanillaBlocks::OAK_SAPLING(),
 				LeavesType::SPRUCE => VanillaBlocks::SPRUCE_SAPLING(),
-				LeavesType::MANGROVE, //TODO: mangrove propagule
+				LeavesType::MANGROVE => VanillaBlocks::MANGROVE_PROPAGULE(),
 				LeavesType::AZALEA => VanillaBlocks::AZALEA(),
 				LeavesType::FLOWERING_AZALEA => VanillaBlocks::FLOWERING_AZALEA(),
-				LeavesType::CHERRY => null, //TODO: cherry
+				LeavesType::CHERRY => VanillaBlocks::CHERRY_SAPLING(),
 				LeavesType::PALE_OAK => null, //TODO: pale oak
 				LeavesType::YELLOW_POPLAR, LeavesType::ORANGE_POPLAR, LeavesType::RED_POPLAR => VanillaBlocks::POPLAR_SAPLING(),
 			})?->asItem();

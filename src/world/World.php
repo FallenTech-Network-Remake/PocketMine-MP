@@ -1161,6 +1161,12 @@ class World implements ChunkManager{
 				UpdateBlockPacket::DATA_LAYER_NORMAL
 			);
 
+			$subChunk = $this->getChunk($b->getFloorX() >> Chunk::COORD_BIT_SIZE, $b->getFloorZ() >> Chunk::COORD_BIT_SIZE)?->getSubChunk($b->getFloorY() >> SubChunk::COORD_BIT_SIZE);
+			if($subChunk !== null && count($subChunk->getBlockLayers()) > 1){
+				$extraStateId = $subChunk->getExtraBlockStateId($b->getFloorX() & SubChunk::COORD_MASK, $b->getFloorY() & SubChunk::COORD_MASK, $b->getFloorZ() & SubChunk::COORD_MASK);
+				$packets[] = UpdateBlockPacket::create($blockPosition, $blockTranslator->internalIdToNetworkId($extraStateId), UpdateBlockPacket::FLAG_NETWORK, UpdateBlockPacket::DATA_LAYER_LIQUID);
+			}
+
 			if($tile instanceof Spawnable){
 				$packets[] = BlockActorDataPacket::create($blockPosition, $tile->getSerializedSpawnCompound());
 			}

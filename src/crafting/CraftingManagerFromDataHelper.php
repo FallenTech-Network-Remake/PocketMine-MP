@@ -37,9 +37,12 @@ use pocketmine\data\bedrock\item\SavedItemStackData;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\item\Item;
+use pocketmine\item\ItemBlock;
+use pocketmine\item\StringToItemParser;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use Symfony\Component\Filesystem\Path;
 use function base64_decode;
@@ -118,6 +121,10 @@ final class CraftingManagerFromDataHelper{
 					->mustGetCompoundTag()
 					->getValue();
 			$blockStateData = BlockStateData::current($blockName, $blockStatesTag);
+			if($blockStatesRaw === null && ($defaultItem = StringToItemParser::getInstance()->parse($name)) instanceof ItemBlock){
+				// Bare block names in creative/recipe data mean the default item state.
+				$blockStateData = GlobalBlockStateHandlers::getSerializer()->serializeBlock($defaultItem->getBlock());
+			}
 		}else{
 			$blockStateData = null;
 		}

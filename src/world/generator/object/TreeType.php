@@ -49,6 +49,7 @@ enum TreeType{
 	case WARPED;
 	case AZALEA;
 	case POPLAR;
+	case CHERRY;
 	//TODO: cherry blossom, mangrove, poplar
 	//TODO: perhaps huge mushrooms should be here too???
 
@@ -64,6 +65,7 @@ enum TreeType{
 			self::WARPED => "Warped",
 			self::AZALEA => "Azalea",
 			self::POPLAR => "Poplar",
+			self::CHERRY => "Cherry",
 		};
 	}
 }

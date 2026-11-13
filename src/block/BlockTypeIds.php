@@ -931,7 +931,22 @@ final class BlockTypeIds{
 	public const COPPER_CHEST = 10895;
 	public const COPPER_GOLEM_STATUE = 10896;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10897;
+	public const WILDFLOWERS = 10897;
+	public const SHORT_DRY_GRASS = 10898;
+	public const SHELF_MUSHROOM = 10899;
+	public const SEAGRASS = 10900;
+	public const RED_SHRUB = 10901;
+	public const OPEN_EYEBLOSSOM = 10902;
+	public const MANGROVE_PROPAGULE = 10903;
+	public const LEAF_LITTER = 10904;
+	public const GOLDEN_DANDELION = 10905;
+	public const FROG_SPAWN = 10906;
+	public const FIREFLY_BUSH = 10907;
+	public const CLOSED_EYEBLOSSOM = 10908;
+
+	public const BUSH = 10909;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10910;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

@@ -53,6 +53,7 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\SubChunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function count;
@@ -374,6 +375,11 @@ class Block{
 		return $this;
 	}
 
+	/** Additional liquid layer supplied by this block, or air when absent. */
+	public function getSecondaryStateId() : int{
+		return self::EMPTY_STATE_ID;
+	}
+
 	/**
 	 * Writes information about the block into the world. This writes the blockstate ID into the chunk, and creates
 	 * and/or removes tiles as necessary.
@@ -387,6 +393,13 @@ class Block{
 			throw new AssumptionFailedError("World::setBlock() should have loaded the chunk before calling this method");
 		}
 		$chunk->setBlockStateId($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getStateId());
+
+		$chunk->getSubChunk($this->position->getFloorY() >> SubChunk::COORD_BIT_SIZE)->setExtraBlockStateId(
+			$this->position->x & Chunk::COORD_MASK,
+			$this->position->y & SubChunk::COORD_MASK,
+			$this->position->z & Chunk::COORD_MASK,
+			$this->getSecondaryStateId()
+		);
 
 		$tileType = $this->idInfo->getTileClass();
 		$oldTile = $world->getTile($this->position);

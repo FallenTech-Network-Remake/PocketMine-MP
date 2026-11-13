@@ -66,6 +66,7 @@ use pocketmine\block\Leaves;
 use pocketmine\block\Lectern;
 use pocketmine\block\Lever;
 use pocketmine\block\Light;
+use pocketmine\block\MangrovePropagule;
 use pocketmine\block\MobHead;
 use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
@@ -81,7 +82,9 @@ use pocketmine\block\RedstoneTorch;
 use pocketmine\block\RedstoneWire;
 use pocketmine\block\RespawnAnchor;
 use pocketmine\block\Sapling;
+use pocketmine\block\Seagrass;
 use pocketmine\block\SeaPickle;
+use pocketmine\block\ShelfMushroom;
 use pocketmine\block\SmallDripleaf;
 use pocketmine\block\SnowLayer;
 use pocketmine\block\Sponge;
@@ -582,6 +585,7 @@ final class VanillaBlockMappings{
 		foreach([
 			Ids::ACACIA_SAPLING => Blocks::ACACIA_SAPLING(),
 			Ids::BIRCH_SAPLING => Blocks::BIRCH_SAPLING(),
+			Ids::CHERRY_SAPLING => Blocks::CHERRY_SAPLING(),
 			Ids::DARK_OAK_SAPLING => Blocks::DARK_OAK_SAPLING(),
 			Ids::JUNGLE_SAPLING => Blocks::JUNGLE_SAPLING(),
 			Ids::OAK_SAPLING => Blocks::OAK_SAPLING(),
@@ -593,6 +597,39 @@ final class VanillaBlockMappings{
 	}
 
 	private static function registerPlantMappings(BlockSerializerDeserializerRegistrar $reg, CommonProperties $commonProperties) : void{
+		foreach([[Blocks::WILDFLOWERS(), Ids::WILDFLOWERS], [Blocks::LEAF_LITTER(), Ids::LEAF_LITTER]] as [$block, $id]){
+			$reg->mapModel(Model::create($block, $id)->properties([
+				new IntProperty(StateNames::GROWTH, 0, 7, fn(PinkPetals $b) => $b->getCount(), fn(PinkPetals $b, int $v) => $b->setCount(min($v, PinkPetals::MAX_COUNT)), offset: 1),
+				$commonProperties->horizontalFacingCardinal
+			]));
+		}
+		foreach([
+			[Blocks::SHORT_DRY_GRASS(), Ids::SHORT_DRY_GRASS],
+			[Blocks::BUSH(), Ids::BUSH],
+			[Blocks::RED_SHRUB(), Ids::RED_SHRUB],
+			[Blocks::OPEN_EYEBLOSSOM(), Ids::OPEN_EYEBLOSSOM],
+			[Blocks::CLOSED_EYEBLOSSOM(), Ids::CLOSED_EYEBLOSSOM],
+			[Blocks::GOLDEN_DANDELION(), Ids::GOLDEN_DANDELION],
+			[Blocks::FROG_SPAWN(), Ids::FROG_SPAWN],
+			[Blocks::FIREFLY_BUSH(), Ids::FIREFLY_BUSH]
+		] as [$block, $id]){
+			$reg->mapSimple($block, $id);
+		}
+		$reg->mapModel(Model::create(Blocks::SHELF_MUSHROOM(), Ids::SHELF_MUSHROOM)->properties([
+			$commonProperties->horizontalFacingCardinal,
+			new IntProperty(StateNames::GROWTH, 0, 7, fn(ShelfMushroom $b) => $b->isLarge() ? 1 : 0, fn(ShelfMushroom $b, int $v) => $b->setLarge($v === 1))
+		]));
+		$reg->mapModel(Model::create(Blocks::MANGROVE_PROPAGULE(), Ids::MANGROVE_PROPAGULE)->properties([
+			new BoolProperty(StateNames::HANGING, fn(MangrovePropagule $b) => $b->isHanging(), fn(MangrovePropagule $b, bool $v) => $b->setHanging($v)),
+			new IntProperty(StateNames::PROPAGULE_STAGE, 0, 4, fn(MangrovePropagule $b) => $b->getAge(), fn(MangrovePropagule $b, int $v) => $b->setAge($v))
+		]));
+		$reg->mapModel(Model::create(Blocks::SEAGRASS(), Ids::SEAGRASS)->properties([
+			new ValueFromStringProperty(StateNames::SEA_GRASS_TYPE, IntFromRawStateMap::string([
+				Seagrass::SINGLE => StringValues::SEA_GRASS_TYPE_DEFAULT,
+				Seagrass::DOUBLE_BOTTOM => StringValues::SEA_GRASS_TYPE_DOUBLE_BOT,
+				Seagrass::DOUBLE_TOP => StringValues::SEA_GRASS_TYPE_DOUBLE_TOP
+			]), fn(Seagrass $b) => $b->getPart(), fn(Seagrass $b, int $v) => $b->setPart($v))
+		]));
 		$reg->mapModel(Model::create(Blocks::BEETROOTS(), Ids::BEETROOT)->properties([$commonProperties->cropAgeMax7]));
 		$reg->mapModel(Model::create(Blocks::CARROTS(), Ids::CARROTS)->properties([$commonProperties->cropAgeMax7]));
 		$reg->mapModel(Model::create(Blocks::POTATOES(), Ids::POTATOES)->properties([$commonProperties->cropAgeMax7]));

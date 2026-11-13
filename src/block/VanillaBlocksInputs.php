@@ -197,6 +197,19 @@ final class VanillaBlocksInputs extends RegistrySource{
 		self::register("cocoa_pod", fn(BID $id) => new CocoaBlock($id, "Cocoa Block", new Info(BreakInfo::axe(0.2, null, 15.0))));
 		self::register("coral_block", fn(BID $id) => new CoralBlock($id, "Coral Block", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0))));
 		self::register("daylight_sensor", fn(BID $id) => new DaylightSensor($id, "Daylight Sensor", new Info(BreakInfo::axe(0.2))), TileDaylightSensor::class);
+		self::register("wildflowers", fn(BID $id) => new Wildflowers($id, "Wildflowers", new Info(BreakInfo::instant())));
+		self::register("leaf_litter", fn(BID $id) => new LeafLitter($id, "Leaf Litter", new Info(BreakInfo::instant())));
+		self::register("short_dry_grass", fn(BID $id) => new ShortDryGrass($id, "Short Dry Grass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+		self::register("shelf_mushroom", fn(BID $id) => new ShelfMushroom($id, "Shelf Mushroom", new Info(BreakInfo::instant())));
+		self::register("seagrass", fn(BID $id) => new Seagrass($id, "Seagrass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+		self::register("bush", fn(BID $id) => new Bush($id, "Bush", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+		self::register("red_shrub", fn(BID $id) => new RedShrub($id, "Red Shrub", new Info(BreakInfo::instant())));
+		self::register("firefly_bush", fn(BID $id) => new FireflyBush($id, "Firefly Bush", new Info(BreakInfo::instant())));
+		self::register("open_eyeblossom", fn(BID $id) => new Flower($id, "Open Eyeblossom", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
+		self::register("closed_eyeblossom", fn(BID $id) => new Flower($id, "Closed Eyeblossom", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
+		self::register("golden_dandelion", fn(BID $id) => new Flower($id, "Golden Dandelion", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
+		self::register("frog_spawn", fn(BID $id) => new FrogSpawn($id, "Frogspawn", new Info(BreakInfo::instant())));
+		self::register("mangrove_propagule", fn(BID $id) => new MangrovePropagule($id, "Mangrove Propagule", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
 		self::register("dead_bush", fn(BID $id) => new DeadBush($id, "Dead Bush", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS])));
 		self::register("detector_rail", fn(BID $id) => new DetectorRail($id, "Detector Rail", $railBreakInfo));
 

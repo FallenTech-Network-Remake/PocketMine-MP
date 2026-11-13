@@ -38,7 +38,7 @@ use pocketmine\world\BlockTransaction;
 class PinkPetals extends Flowable implements HorizontalFacing{
 	use HorizontalFacingTrait;
 	use StaticSupportTrait {
-		canBePlacedAt as supportedWhenPlacedAt;
+		StaticSupportTrait::canBePlacedAt as supportedWhenPlacedAt;
 	}
 
 	public const MIN_COUNT = 1;
@@ -64,18 +64,24 @@ class PinkPetals extends Flowable implements HorizontalFacing{
 		return $this;
 	}
 
-	private function canBeSupportedAt(Block $block) : bool{
+	protected function canBeSupportedAt(Block $block) : bool{
 		$supportBlock = $block->getSide(Facing::DOWN);
 		//TODO: Moss block
 		return $supportBlock->hasTypeTag(BlockTypeTags::DIRT) || $supportBlock->hasTypeTag(BlockTypeTags::MUD);
 	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
-		return ($blockReplace instanceof PinkPetals && $blockReplace->count < self::MAX_COUNT) || $this->supportedWhenPlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
+		if($blockReplace instanceof PinkPetals && $blockReplace->hasSameTypeId($this)){
+			return $blockReplace->count < self::MAX_COUNT;
+		}
+		return $this->supportedWhenPlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockReplace instanceof PinkPetals && $blockReplace->count < self::MAX_COUNT){
+		if($blockReplace instanceof PinkPetals && (!$blockReplace->hasSameTypeId($this) && !$blockReplace->canBeReplaced() || $blockReplace->hasSameTypeId($this) && $blockReplace->count >= self::MAX_COUNT)){
+			return false;
+		}
+		if($blockReplace instanceof PinkPetals && $blockReplace->hasSameTypeId($this) && $blockReplace->count < self::MAX_COUNT){
 			$this->count = $blockReplace->count + 1;
 			$this->facing = $blockReplace->facing;
 		}elseif($player !== null){

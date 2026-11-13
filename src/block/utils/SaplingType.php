@@ -47,7 +47,7 @@ enum SaplingType{
 	case ACACIA;
 	case DARK_OAK;
 	case POPLAR;
-	//TODO: cherry
+	case CHERRY;
 
 	public function getTreeType() : TreeType{
 		return match($this){
@@ -58,6 +58,7 @@ enum SaplingType{
 			self::ACACIA => TreeType::ACACIA,
 			self::DARK_OAK => TreeType::DARK_OAK,
 			self::POPLAR => TreeType::POPLAR,
+			self::CHERRY => TreeType::CHERRY,
 		};
 	}
 
