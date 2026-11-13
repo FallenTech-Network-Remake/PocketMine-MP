@@ -53,6 +53,7 @@ final class VanillaItems{
 	private static Item $_mARMADILLO_SPAWN_EGG;
 	private static Item $_mARMS_UP_POTTERY_SHERD;
 	private static Arrow $_mARROW;
+	private static MobBucket $_mAXOLOTL_BUCKET;
 	private static Item $_mAXOLOTL_SPAWN_EGG;
 	private static BakedPotato $_mBAKED_POTATO;
 	private static Bamboo $_mBAMBOO;
@@ -150,6 +151,7 @@ final class VanillaItems{
 	private static Boat $_mCHERRY_CHEST_BOAT;
 	private static HangingSign $_mCHERRY_HANGING_SIGN;
 	private static ItemBlockWallOrFloor $_mCHERRY_SIGN;
+	private static Minecart $_mCHEST_MINECART;
 	private static Item $_mCHICKEN_SPAWN_EGG;
 	private static ChorusFruit $_mCHORUS_FRUIT;
 	private static Item $_mCLAY;
@@ -158,7 +160,9 @@ final class VanillaItems{
 	private static Coal $_mCOAL;
 	private static Item $_mCOAST_ARMOR_TRIM_SMITHING_TEMPLATE;
 	private static CocoaBeans $_mCOCOA_BEANS;
+	private static MobBucket $_mCOD_BUCKET;
 	private static Item $_mCOD_SPAWN_EGG;
+	private static Minecart $_mCOMMAND_BLOCK_MINECART;
 	private static Compass $_mCOMPASS;
 	private static CookedChicken $_mCOOKED_CHICKEN;
 	private static CookedFish $_mCOOKED_FISH;
@@ -287,6 +291,7 @@ final class VanillaItems{
 	private static Item $_mHOGLIN_SPAWN_EGG;
 	private static Item $_mHONEYCOMB;
 	private static HoneyBottle $_mHONEY_BOTTLE;
+	private static Minecart $_mHOPPER_MINECART;
 	private static Item $_mHORSE_SPAWN_EGG;
 	private static Item $_mHOST_ARMOR_TRIM_SMITHING_TEMPLATE;
 	private static Item $_mHOWL_POTTERY_SHERD;
@@ -374,6 +379,7 @@ final class VanillaItems{
 	private static ItemBlockWallOrFloor $_mOAK_SIGN;
 	private static Item $_mOCELOT_SPAWN_EGG;
 	private static ItemBlockWallOrFloor $_mOMINOUS_BANNER;
+	private static Item $_mOMINOUS_TRIAL_KEY;
 	private static Bundle $_mORANGE_BUNDLE;
 	private static Harness $_mORANGE_HARNESS;
 	private static PaintingItem $_mPAINTING;
@@ -410,6 +416,7 @@ final class VanillaItems{
 	private static Item $_mPRISMARINE_SHARD;
 	private static Item $_mPRIZE_POTTERY_SHERD;
 	private static Pufferfish $_mPUFFERFISH;
+	private static MobBucket $_mPUFFERFISH_BUCKET;
 	private static Item $_mPUFFERFISH_SPAWN_EGG;
 	private static PumpkinPie $_mPUMPKIN_PIE;
 	private static PumpkinSeeds $_mPUMPKIN_SEEDS;
@@ -458,6 +465,7 @@ final class VanillaItems{
 	private static Item $_mRESIN_BRICK;
 	private static Item $_mRIB_ARMOR_TRIM_SMITHING_TEMPLATE;
 	private static RottenFlesh $_mROTTEN_FLESH;
+	private static MobBucket $_mSALMON_BUCKET;
 	private static Item $_mSALMON_SPAWN_EGG;
 	private static Item $_mSCRAPE_POTTERY_SHERD;
 	private static Item $_mSCUTE;
@@ -506,12 +514,16 @@ final class VanillaItems{
 	private static Item $_mSULFUR_CUBE_SPAWN_EGG;
 	private static SuspiciousStew $_mSUSPICIOUS_STEW;
 	private static SweetBerries $_mSWEET_BERRIES;
+	private static MobBucket $_mTADPOLE_BUCKET;
 	private static Item $_mTADPOLE_SPAWN_EGG;
 	private static Item $_mTIDE_ARMOR_TRIM_SMITHING_TEMPLATE;
+	private static Minecart $_mTNT_MINECART;
 	private static TorchflowerSeeds $_mTORCHFLOWER_SEEDS;
 	private static Totem $_mTOTEM;
 	private static Item $_mTRADER_LLAMA_SPAWN_EGG;
+	private static Item $_mTRIAL_KEY;
 	private static Trident $_mTRIDENT;
+	private static MobBucket $_mTROPICAL_FISH_BUCKET;
 	private static Item $_mTROPICAL_FISH_SPAWN_EGG;
 	private static TurtleHelmet $_mTURTLE_HELMET;
 	private static Item $_mTURTLE_SPAWN_EGG;
@@ -522,6 +534,7 @@ final class VanillaItems{
 	private static Item $_mWANDERING_TRADER_SPAWN_EGG;
 	private static Item $_mWARDEN_SPAWN_EGG;
 	private static Item $_mWARD_ARMOR_TRIM_SMITHING_TEMPLATE;
+	private static WarpedFungusOnAStick $_mWARPED_FUNGUS_ON_A_STICK;
 	private static HangingSign $_mWARPED_HANGING_SIGN;
 	private static ItemBlockWallOrFloor $_mWARPED_SIGN;
 	private static LiquidBucket $_mWATER_BUCKET;
@@ -531,6 +544,7 @@ final class VanillaItems{
 	private static Bundle $_mWHITE_BUNDLE;
 	private static Harness $_mWHITE_HARNESS;
 	private static Item $_mWILD_ARMOR_TRIM_SMITHING_TEMPLATE;
+	private static Item $_mWIND_CHARGE;
 	private static Item $_mWITCH_SPAWN_EGG;
 	private static Item $_mWITHER_SKELETON_SPAWN_EGG;
 	private static Item $_mWITHER_SPAWN_EGG;
@@ -600,6 +614,7 @@ final class VanillaItems{
 			"armadillo_spawn_egg" => fn(Item $v) => self::$_mARMADILLO_SPAWN_EGG = $v,
 			"arms_up_pottery_sherd" => fn(Item $v) => self::$_mARMS_UP_POTTERY_SHERD = $v,
 			"arrow" => fn(Arrow $v) => self::$_mARROW = $v,
+			"axolotl_bucket" => fn(MobBucket $v) => self::$_mAXOLOTL_BUCKET = $v,
 			"axolotl_spawn_egg" => fn(Item $v) => self::$_mAXOLOTL_SPAWN_EGG = $v,
 			"baked_potato" => fn(BakedPotato $v) => self::$_mBAKED_POTATO = $v,
 			"bamboo" => fn(Bamboo $v) => self::$_mBAMBOO = $v,
@@ -697,6 +712,7 @@ final class VanillaItems{
 			"cherry_chest_boat" => fn(Boat $v) => self::$_mCHERRY_CHEST_BOAT = $v,
 			"cherry_hanging_sign" => fn(HangingSign $v) => self::$_mCHERRY_HANGING_SIGN = $v,
 			"cherry_sign" => fn(ItemBlockWallOrFloor $v) => self::$_mCHERRY_SIGN = $v,
+			"chest_minecart" => fn(Minecart $v) => self::$_mCHEST_MINECART = $v,
 			"chicken_spawn_egg" => fn(Item $v) => self::$_mCHICKEN_SPAWN_EGG = $v,
 			"chorus_fruit" => fn(ChorusFruit $v) => self::$_mCHORUS_FRUIT = $v,
 			"clay" => fn(Item $v) => self::$_mCLAY = $v,
@@ -705,7 +721,9 @@ final class VanillaItems{
 			"coal" => fn(Coal $v) => self::$_mCOAL = $v,
 			"coast_armor_trim_smithing_template" => fn(Item $v) => self::$_mCOAST_ARMOR_TRIM_SMITHING_TEMPLATE = $v,
 			"cocoa_beans" => fn(CocoaBeans $v) => self::$_mCOCOA_BEANS = $v,
+			"cod_bucket" => fn(MobBucket $v) => self::$_mCOD_BUCKET = $v,
 			"cod_spawn_egg" => fn(Item $v) => self::$_mCOD_SPAWN_EGG = $v,
+			"command_block_minecart" => fn(Minecart $v) => self::$_mCOMMAND_BLOCK_MINECART = $v,
 			"compass" => fn(Compass $v) => self::$_mCOMPASS = $v,
 			"cooked_chicken" => fn(CookedChicken $v) => self::$_mCOOKED_CHICKEN = $v,
 			"cooked_fish" => fn(CookedFish $v) => self::$_mCOOKED_FISH = $v,
@@ -834,6 +852,7 @@ final class VanillaItems{
 			"hoglin_spawn_egg" => fn(Item $v) => self::$_mHOGLIN_SPAWN_EGG = $v,
 			"honeycomb" => fn(Item $v) => self::$_mHONEYCOMB = $v,
 			"honey_bottle" => fn(HoneyBottle $v) => self::$_mHONEY_BOTTLE = $v,
+			"hopper_minecart" => fn(Minecart $v) => self::$_mHOPPER_MINECART = $v,
 			"horse_spawn_egg" => fn(Item $v) => self::$_mHORSE_SPAWN_EGG = $v,
 			"host_armor_trim_smithing_template" => fn(Item $v) => self::$_mHOST_ARMOR_TRIM_SMITHING_TEMPLATE = $v,
 			"howl_pottery_sherd" => fn(Item $v) => self::$_mHOWL_POTTERY_SHERD = $v,
@@ -921,6 +940,7 @@ final class VanillaItems{
 			"oak_sign" => fn(ItemBlockWallOrFloor $v) => self::$_mOAK_SIGN = $v,
 			"ocelot_spawn_egg" => fn(Item $v) => self::$_mOCELOT_SPAWN_EGG = $v,
 			"ominous_banner" => fn(ItemBlockWallOrFloor $v) => self::$_mOMINOUS_BANNER = $v,
+			"ominous_trial_key" => fn(Item $v) => self::$_mOMINOUS_TRIAL_KEY = $v,
 			"orange_bundle" => fn(Bundle $v) => self::$_mORANGE_BUNDLE = $v,
 			"orange_harness" => fn(Harness $v) => self::$_mORANGE_HARNESS = $v,
 			"painting" => fn(PaintingItem $v) => self::$_mPAINTING = $v,
@@ -957,6 +977,7 @@ final class VanillaItems{
 			"prismarine_shard" => fn(Item $v) => self::$_mPRISMARINE_SHARD = $v,
 			"prize_pottery_sherd" => fn(Item $v) => self::$_mPRIZE_POTTERY_SHERD = $v,
 			"pufferfish" => fn(Pufferfish $v) => self::$_mPUFFERFISH = $v,
+			"pufferfish_bucket" => fn(MobBucket $v) => self::$_mPUFFERFISH_BUCKET = $v,
 			"pufferfish_spawn_egg" => fn(Item $v) => self::$_mPUFFERFISH_SPAWN_EGG = $v,
 			"pumpkin_pie" => fn(PumpkinPie $v) => self::$_mPUMPKIN_PIE = $v,
 			"pumpkin_seeds" => fn(PumpkinSeeds $v) => self::$_mPUMPKIN_SEEDS = $v,
@@ -1005,6 +1026,7 @@ final class VanillaItems{
 			"resin_brick" => fn(Item $v) => self::$_mRESIN_BRICK = $v,
 			"rib_armor_trim_smithing_template" => fn(Item $v) => self::$_mRIB_ARMOR_TRIM_SMITHING_TEMPLATE = $v,
 			"rotten_flesh" => fn(RottenFlesh $v) => self::$_mROTTEN_FLESH = $v,
+			"salmon_bucket" => fn(MobBucket $v) => self::$_mSALMON_BUCKET = $v,
 			"salmon_spawn_egg" => fn(Item $v) => self::$_mSALMON_SPAWN_EGG = $v,
 			"scrape_pottery_sherd" => fn(Item $v) => self::$_mSCRAPE_POTTERY_SHERD = $v,
 			"scute" => fn(Item $v) => self::$_mSCUTE = $v,
@@ -1053,12 +1075,16 @@ final class VanillaItems{
 			"sulfur_cube_spawn_egg" => fn(Item $v) => self::$_mSULFUR_CUBE_SPAWN_EGG = $v,
 			"suspicious_stew" => fn(SuspiciousStew $v) => self::$_mSUSPICIOUS_STEW = $v,
 			"sweet_berries" => fn(SweetBerries $v) => self::$_mSWEET_BERRIES = $v,
+			"tadpole_bucket" => fn(MobBucket $v) => self::$_mTADPOLE_BUCKET = $v,
 			"tadpole_spawn_egg" => fn(Item $v) => self::$_mTADPOLE_SPAWN_EGG = $v,
 			"tide_armor_trim_smithing_template" => fn(Item $v) => self::$_mTIDE_ARMOR_TRIM_SMITHING_TEMPLATE = $v,
+			"tnt_minecart" => fn(Minecart $v) => self::$_mTNT_MINECART = $v,
 			"torchflower_seeds" => fn(TorchflowerSeeds $v) => self::$_mTORCHFLOWER_SEEDS = $v,
 			"totem" => fn(Totem $v) => self::$_mTOTEM = $v,
 			"trader_llama_spawn_egg" => fn(Item $v) => self::$_mTRADER_LLAMA_SPAWN_EGG = $v,
+			"trial_key" => fn(Item $v) => self::$_mTRIAL_KEY = $v,
 			"trident" => fn(Trident $v) => self::$_mTRIDENT = $v,
+			"tropical_fish_bucket" => fn(MobBucket $v) => self::$_mTROPICAL_FISH_BUCKET = $v,
 			"tropical_fish_spawn_egg" => fn(Item $v) => self::$_mTROPICAL_FISH_SPAWN_EGG = $v,
 			"turtle_helmet" => fn(TurtleHelmet $v) => self::$_mTURTLE_HELMET = $v,
 			"turtle_spawn_egg" => fn(Item $v) => self::$_mTURTLE_SPAWN_EGG = $v,
@@ -1069,6 +1095,7 @@ final class VanillaItems{
 			"wandering_trader_spawn_egg" => fn(Item $v) => self::$_mWANDERING_TRADER_SPAWN_EGG = $v,
 			"warden_spawn_egg" => fn(Item $v) => self::$_mWARDEN_SPAWN_EGG = $v,
 			"ward_armor_trim_smithing_template" => fn(Item $v) => self::$_mWARD_ARMOR_TRIM_SMITHING_TEMPLATE = $v,
+			"warped_fungus_on_a_stick" => fn(WarpedFungusOnAStick $v) => self::$_mWARPED_FUNGUS_ON_A_STICK = $v,
 			"warped_hanging_sign" => fn(HangingSign $v) => self::$_mWARPED_HANGING_SIGN = $v,
 			"warped_sign" => fn(ItemBlockWallOrFloor $v) => self::$_mWARPED_SIGN = $v,
 			"water_bucket" => fn(LiquidBucket $v) => self::$_mWATER_BUCKET = $v,
@@ -1078,6 +1105,7 @@ final class VanillaItems{
 			"white_bundle" => fn(Bundle $v) => self::$_mWHITE_BUNDLE = $v,
 			"white_harness" => fn(Harness $v) => self::$_mWHITE_HARNESS = $v,
 			"wild_armor_trim_smithing_template" => fn(Item $v) => self::$_mWILD_ARMOR_TRIM_SMITHING_TEMPLATE = $v,
+			"wind_charge" => fn(Item $v) => self::$_mWIND_CHARGE = $v,
 			"witch_spawn_egg" => fn(Item $v) => self::$_mWITCH_SPAWN_EGG = $v,
 			"wither_skeleton_spawn_egg" => fn(Item $v) => self::$_mWITHER_SKELETON_SPAWN_EGG = $v,
 			"wither_spawn_egg" => fn(Item $v) => self::$_mWITHER_SPAWN_EGG = $v,
@@ -1209,6 +1237,11 @@ final class VanillaItems{
 	public static function ARROW() : Arrow{
 		if(!isset(self::$_mARROW)){ self::init(); }
 		return clone self::$_mARROW;
+	}
+
+	public static function AXOLOTL_BUCKET() : MobBucket{
+		if(!isset(self::$_mAXOLOTL_BUCKET)){ self::init(); }
+		return clone self::$_mAXOLOTL_BUCKET;
 	}
 
 	public static function AXOLOTL_SPAWN_EGG() : Item{
@@ -1696,6 +1729,11 @@ final class VanillaItems{
 		return clone self::$_mCHERRY_SIGN;
 	}
 
+	public static function CHEST_MINECART() : Minecart{
+		if(!isset(self::$_mCHEST_MINECART)){ self::init(); }
+		return clone self::$_mCHEST_MINECART;
+	}
+
 	public static function CHICKEN_SPAWN_EGG() : Item{
 		if(!isset(self::$_mCHICKEN_SPAWN_EGG)){ self::init(); }
 		return clone self::$_mCHICKEN_SPAWN_EGG;
@@ -1736,9 +1774,19 @@ final class VanillaItems{
 		return clone self::$_mCOCOA_BEANS;
 	}
 
+	public static function COD_BUCKET() : MobBucket{
+		if(!isset(self::$_mCOD_BUCKET)){ self::init(); }
+		return clone self::$_mCOD_BUCKET;
+	}
+
 	public static function COD_SPAWN_EGG() : Item{
 		if(!isset(self::$_mCOD_SPAWN_EGG)){ self::init(); }
 		return clone self::$_mCOD_SPAWN_EGG;
+	}
+
+	public static function COMMAND_BLOCK_MINECART() : Minecart{
+		if(!isset(self::$_mCOMMAND_BLOCK_MINECART)){ self::init(); }
+		return clone self::$_mCOMMAND_BLOCK_MINECART;
 	}
 
 	public static function COMPASS() : Compass{
@@ -2381,6 +2429,11 @@ final class VanillaItems{
 		return clone self::$_mHONEY_BOTTLE;
 	}
 
+	public static function HOPPER_MINECART() : Minecart{
+		if(!isset(self::$_mHOPPER_MINECART)){ self::init(); }
+		return clone self::$_mHOPPER_MINECART;
+	}
+
 	public static function HORSE_SPAWN_EGG() : Item{
 		if(!isset(self::$_mHORSE_SPAWN_EGG)){ self::init(); }
 		return clone self::$_mHORSE_SPAWN_EGG;
@@ -2816,6 +2869,11 @@ final class VanillaItems{
 		return clone self::$_mOMINOUS_BANNER;
 	}
 
+	public static function OMINOUS_TRIAL_KEY() : Item{
+		if(!isset(self::$_mOMINOUS_TRIAL_KEY)){ self::init(); }
+		return clone self::$_mOMINOUS_TRIAL_KEY;
+	}
+
 	public static function ORANGE_BUNDLE() : Bundle{
 		if(!isset(self::$_mORANGE_BUNDLE)){ self::init(); }
 		return clone self::$_mORANGE_BUNDLE;
@@ -2994,6 +3052,11 @@ final class VanillaItems{
 	public static function PUFFERFISH() : Pufferfish{
 		if(!isset(self::$_mPUFFERFISH)){ self::init(); }
 		return clone self::$_mPUFFERFISH;
+	}
+
+	public static function PUFFERFISH_BUCKET() : MobBucket{
+		if(!isset(self::$_mPUFFERFISH_BUCKET)){ self::init(); }
+		return clone self::$_mPUFFERFISH_BUCKET;
 	}
 
 	public static function PUFFERFISH_SPAWN_EGG() : Item{
@@ -3236,6 +3299,11 @@ final class VanillaItems{
 		return clone self::$_mROTTEN_FLESH;
 	}
 
+	public static function SALMON_BUCKET() : MobBucket{
+		if(!isset(self::$_mSALMON_BUCKET)){ self::init(); }
+		return clone self::$_mSALMON_BUCKET;
+	}
+
 	public static function SALMON_SPAWN_EGG() : Item{
 		if(!isset(self::$_mSALMON_SPAWN_EGG)){ self::init(); }
 		return clone self::$_mSALMON_SPAWN_EGG;
@@ -3476,6 +3544,11 @@ final class VanillaItems{
 		return clone self::$_mSWEET_BERRIES;
 	}
 
+	public static function TADPOLE_BUCKET() : MobBucket{
+		if(!isset(self::$_mTADPOLE_BUCKET)){ self::init(); }
+		return clone self::$_mTADPOLE_BUCKET;
+	}
+
 	public static function TADPOLE_SPAWN_EGG() : Item{
 		if(!isset(self::$_mTADPOLE_SPAWN_EGG)){ self::init(); }
 		return clone self::$_mTADPOLE_SPAWN_EGG;
@@ -3484,6 +3557,11 @@ final class VanillaItems{
 	public static function TIDE_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mTIDE_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
 		return clone self::$_mTIDE_ARMOR_TRIM_SMITHING_TEMPLATE;
+	}
+
+	public static function TNT_MINECART() : Minecart{
+		if(!isset(self::$_mTNT_MINECART)){ self::init(); }
+		return clone self::$_mTNT_MINECART;
 	}
 
 	public static function TORCHFLOWER_SEEDS() : TorchflowerSeeds{
@@ -3501,9 +3579,19 @@ final class VanillaItems{
 		return clone self::$_mTRADER_LLAMA_SPAWN_EGG;
 	}
 
+	public static function TRIAL_KEY() : Item{
+		if(!isset(self::$_mTRIAL_KEY)){ self::init(); }
+		return clone self::$_mTRIAL_KEY;
+	}
+
 	public static function TRIDENT() : Trident{
 		if(!isset(self::$_mTRIDENT)){ self::init(); }
 		return clone self::$_mTRIDENT;
+	}
+
+	public static function TROPICAL_FISH_BUCKET() : MobBucket{
+		if(!isset(self::$_mTROPICAL_FISH_BUCKET)){ self::init(); }
+		return clone self::$_mTROPICAL_FISH_BUCKET;
 	}
 
 	public static function TROPICAL_FISH_SPAWN_EGG() : Item{
@@ -3556,6 +3644,11 @@ final class VanillaItems{
 		return clone self::$_mWARD_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
+	public static function WARPED_FUNGUS_ON_A_STICK() : WarpedFungusOnAStick{
+		if(!isset(self::$_mWARPED_FUNGUS_ON_A_STICK)){ self::init(); }
+		return clone self::$_mWARPED_FUNGUS_ON_A_STICK;
+	}
+
 	public static function WARPED_HANGING_SIGN() : HangingSign{
 		if(!isset(self::$_mWARPED_HANGING_SIGN)){ self::init(); }
 		return clone self::$_mWARPED_HANGING_SIGN;
@@ -3599,6 +3692,11 @@ final class VanillaItems{
 	public static function WILD_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mWILD_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
 		return clone self::$_mWILD_ARMOR_TRIM_SMITHING_TEMPLATE;
+	}
+
+	public static function WIND_CHARGE() : Item{
+		if(!isset(self::$_mWIND_CHARGE)){ self::init(); }
+		return clone self::$_mWIND_CHARGE;
 	}
 
 	public static function WITCH_SPAWN_EGG() : Item{

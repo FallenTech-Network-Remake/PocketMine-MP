@@ -556,7 +556,22 @@ final class ItemTypeIds{
 	public const NETHERITE_NAUTILUS_ARMOR = 20512;
 	public const WOLF_ARMOR = 20513;
 
-	public const FIRST_UNUSED_ITEM_ID = 20514;
+	public const AXOLOTL_BUCKET = 20514;
+	public const CHEST_MINECART = 20515;
+	public const COD_BUCKET = 20516;
+	public const COMMAND_BLOCK_MINECART = 20517;
+	public const HOPPER_MINECART = 20518;
+	public const OMINOUS_TRIAL_KEY = 20519;
+	public const PUFFERFISH_BUCKET = 20520;
+	public const SALMON_BUCKET = 20521;
+	public const TADPOLE_BUCKET = 20522;
+	public const TNT_MINECART = 20523;
+	public const TRIAL_KEY = 20524;
+	public const TROPICAL_FISH_BUCKET = 20525;
+	public const WARPED_FUNGUS_ON_A_STICK = 20526;
+	public const WIND_CHARGE = 20527;
+
+	public const FIRST_UNUSED_ITEM_ID = 20528;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 

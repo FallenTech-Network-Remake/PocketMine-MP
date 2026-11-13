@@ -171,6 +171,20 @@ final class ItemSerializerDeserializerRegistrar{
 	 * Registers mappings for item IDs which directly correspond to PocketMine-MP items.
 	 */
 	private function register1to1ItemMappings() : void{
+		$this->map1to1Item(Ids::AXOLOTL_BUCKET, Items::AXOLOTL_BUCKET());
+		$this->map1to1Item(Ids::CHEST_MINECART, Items::CHEST_MINECART());
+		$this->map1to1Item(Ids::COD_BUCKET, Items::COD_BUCKET());
+		$this->map1to1Item(Ids::COMMAND_BLOCK_MINECART, Items::COMMAND_BLOCK_MINECART());
+		$this->map1to1Item(Ids::HOPPER_MINECART, Items::HOPPER_MINECART());
+		$this->map1to1Item(Ids::OMINOUS_TRIAL_KEY, Items::OMINOUS_TRIAL_KEY());
+		$this->map1to1Item(Ids::PUFFERFISH_BUCKET, Items::PUFFERFISH_BUCKET());
+		$this->map1to1Item(Ids::SALMON_BUCKET, Items::SALMON_BUCKET());
+		$this->map1to1Item(Ids::TADPOLE_BUCKET, Items::TADPOLE_BUCKET());
+		$this->map1to1Item(Ids::TNT_MINECART, Items::TNT_MINECART());
+		$this->map1to1Item(Ids::TRIAL_KEY, Items::TRIAL_KEY());
+		$this->map1to1Item(Ids::TROPICAL_FISH_BUCKET, Items::TROPICAL_FISH_BUCKET());
+		$this->map1to1Item(Ids::WARPED_FUNGUS_ON_A_STICK, Items::WARPED_FUNGUS_ON_A_STICK());
+		$this->map1to1Item(Ids::WIND_CHARGE, Items::WIND_CHARGE());
 		$this->map1to1Item(Ids::ARMADILLO_SCUTE, Items::ARMADILLO_SCUTE());
 		$this->map1to1Item(Ids::BLUE_EGG, Items::BLUE_EGG());
 		$this->map1to1Item(Ids::BREEZE_ROD, Items::BREEZE_ROD());

@@ -1397,6 +1397,20 @@ final class StringToItemParser extends StringToTParser{
 
 	private static function registerItems(self $result) : void{
 
+		$result->register("axolotl_bucket", fn() => Items::AXOLOTL_BUCKET());
+		$result->register("chest_minecart", fn() => Items::CHEST_MINECART());
+		$result->register("cod_bucket", fn() => Items::COD_BUCKET());
+		$result->register("command_block_minecart", fn() => Items::COMMAND_BLOCK_MINECART());
+		$result->register("hopper_minecart", fn() => Items::HOPPER_MINECART());
+		$result->register("ominous_trial_key", fn() => Items::OMINOUS_TRIAL_KEY());
+		$result->register("pufferfish_bucket", fn() => Items::PUFFERFISH_BUCKET());
+		$result->register("salmon_bucket", fn() => Items::SALMON_BUCKET());
+		$result->register("tadpole_bucket", fn() => Items::TADPOLE_BUCKET());
+		$result->register("tnt_minecart", fn() => Items::TNT_MINECART());
+		$result->register("trial_key", fn() => Items::TRIAL_KEY());
+		$result->register("tropical_fish_bucket", fn() => Items::TROPICAL_FISH_BUCKET());
+		$result->register("warped_fungus_on_a_stick", fn() => Items::WARPED_FUNGUS_ON_A_STICK());
+		$result->register("wind_charge", fn() => Items::WIND_CHARGE());
 		$result->register("armadillo_scute", fn() => Items::ARMADILLO_SCUTE());
 		$result->register("blue_egg", fn() => Items::BLUE_EGG());
 		$result->register("breeze_rod", fn() => Items::BREEZE_ROD());

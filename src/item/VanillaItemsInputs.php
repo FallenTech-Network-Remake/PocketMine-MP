@@ -96,6 +96,7 @@ final class VanillaItemsInputs extends RegistrySource{
 		self::registerBundlesAndHarnesses();
 		self::registerBannerPatterns();
 		self::registerAdditionalEggsAndAnimalItems();
+		self::registerAdditionalUtilityItems();
 
 		//this doesn't use the regular register() because it doesn't have an item typeID
 		//in the future we'll probably want to dissociate this from the air block and make a proper null item
@@ -625,6 +626,23 @@ final class VanillaItemsInputs extends RegistrySource{
 		self::register("netherite_horse_armor", fn(IID $id) => new AnimalArmor($id, "Netherite Horse Armor", true));
 		self::register("netherite_nautilus_armor", fn(IID $id) => new AnimalArmor($id, "Netherite Nautilus Armor", true));
 		self::register("wolf_armor", fn(IID $id) => new WolfArmor($id, "Wolf Armor"));
+	}
+
+	private function registerAdditionalUtilityItems() : void{
+		self::register("axolotl_bucket", fn(IID $id) => new MobBucket($id, "Bucket of Axolotl"));
+		self::register("chest_minecart", fn(IID $id) => new Minecart($id, "Chest Minecart"));
+		self::register("cod_bucket", fn(IID $id) => new MobBucket($id, "Bucket of Cod"));
+		self::register("command_block_minecart", fn(IID $id) => new Minecart($id, "Command Block Minecart"));
+		self::register("hopper_minecart", fn(IID $id) => new Minecart($id, "Hopper Minecart"));
+		self::register("ominous_trial_key", fn(IID $id) => new Item($id, "Ominous Trial Key"));
+		self::register("pufferfish_bucket", fn(IID $id) => new MobBucket($id, "Bucket of Pufferfish"));
+		self::register("salmon_bucket", fn(IID $id) => new MobBucket($id, "Bucket of Salmon"));
+		self::register("tadpole_bucket", fn(IID $id) => new MobBucket($id, "Bucket of Tadpole"));
+		self::register("tnt_minecart", fn(IID $id) => new Minecart($id, "TNT Minecart"));
+		self::register("trial_key", fn(IID $id) => new Item($id, "Trial Key"));
+		self::register("tropical_fish_bucket", fn(IID $id) => new MobBucket($id, "Bucket of Tropical Fish"));
+		self::register("warped_fungus_on_a_stick", fn(IID $id) => new WarpedFungusOnAStick($id, "Warped Fungus on a Stick"));
+		self::register("wind_charge", fn(IID $id) => new Item($id, "Wind Charge"));
 	}
 
 }
