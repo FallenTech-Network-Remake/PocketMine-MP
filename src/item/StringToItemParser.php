@@ -69,6 +69,8 @@ final class StringToItemParser extends StringToTParser{
 			$register("candle", fn() => Blocks::DYED_CANDLE()->setColor($color));
 			$register("carpet", fn() => Blocks::CARPET()->setColor($color));
 			$register("concrete", fn() => Blocks::CONCRETE()->setColor($color));
+			$register("concrete_slab", fn() => Blocks::CONCRETE_SLAB()->setColor($color));
+			$register("concrete_stairs", fn() => Blocks::CONCRETE_STAIRS()->setColor($color));
 			$register("concrete_powder", fn() => Blocks::CONCRETE_POWDER()->setColor($color));
 			$register("glazed_terracotta", fn() => Blocks::GLAZED_TERRACOTTA()->setColor($color));
 			$register("stained_clay", fn() => Blocks::STAINED_CLAY()->setColor($color));

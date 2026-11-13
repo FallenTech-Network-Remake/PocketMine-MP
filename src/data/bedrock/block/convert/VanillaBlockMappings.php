@@ -504,6 +504,14 @@ final class VanillaBlockMappings{
 			->idComponents(["minecraft:", $commonProperties->dyeColorIdInfix, "_wool_stairs"])
 			->properties($commonProperties->stairProperties)
 		);
+		$reg->mapFlattenedId(FlattenedIdModel::create(Blocks::CONCRETE_SLAB())
+			->idComponents(["minecraft:", $commonProperties->dyeColorIdInfix, "_concrete_", $commonProperties->slabIdInfix, "slab"])
+			->properties([$commonProperties->slabPositionProperty])
+		);
+		$reg->mapFlattenedId(FlattenedIdModel::create(Blocks::CONCRETE_STAIRS())
+			->idComponents(["minecraft:", $commonProperties->dyeColorIdInfix, "_concrete_stairs"])
+			->properties($commonProperties->stairProperties)
+		);
 
 		$reg->mapFlattenedId(FlattenedIdModel::create(Blocks::GLAZED_TERRACOTTA())
 			->idComponents([

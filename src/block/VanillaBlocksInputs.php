@@ -546,6 +546,9 @@ final class VanillaBlocksInputs extends RegistrySource{
 		self::register("stained_hardened_glass_pane", fn(BID $id) => new StainedHardenedGlassPane($id, "Stained Hardened Glass Pane", $hardenedGlassBreakInfo));
 		self::register("carpet", fn(BID $id) => new Carpet($id, "Carpet", new Info(new BreakInfo(0.1))));
 		self::register("concrete", fn(BID $id) => new Concrete($id, "Concrete", new Info(BreakInfo::pickaxe(1.8, ToolTier::WOOD))));
+		$concreteShapeBreakInfo = new Info(BreakInfo::pickaxe(1.8, ToolTier::WOOD, blastResistance: 0.36 * 5));
+		self::register("concrete_slab", fn(BID $id) => new ConcreteSlab($id, "Concrete", $concreteShapeBreakInfo));
+		self::register("concrete_stairs", fn(BID $id) => new ConcreteStairs($id, "Concrete Stairs", $concreteShapeBreakInfo));
 		self::register("concrete_powder", fn(BID $id) => new ConcretePowder($id, "Concrete Powder", new Info(BreakInfo::shovel(0.5))));
 		$woolBreakInfo = new Info(new WoolBreakInfo(0.8, ToolType::SHEARS));
 		$woolShapeBreakInfo = new Info(new WoolBreakInfo(0.8, ToolType::SHEARS, blastResistance: 0.8));
