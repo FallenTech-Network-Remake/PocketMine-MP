@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\utils\BannerPatternType;
 use pocketmine\block\utils\RecordType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\entity\Entity;
@@ -91,6 +92,9 @@ final class VanillaItemsInputs extends RegistrySource{
 		self::registerSpawnEggs();
 		self::registerTierToolItems();
 		self::registerSmithingTemplates();
+		self::registerPotterySherds();
+		self::registerBundlesAndHarnesses();
+		self::registerBannerPatterns();
 
 		//this doesn't use the regular register() because it doesn't have an item typeID
 		//in the future we'll probably want to dissociate this from the air block and make a proper null item
@@ -525,6 +529,81 @@ final class VanillaItemsInputs extends RegistrySource{
 		self::register("ward_armor_trim_smithing_template", fn(IID $id) => new Item($id, "Ward Armor Trim Smithing Template"));
 		self::register("wayfinder_armor_trim_smithing_template", fn(IID $id) => new Item($id, "Wayfinder Armor Trim Smithing Template"));
 		self::register("wild_armor_trim_smithing_template", fn(IID $id) => new Item($id, "Wild Armor Trim Smithing Template"));
+	}
+
+	private function registerPotterySherds() : void{
+		self::register("angler_pottery_sherd", fn(IID $id) => new Item($id, "Angler Pottery Sherd"));
+		self::register("archer_pottery_sherd", fn(IID $id) => new Item($id, "Archer Pottery Sherd"));
+		self::register("arms_up_pottery_sherd", fn(IID $id) => new Item($id, "Arms Up Pottery Sherd"));
+		self::register("blade_pottery_sherd", fn(IID $id) => new Item($id, "Blade Pottery Sherd"));
+		self::register("brewer_pottery_sherd", fn(IID $id) => new Item($id, "Brewer Pottery Sherd"));
+		self::register("burn_pottery_sherd", fn(IID $id) => new Item($id, "Burn Pottery Sherd"));
+		self::register("danger_pottery_sherd", fn(IID $id) => new Item($id, "Danger Pottery Sherd"));
+		self::register("explorer_pottery_sherd", fn(IID $id) => new Item($id, "Explorer Pottery Sherd"));
+		self::register("flow_pottery_sherd", fn(IID $id) => new Item($id, "Flow Pottery Sherd"));
+		self::register("friend_pottery_sherd", fn(IID $id) => new Item($id, "Friend Pottery Sherd"));
+		self::register("guster_pottery_sherd", fn(IID $id) => new Item($id, "Guster Pottery Sherd"));
+		self::register("heart_pottery_sherd", fn(IID $id) => new Item($id, "Heart Pottery Sherd"));
+		self::register("heartbreak_pottery_sherd", fn(IID $id) => new Item($id, "Heartbreak Pottery Sherd"));
+		self::register("howl_pottery_sherd", fn(IID $id) => new Item($id, "Howl Pottery Sherd"));
+		self::register("miner_pottery_sherd", fn(IID $id) => new Item($id, "Miner Pottery Sherd"));
+		self::register("mourner_pottery_sherd", fn(IID $id) => new Item($id, "Mourner Pottery Sherd"));
+		self::register("plenty_pottery_sherd", fn(IID $id) => new Item($id, "Plenty Pottery Sherd"));
+		self::register("prize_pottery_sherd", fn(IID $id) => new Item($id, "Prize Pottery Sherd"));
+		self::register("scrape_pottery_sherd", fn(IID $id) => new Item($id, "Scrape Pottery Sherd"));
+		self::register("sheaf_pottery_sherd", fn(IID $id) => new Item($id, "Sheaf Pottery Sherd"));
+		self::register("shelter_pottery_sherd", fn(IID $id) => new Item($id, "Shelter Pottery Sherd"));
+		self::register("skull_pottery_sherd", fn(IID $id) => new Item($id, "Skull Pottery Sherd"));
+		self::register("snort_pottery_sherd", fn(IID $id) => new Item($id, "Snort Pottery Sherd"));
+	}
+
+	private function registerBundlesAndHarnesses() : void{
+		self::register("black_bundle", fn(IID $id) => new Bundle($id, "Black Bundle"));
+		self::register("black_harness", fn(IID $id) => new Harness($id, "Black Harness"));
+		self::register("blue_bundle", fn(IID $id) => new Bundle($id, "Blue Bundle"));
+		self::register("blue_harness", fn(IID $id) => new Harness($id, "Blue Harness"));
+		self::register("brown_bundle", fn(IID $id) => new Bundle($id, "Brown Bundle"));
+		self::register("brown_harness", fn(IID $id) => new Harness($id, "Brown Harness"));
+		self::register("bundle", fn(IID $id) => new Bundle($id, "Bundle"));
+		self::register("cyan_bundle", fn(IID $id) => new Bundle($id, "Cyan Bundle"));
+		self::register("cyan_harness", fn(IID $id) => new Harness($id, "Cyan Harness"));
+		self::register("gray_bundle", fn(IID $id) => new Bundle($id, "Gray Bundle"));
+		self::register("gray_harness", fn(IID $id) => new Harness($id, "Gray Harness"));
+		self::register("green_bundle", fn(IID $id) => new Bundle($id, "Green Bundle"));
+		self::register("green_harness", fn(IID $id) => new Harness($id, "Green Harness"));
+		self::register("light_blue_bundle", fn(IID $id) => new Bundle($id, "Light Blue Bundle"));
+		self::register("light_blue_harness", fn(IID $id) => new Harness($id, "Light Blue Harness"));
+		self::register("light_gray_bundle", fn(IID $id) => new Bundle($id, "Light Gray Bundle"));
+		self::register("light_gray_harness", fn(IID $id) => new Harness($id, "Light Gray Harness"));
+		self::register("lime_bundle", fn(IID $id) => new Bundle($id, "Lime Bundle"));
+		self::register("lime_harness", fn(IID $id) => new Harness($id, "Lime Harness"));
+		self::register("magenta_bundle", fn(IID $id) => new Bundle($id, "Magenta Bundle"));
+		self::register("magenta_harness", fn(IID $id) => new Harness($id, "Magenta Harness"));
+		self::register("orange_bundle", fn(IID $id) => new Bundle($id, "Orange Bundle"));
+		self::register("orange_harness", fn(IID $id) => new Harness($id, "Orange Harness"));
+		self::register("pink_bundle", fn(IID $id) => new Bundle($id, "Pink Bundle"));
+		self::register("pink_harness", fn(IID $id) => new Harness($id, "Pink Harness"));
+		self::register("purple_bundle", fn(IID $id) => new Bundle($id, "Purple Bundle"));
+		self::register("purple_harness", fn(IID $id) => new Harness($id, "Purple Harness"));
+		self::register("red_bundle", fn(IID $id) => new Bundle($id, "Red Bundle"));
+		self::register("red_harness", fn(IID $id) => new Harness($id, "Red Harness"));
+		self::register("white_bundle", fn(IID $id) => new Bundle($id, "White Bundle"));
+		self::register("white_harness", fn(IID $id) => new Harness($id, "White Harness"));
+		self::register("yellow_bundle", fn(IID $id) => new Bundle($id, "Yellow Bundle"));
+		self::register("yellow_harness", fn(IID $id) => new Harness($id, "Yellow Harness"));
+	}
+
+	private function registerBannerPatterns() : void{
+		self::register("bordure_indented_banner_pattern", fn(IID $id) => new BannerPattern($id, "Bordure Indented Banner Pattern", BannerPatternType::CURLY_BORDER));
+		self::register("creeper_banner_pattern", fn(IID $id) => new BannerPattern($id, "Creeper Banner Pattern", BannerPatternType::CREEPER));
+		self::register("field_masoned_banner_pattern", fn(IID $id) => new BannerPattern($id, "Field Masoned Banner Pattern", BannerPatternType::BRICKS));
+		self::register("flow_banner_pattern", fn(IID $id) => new BannerPattern($id, "Flow Banner Pattern", BannerPatternType::FLOW));
+		self::register("flower_banner_pattern", fn(IID $id) => new BannerPattern($id, "Flower Banner Pattern", BannerPatternType::FLOWER));
+		self::register("globe_banner_pattern", fn(IID $id) => new BannerPattern($id, "Globe Banner Pattern", BannerPatternType::GLOBE));
+		self::register("guster_banner_pattern", fn(IID $id) => new BannerPattern($id, "Guster Banner Pattern", BannerPatternType::GUSTER));
+		self::register("mojang_banner_pattern", fn(IID $id) => new BannerPattern($id, "Mojang Banner Pattern", BannerPatternType::MOJANG));
+		self::register("piglin_banner_pattern", fn(IID $id) => new BannerPattern($id, "Piglin Banner Pattern", BannerPatternType::PIGLIN));
+		self::register("skull_banner_pattern", fn(IID $id) => new BannerPattern($id, "Skull Banner Pattern", BannerPatternType::SKULL));
 	}
 
 }
