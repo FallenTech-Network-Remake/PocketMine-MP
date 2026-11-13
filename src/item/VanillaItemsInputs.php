@@ -339,7 +339,10 @@ final class VanillaItemsInputs extends RegistrySource{
 
 		foreach(BoatType::cases() as $type){
 			//boat type is static, because different types of wood may have different properties
-			self::register(strtolower($type->name) . "_boat", fn(IID $id) => new Boat($id, $type->getDisplayName() . " Boat", $type));
+			$suffix = $type === BoatType::BAMBOO ? "raft" : "boat";
+			$displaySuffix = $type === BoatType::BAMBOO ? " Raft" : " Boat";
+			self::register(strtolower($type->name) . "_" . $suffix, fn(IID $id) => new Boat($id, $type->getDisplayName() . $displaySuffix, $type));
+			self::register(strtolower($type->name) . "_chest_" . $suffix, fn(IID $id) => new Boat($id, $type->getDisplayName() . $displaySuffix . " with Chest", $type, true));
 		}
 	}
 

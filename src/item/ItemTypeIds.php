@@ -455,7 +455,23 @@ final class ItemTypeIds{
 	public const ZOMBIE_PIGMAN_SPAWN_EGG = 20414;
 	public const ZOMBIE_VILLAGER_SPAWN_EGG = 20415;
 
-	public const FIRST_UNUSED_ITEM_ID = 20416;
+	public const ACACIA_CHEST_BOAT = 20416;
+	public const BAMBOO_CHEST_RAFT = 20417;
+	public const BAMBOO_RAFT = 20418;
+	public const BIRCH_CHEST_BOAT = 20419;
+	public const CHERRY_BOAT = 20420;
+	public const CHERRY_CHEST_BOAT = 20421;
+	public const DARK_OAK_CHEST_BOAT = 20422;
+	public const JUNGLE_CHEST_BOAT = 20423;
+	public const MANGROVE_CHEST_BOAT = 20424;
+	public const OAK_CHEST_BOAT = 20425;
+	public const PALE_OAK_BOAT = 20426;
+	public const PALE_OAK_CHEST_BOAT = 20427;
+	public const POPLAR_BOAT = 20428;
+	public const POPLAR_CHEST_BOAT = 20429;
+	public const SPRUCE_CHEST_BOAT = 20430;
+
+	public const FIRST_UNUSED_ITEM_ID = 20431;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 

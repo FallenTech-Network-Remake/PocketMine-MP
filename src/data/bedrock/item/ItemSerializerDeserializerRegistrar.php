@@ -171,6 +171,21 @@ final class ItemSerializerDeserializerRegistrar{
 	 * Registers mappings for item IDs which directly correspond to PocketMine-MP items.
 	 */
 	private function register1to1ItemMappings() : void{
+		$this->map1to1Item(Ids::ACACIA_CHEST_BOAT, Items::ACACIA_CHEST_BOAT());
+		$this->map1to1Item(Ids::BAMBOO_CHEST_RAFT, Items::BAMBOO_CHEST_RAFT());
+		$this->map1to1Item(Ids::BAMBOO_RAFT, Items::BAMBOO_RAFT());
+		$this->map1to1Item(Ids::BIRCH_CHEST_BOAT, Items::BIRCH_CHEST_BOAT());
+		$this->map1to1Item(Ids::CHERRY_BOAT, Items::CHERRY_BOAT());
+		$this->map1to1Item(Ids::CHERRY_CHEST_BOAT, Items::CHERRY_CHEST_BOAT());
+		$this->map1to1Item(Ids::DARK_OAK_CHEST_BOAT, Items::DARK_OAK_CHEST_BOAT());
+		$this->map1to1Item(Ids::JUNGLE_CHEST_BOAT, Items::JUNGLE_CHEST_BOAT());
+		$this->map1to1Item(Ids::MANGROVE_CHEST_BOAT, Items::MANGROVE_CHEST_BOAT());
+		$this->map1to1Item(Ids::OAK_CHEST_BOAT, Items::OAK_CHEST_BOAT());
+		$this->map1to1Item(Ids::PALE_OAK_BOAT, Items::PALE_OAK_BOAT());
+		$this->map1to1Item(Ids::PALE_OAK_CHEST_BOAT, Items::PALE_OAK_CHEST_BOAT());
+		$this->map1to1Item(Ids::POPLAR_BOAT, Items::POPLAR_BOAT());
+		$this->map1to1Item(Ids::POPLAR_CHEST_BOAT, Items::POPLAR_CHEST_BOAT());
+		$this->map1to1Item(Ids::SPRUCE_CHEST_BOAT, Items::SPRUCE_CHEST_BOAT());
 		$this->map1to1Item(Ids::ACACIA_BOAT, Items::ACACIA_BOAT());
 		$this->map1to1Item(Ids::ACACIA_HANGING_SIGN, Items::ACACIA_HANGING_SIGN());
 		$this->map1to1Item(Ids::ACACIA_SIGN, Items::ACACIA_SIGN());

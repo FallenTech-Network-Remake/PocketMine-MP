@@ -26,13 +26,17 @@ namespace pocketmine\item;
 class Boat extends Item{
 	private BoatType $boatType;
 
-	public function __construct(ItemIdentifier $identifier, string $name, BoatType $boatType){
+	public function __construct(ItemIdentifier $identifier, string $name, BoatType $boatType, private bool $hasChest = false){
 		parent::__construct($identifier, $name);
 		$this->boatType = $boatType;
 	}
 
 	public function getType() : BoatType{
 		return $this->boatType;
+	}
+
+	public function hasChest() : bool{
+		return $this->hasChest;
 	}
 
 	public function getFuelTime() : int{
