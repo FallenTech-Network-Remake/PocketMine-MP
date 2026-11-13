@@ -163,6 +163,8 @@ final class VanillaBlocksInputs extends RegistrySource{
 		self::register("sniffer_egg", fn(BID $id) => new SnifferEgg($id, "Sniffer Egg", new Info(new BreakInfo(0.5))));
 		self::register("structure_block", fn(BID $id) => new StructureBlock($id, "Structure Block", new Info(BreakInfo::indestructible(18000000.0))));
 
+		self::register("bubble_column", fn(BID $id) => new BubbleColumn($id, "Bubble Column", new Info(BreakInfo::instant())));
+
 		self::register("air", fn(BID $id) => new Air($id, "Air", new Info(BreakInfo::indestructible(-1.0))));
 
 		$railBreakInfo = new Info(new BreakInfo(0.7));

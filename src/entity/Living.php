@@ -25,6 +25,7 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
+use pocketmine\block\BubbleColumn;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Water;
 use pocketmine\data\bedrock\EffectIdMap;
@@ -825,7 +826,7 @@ abstract class Living extends Entity{
 	 * Returns whether the entity can currently breathe.
 	 */
 	public function canBreathe() : bool{
-		return $this->effectManager->has(VanillaEffects::WATER_BREATHING()) || $this->effectManager->has(VanillaEffects::CONDUIT_POWER()) || !$this->isUnderwater();
+		return $this->effectManager->has(VanillaEffects::WATER_BREATHING()) || $this->effectManager->has(VanillaEffects::CONDUIT_POWER()) || !$this->isUnderwater() || $this->getWorld()->getBlock($this->getEyePos()) instanceof BubbleColumn;
 	}
 
 	/**

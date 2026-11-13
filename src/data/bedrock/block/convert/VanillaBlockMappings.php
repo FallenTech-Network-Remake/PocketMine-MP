@@ -36,6 +36,7 @@ use pocketmine\block\Bell;
 use pocketmine\block\BigDripleafHead;
 use pocketmine\block\Block;
 use pocketmine\block\BrewingStand;
+use pocketmine\block\BubbleColumn;
 use pocketmine\block\Cactus;
 use pocketmine\block\Cake;
 use pocketmine\block\Candle;
@@ -50,13 +51,13 @@ use pocketmine\block\CopperLantern;
 use pocketmine\block\Crafter;
 use pocketmine\block\CyclingPotentSulfur;
 use pocketmine\block\DaylightSensor;
-
 use pocketmine\block\DetectorRail;
 use pocketmine\block\DirectionalUtilityBlock;
-use pocketmine\block\Dirt;
 
+use pocketmine\block\Dirt;
 use pocketmine\block\DoublePitcherCrop;
 use pocketmine\block\DoublePlant;
+
 use pocketmine\block\DriedGhast;
 use pocketmine\block\EndPortalFrame;
 use pocketmine\block\EndRod;
@@ -714,6 +715,7 @@ final class VanillaBlockMappings{
 		$reg->mapSimple(Blocks::END_GATEWAY(), Ids::END_GATEWAY);
 		$reg->mapSimple(Blocks::DRIPSTONE_BLOCK(), Ids::DRIPSTONE_BLOCK);
 		$reg->mapSimple(Blocks::CONDUIT(), Ids::CONDUIT);
+		$reg->mapModel(Model::create(Blocks::BUBBLE_COLUMN(), Ids::BUBBLE_COLUMN)->properties([new BoolProperty(StateNames::DRAG_DOWN, fn(BubbleColumn $b) => $b->isDragDown(), fn(BubbleColumn $b, bool $v) => $b->setDragDown($v))]));
 		$reg->mapModel(Model::create(Blocks::DECORATED_POT(), Ids::DECORATED_POT)->properties([$commonProperties->horizontalFacingSWNE]));
 		$reg->mapModel(Model::create(Blocks::DRIED_GHAST(), Ids::DRIED_GHAST)->properties([$commonProperties->horizontalFacingCardinal, new IntProperty(StateNames::REHYDRATION_LEVEL, 0, 3, fn(DriedGhast $b) => $b->getRehydrationLevel(), fn(DriedGhast $b, int $v) => $b->setRehydrationLevel($v))]));
 		$reg->mapModel(Model::create(Blocks::JIGSAW(), Ids::JIGSAW)->properties([$commonProperties->anyFacingClassic, new IntProperty(StateNames::ROTATION, 0, 3, fn(Jigsaw $b) => $b->getRotation(), fn(Jigsaw $b, int $v) => $b->setRotation($v))]));

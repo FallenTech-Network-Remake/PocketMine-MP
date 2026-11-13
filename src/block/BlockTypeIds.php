@@ -1000,7 +1000,10 @@ final class BlockTypeIds{
 	public const SNIFFER_EGG = 10957;
 	public const STRUCTURE_BLOCK = 10958;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10959;
+	// 10959-10960 reserved after withdrawing experimental ice blocks.
+	public const BUBBLE_COLUMN = 10961;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10962;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

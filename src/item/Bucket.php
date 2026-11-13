@@ -46,7 +46,7 @@ class Bucket extends Item{
 
 			$resultItem = match($blockClicked->getTypeId()){
 				BlockTypeIds::LAVA => VanillaItems::LAVA_BUCKET(),
-				BlockTypeIds::WATER => VanillaItems::WATER_BUCKET(),
+				BlockTypeIds::WATER, BlockTypeIds::BUBBLE_COLUMN => VanillaItems::WATER_BUCKET(),
 				BlockTypeIds::POWDER_SNOW => VanillaItems::POWDER_SNOW_BUCKET(),
 				default => null
 			};

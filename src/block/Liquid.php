@@ -139,8 +139,13 @@ abstract class Liquid extends Transparent{
 		return $this;
 	}
 
+	/** Whether this block participates in the same fluid simulation. */
+	protected function isSameLiquidType(Block $block) : bool{
+		return $block instanceof self && $block->hasSameTypeId($this);
+	}
+
 	protected function getEffectiveFlowDecay(Block $block) : int{
-		if(!($block instanceof Liquid) || !$block->hasSameTypeId($this)){
+		if(!($block instanceof Liquid) || !$this->isSameLiquidType($block)){
 			return -1;
 		}
 
@@ -281,7 +286,7 @@ abstract class Liquid extends Transparent{
 			$minAdjacentSources = $this->getMinAdjacentSourcesToFormSource();
 			if($minAdjacentSources !== null && $this->adjacentSources >= $minAdjacentSources){
 				$bottomBlock = $world->getBlockAt($x, $y - 1, $z);
-				if($bottomBlock->isSolid() || ($bottomBlock instanceof Liquid && $bottomBlock->hasSameTypeId($this) && $bottomBlock->isSource())){
+				if($bottomBlock->isSolid() || ($bottomBlock instanceof Liquid && $this->isSameLiquidType($bottomBlock) && $bottomBlock->isSource())){
 					$newDecay = 0;
 					$falling = false;
 				}
@@ -322,9 +327,14 @@ abstract class Liquid extends Transparent{
 		$this->checkForHarden();
 	}
 
+	/** Override when a liquid-derived block must spread a different block type. */
+	protected function createFlowingBlock() : Liquid{
+		return clone $this;
+	}
+
 	protected function flowIntoBlock(Block $block, int $newFlowDecay, bool $falling) : void{
 		if($this->canFlowInto($block) && !($block instanceof Liquid)){
-			$new = clone $this;
+			$new = $this->createFlowingBlock();
 			$new->falling = $falling;
 			$new->decay = $falling ? 0 : $newFlowDecay;
 
@@ -343,7 +353,7 @@ abstract class Liquid extends Transparent{
 
 	/** @phpstan-impure */
 	private function getSmallestFlowDecay(Block $block, int $decay) : int{
-		if(!($block instanceof Liquid) || !$block->hasSameTypeId($this)){
+		if(!($block instanceof Liquid) || !$this->isSameLiquidType($block)){
 			return $decay;
 		}
 

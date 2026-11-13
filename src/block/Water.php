@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityExtinguishEvent;
+use pocketmine\math\Facing;
 use pocketmine\world\sound\BucketEmptyWaterSound;
 use pocketmine\world\sound\BucketFillWaterSound;
 use pocketmine\world\sound\Sound;
@@ -49,6 +51,21 @@ class Water extends Liquid{
 
 	public function getMinAdjacentSourcesToFormSource() : ?int{
 		return 2;
+	}
+
+	protected function isSameLiquidType(Block $block) : bool{
+		return $block instanceof self;
+	}
+
+	public function onScheduledUpdate() : void{
+		if($this->getTypeId() === BlockTypeIds::WATER && $this->isSource()){
+			$below = $this->getSide(Facing::DOWN);
+			$drag = BubbleColumn::getDragFromSupport($below);
+			if($drag !== null && BlockEventHelper::form($this, VanillaBlocks::BUBBLE_COLUMN()->setDragDown($drag), $below)){
+				return;
+			}
+		}
+		parent::onScheduledUpdate();
 	}
 
 	public function onEntityInside(Entity $entity) : bool{
