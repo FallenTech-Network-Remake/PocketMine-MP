@@ -636,6 +636,18 @@ final class VanillaBlocksInputs extends RegistrySource{
 		self::register("command_block", fn(BID $id) => new CommandBlock($id, "Command Block", new Info(BreakInfo::indestructible(18000000.0))));
 		self::register("chain_command_block", fn(BID $id) => new CommandBlock($id, "Chain Command Block", new Info(BreakInfo::indestructible(18000000.0))));
 		self::register("repeating_command_block", fn(BID $id) => new CommandBlock($id, "Repeating Command Block", new Info(BreakInfo::indestructible(18000000.0))));
+		self::register("bee_nest", fn(BID $id) => new Beehive($id, "Bee Nest", new Info(BreakInfo::axe(0.3))));
+		self::register("beehive", fn(BID $id) => new Beehive($id, "Beehive", new Info(BreakInfo::axe(0.6))));
+		self::register("composter", fn(BID $id) => new Composter($id, "Composter", new Info(BreakInfo::axe(0.6))));
+		self::register("crafter", fn(BID $id) => new Crafter($id, "Crafter", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 17.5))));
+		self::register("creaking_heart", fn(BID $id) => new CreakingHeart($id, "Creaking Heart", new Info(BreakInfo::axe(10.0))));
+		self::register("dispenser", fn(BID $id) => new DirectionalUtilityBlock($id, "Dispenser", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD))));
+		self::register("dropper", fn(BID $id) => new DirectionalUtilityBlock($id, "Dropper", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD))));
+		self::register("grindstone", fn(BID $id) => new Grindstone($id, "Grindstone", new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0))));
+		self::register("lodestone", fn(BID $id) => new Opaque($id, "Lodestone", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD))));
+		self::register("observer", fn(BID $id) => new DirectionalUtilityBlock($id, "Observer", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD))));
+		self::register("tall_dry_grass", fn(BID $id) => new TallDryGrass($id, "Tall Dry Grass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+		self::register("target", fn(BID $id) => new Opaque($id, "Target", new Info(new BreakInfo(0.5, ToolType::HOE))));
 		self::register("sculk", fn(BID $id) => new Sculk($id, "Sculk", new Info(new BreakInfo(0.2, ToolType::HOE))));
 		self::register("reinforced_deepslate", fn(BID $id) => new class($id, "Reinforced Deepslate", new Info(new BreakInfo(55.0, ToolType::NONE, 0, 6000.0))) extends Opaque{
 			public function getDropsForCompatibleTool(Item $item) : array{

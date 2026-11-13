@@ -961,7 +961,20 @@ final class BlockTypeIds{
 	public const CHAIN_COMMAND_BLOCK = 10922;
 	public const REPEATING_COMMAND_BLOCK = 10923;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10924;
+	public const BEE_NEST = 10924;
+	public const BEEHIVE = 10925;
+	public const COMPOSTER = 10926;
+	public const CRAFTER = 10927;
+	public const CREAKING_HEART = 10928;
+	public const DISPENSER = 10929;
+	public const DROPPER = 10930;
+	public const GRINDSTONE = 10931;
+	public const LODESTONE = 10932;
+	public const OBSERVER = 10933;
+	public const TALL_DRY_GRASS = 10934;
+	public const TARGET = 10935;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10936;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

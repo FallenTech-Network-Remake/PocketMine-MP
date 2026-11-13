@@ -26,12 +26,17 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class ShortDryGrass extends DeadBush{
+	public function onInteract(Item $item, int $face, \pocketmine\math\Vector3 $clickVector, ?\pocketmine\player\Player $player = null, array &$returnedItems = []) : bool{
+		if($item instanceof \pocketmine\item\Fertilizer && utils\BlockEventHelper::grow($this, VanillaBlocks::TALL_DRY_GRASS(), $player)){ $item->pop(); return true; }
+		return false;
+	}
+
 	public function canBeReplaced() : bool{
 		return true;
 	}
 
 	public function getDropsForIncompatibleTool(Item $item) : array{
-		return [];
+		return $item->hasEnchantment(\pocketmine\item\enchantment\VanillaEnchantments::SILK_TOUCH()) ? $this->getSilkTouchDrops($item) : [];
 	}
 
 	public function getFuelTime() : int{
