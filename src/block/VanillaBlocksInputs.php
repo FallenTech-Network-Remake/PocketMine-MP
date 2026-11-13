@@ -165,6 +165,14 @@ final class VanillaBlocksInputs extends RegistrySource{
 
 		self::register("bubble_column", fn(BID $id) => new BubbleColumn($id, "Bubble Column", new Info(BreakInfo::instant())));
 
+		// Native data exposes hardness 0.2, but these protected blocks cannot be broken in Survival.
+		$educationBlockInfo = new Info(new class(0.2, blastResistance: 18000.0) extends BreakInfo{
+			public function isBreakable() : bool{ return false; }
+		});
+		self::register("allow", fn(BID $id) => new EducationBlock($id, "Allow", $educationBlockInfo));
+		self::register("border_block", fn(BID $id) => new BorderBlock($id, "Border", $educationBlockInfo));
+		self::register("deny", fn(BID $id) => new EducationBlock($id, "Deny", $educationBlockInfo));
+
 		self::register("air", fn(BID $id) => new Air($id, "Air", new Info(BreakInfo::indestructible(-1.0))));
 
 		$railBreakInfo = new Info(new BreakInfo(0.7));

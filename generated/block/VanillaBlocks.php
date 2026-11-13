@@ -60,6 +60,7 @@ final class VanillaBlocks{
 	private static ActivatorRail $_mACTIVATOR_RAIL;
 	private static Air $_mAIR;
 	private static Flower $_mALLIUM;
+	private static EducationBlock $_mALLOW;
 	private static MushroomStem $_mALL_SIDED_MUSHROOM_STEM;
 	private static Opaque $_mAMETHYST;
 	private static AmethystCluster $_mAMETHYST_CLUSTER;
@@ -135,6 +136,7 @@ final class VanillaBlocks{
 	private static Torch $_mBLUE_TORCH;
 	private static BoneBlock $_mBONE_BLOCK;
 	private static Bookshelf $_mBOOKSHELF;
+	private static BorderBlock $_mBORDER_BLOCK;
 	private static BrewingStand $_mBREWING_STAND;
 	private static Opaque $_mBRICKS;
 	private static Slab $_mBRICK_SLAB;
@@ -326,6 +328,7 @@ final class VanillaBlocks{
 	private static Slab $_mDEEPSLATE_TILE_SLAB;
 	private static Stair $_mDEEPSLATE_TILE_STAIRS;
 	private static Wall $_mDEEPSLATE_TILE_WALL;
+	private static EducationBlock $_mDENY;
 	private static DetectorRail $_mDETECTOR_RAIL;
 	private static Opaque $_mDIAMOND;
 	private static DiamondOre $_mDIAMOND_ORE;
@@ -1027,6 +1030,7 @@ final class VanillaBlocks{
 			"activator_rail" => fn(ActivatorRail $v) => self::$_mACTIVATOR_RAIL = $v,
 			"air" => fn(Air $v) => self::$_mAIR = $v,
 			"allium" => fn(Flower $v) => self::$_mALLIUM = $v,
+			"allow" => fn(EducationBlock $v) => self::$_mALLOW = $v,
 			"all_sided_mushroom_stem" => fn(MushroomStem $v) => self::$_mALL_SIDED_MUSHROOM_STEM = $v,
 			"amethyst" => fn(Opaque $v) => self::$_mAMETHYST = $v,
 			"amethyst_cluster" => fn(AmethystCluster $v) => self::$_mAMETHYST_CLUSTER = $v,
@@ -1102,6 +1106,7 @@ final class VanillaBlocks{
 			"blue_torch" => fn(Torch $v) => self::$_mBLUE_TORCH = $v,
 			"bone_block" => fn(BoneBlock $v) => self::$_mBONE_BLOCK = $v,
 			"bookshelf" => fn(Bookshelf $v) => self::$_mBOOKSHELF = $v,
+			"border_block" => fn(BorderBlock $v) => self::$_mBORDER_BLOCK = $v,
 			"brewing_stand" => fn(BrewingStand $v) => self::$_mBREWING_STAND = $v,
 			"bricks" => fn(Opaque $v) => self::$_mBRICKS = $v,
 			"brick_slab" => fn(Slab $v) => self::$_mBRICK_SLAB = $v,
@@ -1293,6 +1298,7 @@ final class VanillaBlocks{
 			"deepslate_tile_slab" => fn(Slab $v) => self::$_mDEEPSLATE_TILE_SLAB = $v,
 			"deepslate_tile_stairs" => fn(Stair $v) => self::$_mDEEPSLATE_TILE_STAIRS = $v,
 			"deepslate_tile_wall" => fn(Wall $v) => self::$_mDEEPSLATE_TILE_WALL = $v,
+			"deny" => fn(EducationBlock $v) => self::$_mDENY = $v,
 			"detector_rail" => fn(DetectorRail $v) => self::$_mDETECTOR_RAIL = $v,
 			"diamond" => fn(Opaque $v) => self::$_mDIAMOND = $v,
 			"diamond_ore" => fn(DiamondOre $v) => self::$_mDIAMOND_ORE = $v,
@@ -2086,6 +2092,11 @@ final class VanillaBlocks{
 		return clone self::$_mALLIUM;
 	}
 
+	public static function ALLOW() : EducationBlock{
+		if(!isset(self::$_mALLOW)){ self::init(); }
+		return clone self::$_mALLOW;
+	}
+
 	public static function ALL_SIDED_MUSHROOM_STEM() : MushroomStem{
 		if(!isset(self::$_mALL_SIDED_MUSHROOM_STEM)){ self::init(); }
 		return clone self::$_mALL_SIDED_MUSHROOM_STEM;
@@ -2459,6 +2470,11 @@ final class VanillaBlocks{
 	public static function BOOKSHELF() : Bookshelf{
 		if(!isset(self::$_mBOOKSHELF)){ self::init(); }
 		return clone self::$_mBOOKSHELF;
+	}
+
+	public static function BORDER_BLOCK() : BorderBlock{
+		if(!isset(self::$_mBORDER_BLOCK)){ self::init(); }
+		return clone self::$_mBORDER_BLOCK;
 	}
 
 	public static function BREWING_STAND() : BrewingStand{
@@ -3414,6 +3430,11 @@ final class VanillaBlocks{
 	public static function DEEPSLATE_TILE_WALL() : Wall{
 		if(!isset(self::$_mDEEPSLATE_TILE_WALL)){ self::init(); }
 		return clone self::$_mDEEPSLATE_TILE_WALL;
+	}
+
+	public static function DENY() : EducationBlock{
+		if(!isset(self::$_mDENY)){ self::init(); }
+		return clone self::$_mDENY;
 	}
 
 	public static function DETECTOR_RAIL() : DetectorRail{

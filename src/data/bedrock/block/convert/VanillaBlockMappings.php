@@ -715,6 +715,9 @@ final class VanillaBlockMappings{
 		$reg->mapSimple(Blocks::END_GATEWAY(), Ids::END_GATEWAY);
 		$reg->mapSimple(Blocks::DRIPSTONE_BLOCK(), Ids::DRIPSTONE_BLOCK);
 		$reg->mapSimple(Blocks::CONDUIT(), Ids::CONDUIT);
+		$reg->mapSimple(Blocks::ALLOW(), Ids::ALLOW);
+		$reg->mapSimple(Blocks::DENY(), Ids::DENY);
+		$reg->mapModel(Model::create(Blocks::BORDER_BLOCK(), Ids::BORDER_BLOCK)->properties($commonProperties->wallProperties));
 		$reg->mapModel(Model::create(Blocks::BUBBLE_COLUMN(), Ids::BUBBLE_COLUMN)->properties([new BoolProperty(StateNames::DRAG_DOWN, fn(BubbleColumn $b) => $b->isDragDown(), fn(BubbleColumn $b, bool $v) => $b->setDragDown($v))]));
 		$reg->mapModel(Model::create(Blocks::DECORATED_POT(), Ids::DECORATED_POT)->properties([$commonProperties->horizontalFacingSWNE]));
 		$reg->mapModel(Model::create(Blocks::DRIED_GHAST(), Ids::DRIED_GHAST)->properties([$commonProperties->horizontalFacingCardinal, new IntProperty(StateNames::REHYDRATION_LEVEL, 0, 3, fn(DriedGhast $b) => $b->getRehydrationLevel(), fn(DriedGhast $b, int $v) => $b->setRehydrationLevel($v))]));

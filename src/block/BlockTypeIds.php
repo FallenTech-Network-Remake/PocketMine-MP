@@ -1003,7 +1003,11 @@ final class BlockTypeIds{
 	// 10959-10960 reserved after withdrawing experimental ice blocks.
 	public const BUBBLE_COLUMN = 10961;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10962;
+	public const ALLOW = 10962;
+	public const BORDER_BLOCK = 10963;
+	public const DENY = 10964;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10965;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
