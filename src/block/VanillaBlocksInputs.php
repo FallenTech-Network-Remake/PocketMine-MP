@@ -689,6 +689,7 @@ final class VanillaBlocksInputs extends RegistrySource{
 			WoodType::WARPED => VanillaItems::WARPED_SIGN(...),
 			WoodType::CHERRY => VanillaItems::CHERRY_SIGN(...),
 			WoodType::PALE_OAK => VanillaItems::PALE_OAK_SIGN(...),
+			WoodType::POPLAR => VanillaItems::POPLAR_SIGN(...),
 			WoodType::BAMBOO => VanillaItems::BAMBOO_SIGN(...),
 		};
 	}
@@ -709,6 +710,7 @@ final class VanillaBlocksInputs extends RegistrySource{
 			WoodType::WARPED => VanillaItems::WARPED_HANGING_SIGN(...),
 			WoodType::CHERRY => VanillaItems::CHERRY_HANGING_SIGN(...),
 			WoodType::PALE_OAK => VanillaItems::PALE_OAK_HANGING_SIGN(...),
+			WoodType::POPLAR => VanillaItems::POPLAR_HANGING_SIGN(...),
 			WoodType::BAMBOO => VanillaItems::BAMBOO_HANGING_SIGN(...),
 		};
 	}
@@ -721,8 +723,6 @@ final class VanillaBlocksInputs extends RegistrySource{
 		$woodenDoorBreakInfo = new Info(BreakInfo::axe(3.0, null, 15.0));
 		$woodenButtonBreakInfo = new Info(BreakInfo::axe(0.5));
 		$woodenPressurePlateBreakInfo = new Info(BreakInfo::axe(0.5));
-
-		self::register("poplar_shelf", fn(BID $id) => new Shelf($id, "Poplar Shelf", $planksBreakInfo));
 
 		foreach(WoodType::cases() as $woodType){
 			$name = $woodType->getDisplayName();

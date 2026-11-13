@@ -907,7 +907,28 @@ final class BlockTypeIds{
 	public const SPRUCE_SHELF = 10873;
 	public const WARPED_SHELF = 10874;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10875;
+	public const POPLAR_BUTTON = 10875;
+	public const POPLAR_DOOR = 10876;
+	public const POPLAR_FENCE = 10877;
+	public const POPLAR_FENCE_GATE = 10878;
+	public const POPLAR_LOG = 10879;
+	public const POPLAR_PLANKS = 10880;
+	public const POPLAR_PRESSURE_PLATE = 10881;
+	public const POPLAR_SIGN = 10882;
+	public const POPLAR_SLAB = 10883;
+	public const POPLAR_STAIRS = 10884;
+	public const POPLAR_TRAPDOOR = 10885;
+	public const POPLAR_WALL_SIGN = 10886;
+	public const POPLAR_WOOD = 10887;
+	public const POPLAR_CEILING_CENTER_HANGING_SIGN = 10888;
+	public const POPLAR_CEILING_EDGES_HANGING_SIGN = 10889;
+	public const POPLAR_WALL_HANGING_SIGN = 10890;
+	public const POPLAR_SAPLING = 10891;
+	public const YELLOW_POPLAR_LEAVES = 10892;
+	public const ORANGE_POPLAR_LEAVES = 10893;
+	public const RED_POPLAR_LEAVES = 10894;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10895;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
