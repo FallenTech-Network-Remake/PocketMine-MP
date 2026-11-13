@@ -44,6 +44,7 @@ use pocketmine\item\EducationItem;
 use pocketmine\item\FireworkStar;
 use pocketmine\item\GoatHorn;
 use pocketmine\item\Item;
+use pocketmine\item\Map;
 use pocketmine\item\Medicine;
 use pocketmine\item\OminousBottle;
 use pocketmine\item\Potion;
@@ -173,6 +174,18 @@ final class ItemSerializerDeserializerRegistrar{
 	 * Registers mappings for item IDs which directly correspond to PocketMine-MP items.
 	 */
 	private function register1to1ItemMappings() : void{
+		$this->map1to1Item(Ids::WOODEN_SPEAR, Items::WOODEN_SPEAR());
+		$this->map1to1Item(Ids::STONE_SPEAR, Items::STONE_SPEAR());
+		$this->map1to1Item(Ids::COPPER_SPEAR, Items::COPPER_SPEAR());
+		$this->map1to1Item(Ids::IRON_SPEAR, Items::IRON_SPEAR());
+		$this->map1to1Item(Ids::GOLDEN_SPEAR, Items::GOLDEN_SPEAR());
+		$this->map1to1Item(Ids::DIAMOND_SPEAR, Items::DIAMOND_SPEAR());
+		$this->map1to1Item(Ids::NETHERITE_SPEAR, Items::NETHERITE_SPEAR());
+		$this->map1to1Item(Ids::SHIELD, Items::SHIELD());
+		$this->map1to1Item(Ids::MACE, Items::MACE());
+		$this->map1to1Item(Ids::CROSSBOW, Items::CROSSBOW());
+		$this->map1to1Item(Ids::BRUSH, Items::BRUSH());
+		$this->map1to1Item(Ids::ARMOR_STAND, Items::ARMOR_STAND());
 		$this->map1to1Item(Ids::WHITE_CUSHION, Items::WHITE_CUSHION());
 		$this->map1to1Item(Ids::ORANGE_CUSHION, Items::ORANGE_CUSHION());
 		$this->map1to1Item(Ids::MAGENTA_CUSHION, Items::MAGENTA_CUSHION());
@@ -756,6 +769,15 @@ final class ItemSerializerDeserializerRegistrar{
 	 * in a unified manner.
 	 */
 	private function register1to1ItemWithMetaMappings() : void{
+		foreach([Ids::EMPTY_MAP => Items::EMPTY_MAP(), Ids::FILLED_MAP => Items::FILLED_MAP()] as $id => $map){
+			$this->map1to1ItemWithMeta($id, $map, function(Map $item, int $meta) : void{
+				if($meta < 0 || $meta > Map::MAX_VARIANT){
+					throw new ItemTypeDeserializeException("Invalid map metadata: $meta");
+				}
+				$item->setVariant($meta);
+			}, fn(Map $item) => $item->getVariant());
+		}
+
 		$this->map1to1ItemWithMeta(
 			Ids::OMINOUS_BOTTLE,
 			Items::OMINOUS_BOTTLE(),

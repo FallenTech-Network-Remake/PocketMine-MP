@@ -99,6 +99,7 @@ final class VanillaItemsInputs extends RegistrySource{
 		self::registerAdditionalEggsAndAnimalItems();
 		self::registerAdditionalUtilityItems();
 		self::registerAdditionalNativeItems();
+		self::registerBasicCombatAndMapItems();
 		foreach(DyeColor::cases() as $color){
 			self::register(strtolower($color->name) . "_cushion", fn(IID $id) => new Cushion($id, $color->getDisplayName() . " Cushion", $color));
 		}
@@ -671,6 +672,24 @@ final class VanillaItemsInputs extends RegistrySource{
 		self::register("saddle", fn(IID $id) => new Saddle($id, "Saddle"));
 		self::register("sparkler", fn(IID $id) => (new EducationItem($id, "Sparkler", 1, 15))->setVariant(1));
 		self::register("sulfur_cube_bucket", fn(IID $id) => new MobBucket($id, "Bucket of Sulfur Cube"));
+	}
+
+	private function registerBasicCombatAndMapItems() : void{
+		self::register("wooden_spear", fn(IID $id) => new Spear($id, "Wooden Spear", ToolTier::WOOD));
+		self::register("stone_spear", fn(IID $id) => new Spear($id, "Stone Spear", ToolTier::STONE));
+		self::register("copper_spear", fn(IID $id) => new Spear($id, "Copper Spear", ToolTier::COPPER));
+		self::register("iron_spear", fn(IID $id) => new Spear($id, "Iron Spear", ToolTier::IRON));
+		self::register("golden_spear", fn(IID $id) => new Spear($id, "Golden Spear", ToolTier::GOLD));
+		self::register("diamond_spear", fn(IID $id) => new Spear($id, "Diamond Spear", ToolTier::DIAMOND));
+		self::register("netherite_spear", fn(IID $id) => new Spear($id, "Netherite Spear", ToolTier::NETHERITE));
+		self::register("shield", fn(IID $id) => new Shield($id, "Shield", [EnchantmentTags::SHIELD]));
+		self::register("mace", fn(IID $id) => new Mace($id, "Mace"));
+		self::register("crossbow", fn(IID $id) => new Crossbow($id, "Crossbow", [EnchantmentTags::CROSSBOW]));
+		self::register("brush", fn(IID $id) => new Brush($id, "Brush", [EnchantmentTags::BRUSH]));
+		self::register("empty_map", fn(IID $id) => new Map($id, "Empty Map"));
+		self::register("filled_map", fn(IID $id) => new Map($id, "Filled Map"));
+		// Item only; armor stand entity placement is not implemented.
+		self::register("armor_stand", fn(IID $id) => new Item($id, "Armor Stand"));
 	}
 
 }

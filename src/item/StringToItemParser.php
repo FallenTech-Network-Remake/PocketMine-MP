@@ -1397,6 +1397,20 @@ final class StringToItemParser extends StringToTParser{
 
 	private static function registerItems(self $result) : void{
 
+		$result->register("wooden_spear", fn() => Items::WOODEN_SPEAR());
+		$result->register("stone_spear", fn() => Items::STONE_SPEAR());
+		$result->register("copper_spear", fn() => Items::COPPER_SPEAR());
+		$result->register("iron_spear", fn() => Items::IRON_SPEAR());
+		$result->register("golden_spear", fn() => Items::GOLDEN_SPEAR());
+		$result->register("diamond_spear", fn() => Items::DIAMOND_SPEAR());
+		$result->register("netherite_spear", fn() => Items::NETHERITE_SPEAR());
+		$result->register("shield", fn() => Items::SHIELD());
+		$result->register("mace", fn() => Items::MACE());
+		$result->register("crossbow", fn() => Items::CROSSBOW());
+		$result->register("brush", fn() => Items::BRUSH());
+		$result->register("empty_map", fn() => Items::EMPTY_MAP());
+		$result->register("filled_map", fn() => Items::FILLED_MAP());
+		$result->register("armor_stand", fn() => Items::ARMOR_STAND());
 		$result->register("white_cushion", fn() => Items::WHITE_CUSHION());
 		$result->register("orange_cushion", fn() => Items::ORANGE_CUSHION());
 		$result->register("magenta_cushion", fn() => Items::MAGENTA_CUSHION());

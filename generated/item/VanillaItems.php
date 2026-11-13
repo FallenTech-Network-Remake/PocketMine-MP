@@ -51,6 +51,7 @@ final class VanillaItems{
 	private static Item $_mARCHER_POTTERY_SHERD;
 	private static Item $_mARMADILLO_SCUTE;
 	private static Item $_mARMADILLO_SPAWN_EGG;
+	private static Item $_mARMOR_STAND;
 	private static Item $_mARMS_UP_POTTERY_SHERD;
 	private static Arrow $_mARROW;
 	private static MobBucket $_mAXOLOTL_BUCKET;
@@ -102,6 +103,7 @@ final class VanillaItems{
 	private static Cushion $_mBROWN_CUSHION;
 	private static Egg $_mBROWN_EGG;
 	private static Harness $_mBROWN_HARNESS;
+	private static Brush $_mBRUSH;
 	private static Bucket $_mBUCKET;
 	private static Bundle $_mBUNDLE;
 	private static Item $_mBURN_POTTERY_SHERD;
@@ -192,6 +194,7 @@ final class VanillaItems{
 	private static Item $_mCOPPER_NUGGET;
 	private static Pickaxe $_mCOPPER_PICKAXE;
 	private static Shovel $_mCOPPER_SHOVEL;
+	private static Spear $_mCOPPER_SPEAR;
 	private static Sword $_mCOPPER_SWORD;
 	private static CoralFan $_mCORAL_FAN;
 	private static Item $_mCOW_SPAWN_EGG;
@@ -200,6 +203,7 @@ final class VanillaItems{
 	private static Item $_mCREEPER_SPAWN_EGG;
 	private static HangingSign $_mCRIMSON_HANGING_SIGN;
 	private static ItemBlockWallOrFloor $_mCRIMSON_SIGN;
+	private static Crossbow $_mCROSSBOW;
 	private static Bundle $_mCYAN_BUNDLE;
 	private static Cushion $_mCYAN_CUSHION;
 	private static Harness $_mCYAN_HARNESS;
@@ -219,6 +223,7 @@ final class VanillaItems{
 	private static AnimalArmor $_mDIAMOND_NAUTILUS_ARMOR;
 	private static Pickaxe $_mDIAMOND_PICKAXE;
 	private static Shovel $_mDIAMOND_SHOVEL;
+	private static Spear $_mDIAMOND_SPEAR;
 	private static Sword $_mDIAMOND_SWORD;
 	private static Item $_mDISC_FRAGMENT_5;
 	private static Item $_mDOLPHIN_SPAWN_EGG;
@@ -233,6 +238,7 @@ final class VanillaItems{
 	private static Item $_mELDER_GUARDIAN_SPAWN_EGG;
 	private static Elytra $_mELYTRA;
 	private static Item $_mEMERALD;
+	private static Map $_mEMPTY_MAP;
 	private static EnchantedBook $_mENCHANTED_BOOK;
 	private static GoldenAppleEnchanted $_mENCHANTED_GOLDEN_APPLE;
 	private static Item $_mENDERMAN_SPAWN_EGG;
@@ -248,6 +254,7 @@ final class VanillaItems{
 	private static Item $_mFEATHER;
 	private static Item $_mFERMENTED_SPIDER_EYE;
 	private static BannerPattern $_mFIELD_MASONED_BANNER_PATTERN;
+	private static Map $_mFILLED_MAP;
 	private static FireworkRocket $_mFIREWORK_ROCKET;
 	private static FireworkStar $_mFIREWORK_STAR;
 	private static FireCharge $_mFIRE_CHARGE;
@@ -286,6 +293,7 @@ final class VanillaItems{
 	private static AnimalArmor $_mGOLDEN_NAUTILUS_ARMOR;
 	private static Pickaxe $_mGOLDEN_PICKAXE;
 	private static Shovel $_mGOLDEN_SHOVEL;
+	private static Spear $_mGOLDEN_SPEAR;
 	private static Sword $_mGOLDEN_SWORD;
 	private static Item $_mGOLD_INGOT;
 	private static Item $_mGOLD_NUGGET;
@@ -327,6 +335,7 @@ final class VanillaItems{
 	private static Item $_mIRON_NUGGET;
 	private static Pickaxe $_mIRON_PICKAXE;
 	private static Shovel $_mIRON_SHOVEL;
+	private static Spear $_mIRON_SPEAR;
 	private static Sword $_mIRON_SWORD;
 	private static Boat $_mJUNGLE_BOAT;
 	private static Boat $_mJUNGLE_CHEST_BOAT;
@@ -353,6 +362,7 @@ final class VanillaItems{
 	private static SplashPotion $_mLINGERING_POTION;
 	private static Item $_mLLAMA_SPAWN_EGG;
 	private static Compass $_mLODESTONE_COMPASS;
+	private static Mace $_mMACE;
 	private static Bundle $_mMAGENTA_BUNDLE;
 	private static Cushion $_mMAGENTA_CUSHION;
 	private static Harness $_mMAGENTA_HARNESS;
@@ -388,6 +398,7 @@ final class VanillaItems{
 	private static Pickaxe $_mNETHERITE_PICKAXE;
 	private static Item $_mNETHERITE_SCRAP;
 	private static Shovel $_mNETHERITE_SHOVEL;
+	private static Spear $_mNETHERITE_SPEAR;
 	private static Sword $_mNETHERITE_SWORD;
 	private static Item $_mNETHERITE_UPGRADE_SMITHING_TEMPLATE;
 	private static Item $_mNETHER_BRICK;
@@ -507,6 +518,7 @@ final class VanillaItems{
 	private static Shears $_mSHEARS;
 	private static Item $_mSHEEP_SPAWN_EGG;
 	private static Item $_mSHELTER_POTTERY_SHERD;
+	private static Shield $_mSHIELD;
 	private static Item $_mSHULKER_SHELL;
 	private static Item $_mSHULKER_SPAWN_EGG;
 	private static Item $_mSILENCE_ARMOR_TRIM_SMITHING_TEMPLATE;
@@ -539,6 +551,7 @@ final class VanillaItems{
 	private static Hoe $_mSTONE_HOE;
 	private static Pickaxe $_mSTONE_PICKAXE;
 	private static Shovel $_mSTONE_SHOVEL;
+	private static Spear $_mSTONE_SPEAR;
 	private static Sword $_mSTONE_SWORD;
 	private static Item $_mSTRAY_SPAWN_EGG;
 	private static Item $_mSTRIDER_SPAWN_EGG;
@@ -589,6 +602,7 @@ final class VanillaItems{
 	private static Hoe $_mWOODEN_HOE;
 	private static Pickaxe $_mWOODEN_PICKAXE;
 	private static Shovel $_mWOODEN_SHOVEL;
+	private static Spear $_mWOODEN_SPEAR;
 	private static Sword $_mWOODEN_SWORD;
 	private static WritableBook $_mWRITABLE_BOOK;
 	private static WrittenBook $_mWRITTEN_BOOK;
@@ -648,6 +662,7 @@ final class VanillaItems{
 			"archer_pottery_sherd" => fn(Item $v) => self::$_mARCHER_POTTERY_SHERD = $v,
 			"armadillo_scute" => fn(Item $v) => self::$_mARMADILLO_SCUTE = $v,
 			"armadillo_spawn_egg" => fn(Item $v) => self::$_mARMADILLO_SPAWN_EGG = $v,
+			"armor_stand" => fn(Item $v) => self::$_mARMOR_STAND = $v,
 			"arms_up_pottery_sherd" => fn(Item $v) => self::$_mARMS_UP_POTTERY_SHERD = $v,
 			"arrow" => fn(Arrow $v) => self::$_mARROW = $v,
 			"axolotl_bucket" => fn(MobBucket $v) => self::$_mAXOLOTL_BUCKET = $v,
@@ -699,6 +714,7 @@ final class VanillaItems{
 			"brown_cushion" => fn(Cushion $v) => self::$_mBROWN_CUSHION = $v,
 			"brown_egg" => fn(Egg $v) => self::$_mBROWN_EGG = $v,
 			"brown_harness" => fn(Harness $v) => self::$_mBROWN_HARNESS = $v,
+			"brush" => fn(Brush $v) => self::$_mBRUSH = $v,
 			"bucket" => fn(Bucket $v) => self::$_mBUCKET = $v,
 			"bundle" => fn(Bundle $v) => self::$_mBUNDLE = $v,
 			"burn_pottery_sherd" => fn(Item $v) => self::$_mBURN_POTTERY_SHERD = $v,
@@ -789,6 +805,7 @@ final class VanillaItems{
 			"copper_nugget" => fn(Item $v) => self::$_mCOPPER_NUGGET = $v,
 			"copper_pickaxe" => fn(Pickaxe $v) => self::$_mCOPPER_PICKAXE = $v,
 			"copper_shovel" => fn(Shovel $v) => self::$_mCOPPER_SHOVEL = $v,
+			"copper_spear" => fn(Spear $v) => self::$_mCOPPER_SPEAR = $v,
 			"copper_sword" => fn(Sword $v) => self::$_mCOPPER_SWORD = $v,
 			"coral_fan" => fn(CoralFan $v) => self::$_mCORAL_FAN = $v,
 			"cow_spawn_egg" => fn(Item $v) => self::$_mCOW_SPAWN_EGG = $v,
@@ -797,6 +814,7 @@ final class VanillaItems{
 			"creeper_spawn_egg" => fn(Item $v) => self::$_mCREEPER_SPAWN_EGG = $v,
 			"crimson_hanging_sign" => fn(HangingSign $v) => self::$_mCRIMSON_HANGING_SIGN = $v,
 			"crimson_sign" => fn(ItemBlockWallOrFloor $v) => self::$_mCRIMSON_SIGN = $v,
+			"crossbow" => fn(Crossbow $v) => self::$_mCROSSBOW = $v,
 			"cyan_bundle" => fn(Bundle $v) => self::$_mCYAN_BUNDLE = $v,
 			"cyan_cushion" => fn(Cushion $v) => self::$_mCYAN_CUSHION = $v,
 			"cyan_harness" => fn(Harness $v) => self::$_mCYAN_HARNESS = $v,
@@ -816,6 +834,7 @@ final class VanillaItems{
 			"diamond_nautilus_armor" => fn(AnimalArmor $v) => self::$_mDIAMOND_NAUTILUS_ARMOR = $v,
 			"diamond_pickaxe" => fn(Pickaxe $v) => self::$_mDIAMOND_PICKAXE = $v,
 			"diamond_shovel" => fn(Shovel $v) => self::$_mDIAMOND_SHOVEL = $v,
+			"diamond_spear" => fn(Spear $v) => self::$_mDIAMOND_SPEAR = $v,
 			"diamond_sword" => fn(Sword $v) => self::$_mDIAMOND_SWORD = $v,
 			"disc_fragment_5" => fn(Item $v) => self::$_mDISC_FRAGMENT_5 = $v,
 			"dolphin_spawn_egg" => fn(Item $v) => self::$_mDOLPHIN_SPAWN_EGG = $v,
@@ -830,6 +849,7 @@ final class VanillaItems{
 			"elder_guardian_spawn_egg" => fn(Item $v) => self::$_mELDER_GUARDIAN_SPAWN_EGG = $v,
 			"elytra" => fn(Elytra $v) => self::$_mELYTRA = $v,
 			"emerald" => fn(Item $v) => self::$_mEMERALD = $v,
+			"empty_map" => fn(Map $v) => self::$_mEMPTY_MAP = $v,
 			"enchanted_book" => fn(EnchantedBook $v) => self::$_mENCHANTED_BOOK = $v,
 			"enchanted_golden_apple" => fn(GoldenAppleEnchanted $v) => self::$_mENCHANTED_GOLDEN_APPLE = $v,
 			"enderman_spawn_egg" => fn(Item $v) => self::$_mENDERMAN_SPAWN_EGG = $v,
@@ -845,6 +865,7 @@ final class VanillaItems{
 			"feather" => fn(Item $v) => self::$_mFEATHER = $v,
 			"fermented_spider_eye" => fn(Item $v) => self::$_mFERMENTED_SPIDER_EYE = $v,
 			"field_masoned_banner_pattern" => fn(BannerPattern $v) => self::$_mFIELD_MASONED_BANNER_PATTERN = $v,
+			"filled_map" => fn(Map $v) => self::$_mFILLED_MAP = $v,
 			"firework_rocket" => fn(FireworkRocket $v) => self::$_mFIREWORK_ROCKET = $v,
 			"firework_star" => fn(FireworkStar $v) => self::$_mFIREWORK_STAR = $v,
 			"fire_charge" => fn(FireCharge $v) => self::$_mFIRE_CHARGE = $v,
@@ -883,6 +904,7 @@ final class VanillaItems{
 			"golden_nautilus_armor" => fn(AnimalArmor $v) => self::$_mGOLDEN_NAUTILUS_ARMOR = $v,
 			"golden_pickaxe" => fn(Pickaxe $v) => self::$_mGOLDEN_PICKAXE = $v,
 			"golden_shovel" => fn(Shovel $v) => self::$_mGOLDEN_SHOVEL = $v,
+			"golden_spear" => fn(Spear $v) => self::$_mGOLDEN_SPEAR = $v,
 			"golden_sword" => fn(Sword $v) => self::$_mGOLDEN_SWORD = $v,
 			"gold_ingot" => fn(Item $v) => self::$_mGOLD_INGOT = $v,
 			"gold_nugget" => fn(Item $v) => self::$_mGOLD_NUGGET = $v,
@@ -924,6 +946,7 @@ final class VanillaItems{
 			"iron_nugget" => fn(Item $v) => self::$_mIRON_NUGGET = $v,
 			"iron_pickaxe" => fn(Pickaxe $v) => self::$_mIRON_PICKAXE = $v,
 			"iron_shovel" => fn(Shovel $v) => self::$_mIRON_SHOVEL = $v,
+			"iron_spear" => fn(Spear $v) => self::$_mIRON_SPEAR = $v,
 			"iron_sword" => fn(Sword $v) => self::$_mIRON_SWORD = $v,
 			"jungle_boat" => fn(Boat $v) => self::$_mJUNGLE_BOAT = $v,
 			"jungle_chest_boat" => fn(Boat $v) => self::$_mJUNGLE_CHEST_BOAT = $v,
@@ -950,6 +973,7 @@ final class VanillaItems{
 			"lingering_potion" => fn(SplashPotion $v) => self::$_mLINGERING_POTION = $v,
 			"llama_spawn_egg" => fn(Item $v) => self::$_mLLAMA_SPAWN_EGG = $v,
 			"lodestone_compass" => fn(Compass $v) => self::$_mLODESTONE_COMPASS = $v,
+			"mace" => fn(Mace $v) => self::$_mMACE = $v,
 			"magenta_bundle" => fn(Bundle $v) => self::$_mMAGENTA_BUNDLE = $v,
 			"magenta_cushion" => fn(Cushion $v) => self::$_mMAGENTA_CUSHION = $v,
 			"magenta_harness" => fn(Harness $v) => self::$_mMAGENTA_HARNESS = $v,
@@ -985,6 +1009,7 @@ final class VanillaItems{
 			"netherite_pickaxe" => fn(Pickaxe $v) => self::$_mNETHERITE_PICKAXE = $v,
 			"netherite_scrap" => fn(Item $v) => self::$_mNETHERITE_SCRAP = $v,
 			"netherite_shovel" => fn(Shovel $v) => self::$_mNETHERITE_SHOVEL = $v,
+			"netherite_spear" => fn(Spear $v) => self::$_mNETHERITE_SPEAR = $v,
 			"netherite_sword" => fn(Sword $v) => self::$_mNETHERITE_SWORD = $v,
 			"netherite_upgrade_smithing_template" => fn(Item $v) => self::$_mNETHERITE_UPGRADE_SMITHING_TEMPLATE = $v,
 			"nether_brick" => fn(Item $v) => self::$_mNETHER_BRICK = $v,
@@ -1104,6 +1129,7 @@ final class VanillaItems{
 			"shears" => fn(Shears $v) => self::$_mSHEARS = $v,
 			"sheep_spawn_egg" => fn(Item $v) => self::$_mSHEEP_SPAWN_EGG = $v,
 			"shelter_pottery_sherd" => fn(Item $v) => self::$_mSHELTER_POTTERY_SHERD = $v,
+			"shield" => fn(Shield $v) => self::$_mSHIELD = $v,
 			"shulker_shell" => fn(Item $v) => self::$_mSHULKER_SHELL = $v,
 			"shulker_spawn_egg" => fn(Item $v) => self::$_mSHULKER_SPAWN_EGG = $v,
 			"silence_armor_trim_smithing_template" => fn(Item $v) => self::$_mSILENCE_ARMOR_TRIM_SMITHING_TEMPLATE = $v,
@@ -1136,6 +1162,7 @@ final class VanillaItems{
 			"stone_hoe" => fn(Hoe $v) => self::$_mSTONE_HOE = $v,
 			"stone_pickaxe" => fn(Pickaxe $v) => self::$_mSTONE_PICKAXE = $v,
 			"stone_shovel" => fn(Shovel $v) => self::$_mSTONE_SHOVEL = $v,
+			"stone_spear" => fn(Spear $v) => self::$_mSTONE_SPEAR = $v,
 			"stone_sword" => fn(Sword $v) => self::$_mSTONE_SWORD = $v,
 			"stray_spawn_egg" => fn(Item $v) => self::$_mSTRAY_SPAWN_EGG = $v,
 			"strider_spawn_egg" => fn(Item $v) => self::$_mSTRIDER_SPAWN_EGG = $v,
@@ -1186,6 +1213,7 @@ final class VanillaItems{
 			"wooden_hoe" => fn(Hoe $v) => self::$_mWOODEN_HOE = $v,
 			"wooden_pickaxe" => fn(Pickaxe $v) => self::$_mWOODEN_PICKAXE = $v,
 			"wooden_shovel" => fn(Shovel $v) => self::$_mWOODEN_SHOVEL = $v,
+			"wooden_spear" => fn(Spear $v) => self::$_mWOODEN_SPEAR = $v,
 			"wooden_sword" => fn(Sword $v) => self::$_mWOODEN_SWORD = $v,
 			"writable_book" => fn(WritableBook $v) => self::$_mWRITABLE_BOOK = $v,
 			"written_book" => fn(WrittenBook $v) => self::$_mWRITTEN_BOOK = $v,
@@ -1299,6 +1327,11 @@ final class VanillaItems{
 	public static function ARMADILLO_SPAWN_EGG() : Item{
 		if(!isset(self::$_mARMADILLO_SPAWN_EGG)){ self::init(); }
 		return clone self::$_mARMADILLO_SPAWN_EGG;
+	}
+
+	public static function ARMOR_STAND() : Item{
+		if(!isset(self::$_mARMOR_STAND)){ self::init(); }
+		return clone self::$_mARMOR_STAND;
 	}
 
 	public static function ARMS_UP_POTTERY_SHERD() : Item{
@@ -1554,6 +1587,11 @@ final class VanillaItems{
 	public static function BROWN_HARNESS() : Harness{
 		if(!isset(self::$_mBROWN_HARNESS)){ self::init(); }
 		return clone self::$_mBROWN_HARNESS;
+	}
+
+	public static function BRUSH() : Brush{
+		if(!isset(self::$_mBRUSH)){ self::init(); }
+		return clone self::$_mBRUSH;
 	}
 
 	public static function BUCKET() : Bucket{
@@ -2006,6 +2044,11 @@ final class VanillaItems{
 		return clone self::$_mCOPPER_SHOVEL;
 	}
 
+	public static function COPPER_SPEAR() : Spear{
+		if(!isset(self::$_mCOPPER_SPEAR)){ self::init(); }
+		return clone self::$_mCOPPER_SPEAR;
+	}
+
 	public static function COPPER_SWORD() : Sword{
 		if(!isset(self::$_mCOPPER_SWORD)){ self::init(); }
 		return clone self::$_mCOPPER_SWORD;
@@ -2044,6 +2087,11 @@ final class VanillaItems{
 	public static function CRIMSON_SIGN() : ItemBlockWallOrFloor{
 		if(!isset(self::$_mCRIMSON_SIGN)){ self::init(); }
 		return clone self::$_mCRIMSON_SIGN;
+	}
+
+	public static function CROSSBOW() : Crossbow{
+		if(!isset(self::$_mCROSSBOW)){ self::init(); }
+		return clone self::$_mCROSSBOW;
 	}
 
 	public static function CYAN_BUNDLE() : Bundle{
@@ -2141,6 +2189,11 @@ final class VanillaItems{
 		return clone self::$_mDIAMOND_SHOVEL;
 	}
 
+	public static function DIAMOND_SPEAR() : Spear{
+		if(!isset(self::$_mDIAMOND_SPEAR)){ self::init(); }
+		return clone self::$_mDIAMOND_SPEAR;
+	}
+
 	public static function DIAMOND_SWORD() : Sword{
 		if(!isset(self::$_mDIAMOND_SWORD)){ self::init(); }
 		return clone self::$_mDIAMOND_SWORD;
@@ -2209,6 +2262,11 @@ final class VanillaItems{
 	public static function EMERALD() : Item{
 		if(!isset(self::$_mEMERALD)){ self::init(); }
 		return clone self::$_mEMERALD;
+	}
+
+	public static function EMPTY_MAP() : Map{
+		if(!isset(self::$_mEMPTY_MAP)){ self::init(); }
+		return clone self::$_mEMPTY_MAP;
 	}
 
 	public static function ENCHANTED_BOOK() : EnchantedBook{
@@ -2284,6 +2342,11 @@ final class VanillaItems{
 	public static function FIELD_MASONED_BANNER_PATTERN() : BannerPattern{
 		if(!isset(self::$_mFIELD_MASONED_BANNER_PATTERN)){ self::init(); }
 		return clone self::$_mFIELD_MASONED_BANNER_PATTERN;
+	}
+
+	public static function FILLED_MAP() : Map{
+		if(!isset(self::$_mFILLED_MAP)){ self::init(); }
+		return clone self::$_mFILLED_MAP;
 	}
 
 	public static function FIREWORK_ROCKET() : FireworkRocket{
@@ -2474,6 +2537,11 @@ final class VanillaItems{
 	public static function GOLDEN_SHOVEL() : Shovel{
 		if(!isset(self::$_mGOLDEN_SHOVEL)){ self::init(); }
 		return clone self::$_mGOLDEN_SHOVEL;
+	}
+
+	public static function GOLDEN_SPEAR() : Spear{
+		if(!isset(self::$_mGOLDEN_SPEAR)){ self::init(); }
+		return clone self::$_mGOLDEN_SPEAR;
 	}
 
 	public static function GOLDEN_SWORD() : Sword{
@@ -2681,6 +2749,11 @@ final class VanillaItems{
 		return clone self::$_mIRON_SHOVEL;
 	}
 
+	public static function IRON_SPEAR() : Spear{
+		if(!isset(self::$_mIRON_SPEAR)){ self::init(); }
+		return clone self::$_mIRON_SPEAR;
+	}
+
 	public static function IRON_SWORD() : Sword{
 		if(!isset(self::$_mIRON_SWORD)){ self::init(); }
 		return clone self::$_mIRON_SWORD;
@@ -2809,6 +2882,11 @@ final class VanillaItems{
 	public static function LODESTONE_COMPASS() : Compass{
 		if(!isset(self::$_mLODESTONE_COMPASS)){ self::init(); }
 		return clone self::$_mLODESTONE_COMPASS;
+	}
+
+	public static function MACE() : Mace{
+		if(!isset(self::$_mMACE)){ self::init(); }
+		return clone self::$_mMACE;
 	}
 
 	public static function MAGENTA_BUNDLE() : Bundle{
@@ -2984,6 +3062,11 @@ final class VanillaItems{
 	public static function NETHERITE_SHOVEL() : Shovel{
 		if(!isset(self::$_mNETHERITE_SHOVEL)){ self::init(); }
 		return clone self::$_mNETHERITE_SHOVEL;
+	}
+
+	public static function NETHERITE_SPEAR() : Spear{
+		if(!isset(self::$_mNETHERITE_SPEAR)){ self::init(); }
+		return clone self::$_mNETHERITE_SPEAR;
 	}
 
 	public static function NETHERITE_SWORD() : Sword{
@@ -3581,6 +3664,11 @@ final class VanillaItems{
 		return clone self::$_mSHELTER_POTTERY_SHERD;
 	}
 
+	public static function SHIELD() : Shield{
+		if(!isset(self::$_mSHIELD)){ self::init(); }
+		return clone self::$_mSHIELD;
+	}
+
 	public static function SHULKER_SHELL() : Item{
 		if(!isset(self::$_mSHULKER_SHELL)){ self::init(); }
 		return clone self::$_mSHULKER_SHELL;
@@ -3739,6 +3827,11 @@ final class VanillaItems{
 	public static function STONE_SHOVEL() : Shovel{
 		if(!isset(self::$_mSTONE_SHOVEL)){ self::init(); }
 		return clone self::$_mSTONE_SHOVEL;
+	}
+
+	public static function STONE_SPEAR() : Spear{
+		if(!isset(self::$_mSTONE_SPEAR)){ self::init(); }
+		return clone self::$_mSTONE_SPEAR;
 	}
 
 	public static function STONE_SWORD() : Sword{
@@ -3989,6 +4082,11 @@ final class VanillaItems{
 	public static function WOODEN_SHOVEL() : Shovel{
 		if(!isset(self::$_mWOODEN_SHOVEL)){ self::init(); }
 		return clone self::$_mWOODEN_SHOVEL;
+	}
+
+	public static function WOODEN_SPEAR() : Spear{
+		if(!isset(self::$_mWOODEN_SPEAR)){ self::init(); }
+		return clone self::$_mWOODEN_SPEAR;
 	}
 
 	public static function WOODEN_SWORD() : Sword{
