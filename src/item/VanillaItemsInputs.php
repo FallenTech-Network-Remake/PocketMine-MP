@@ -97,6 +97,7 @@ final class VanillaItemsInputs extends RegistrySource{
 		self::registerBannerPatterns();
 		self::registerAdditionalEggsAndAnimalItems();
 		self::registerAdditionalUtilityItems();
+		self::registerAdditionalNativeItems();
 
 		//this doesn't use the regular register() because it doesn't have an item typeID
 		//in the future we'll probably want to dissociate this from the air block and make a proper null item
@@ -643,6 +644,29 @@ final class VanillaItemsInputs extends RegistrySource{
 		self::register("tropical_fish_bucket", fn(IID $id) => new MobBucket($id, "Bucket of Tropical Fish"));
 		self::register("warped_fungus_on_a_stick", fn(IID $id) => new WarpedFungusOnAStick($id, "Warped Fungus on a Stick"));
 		self::register("wind_charge", fn(IID $id) => new Item($id, "Wind Charge"));
+	}
+
+	private function registerAdditionalNativeItems() : void{
+		self::register("balloon", fn(IID $id) => new EducationItem($id, "Balloon", 64, 15));
+		self::register("board", fn(IID $id) => new EducationItem($id, "Board", 16, 2));
+		self::register("bolt_armor_trim_smithing_template", fn(IID $id) => new Item($id, "Bolt Armor Trim Smithing Template"));
+		self::register("camera", fn(IID $id) => new EducationItem($id, "Camera", 1));
+		self::register("carrot_on_a_stick", fn(IID $id) => new CarrotOnAStick($id, "Carrot on a Stick"));
+		self::registerDelayed("elytra", fn(string $name) : Elytra => new Elytra(self::makeIID($name), "Elytra", [EnchantmentTags::ELYTRA]));
+		self::register("ender_eye", fn(IID $id) => new Item($id, "Ender Eye"));
+		self::register("flow_armor_trim_smithing_template", fn(IID $id) => new Item($id, "Flow Armor Trim Smithing Template"));
+		self::register("glow_stick", fn(IID $id) => (new EducationItem($id, "Glow Stick", 1, 15))->setVariant(1));
+		self::register("ice_ball", fn(IID $id) => new EducationItem($id, "Ice Ball", 16));
+		self::register("lodestone_compass", fn(IID $id) => new Compass($id, "Lodestone Compass", [EnchantmentTags::COMPASS]));
+		self::register("record_bounce", fn(IID $id) => new Record($id, RecordType::DISK_BOUNCE, "Record Bounce"));
+		self::register("record_tears", fn(IID $id) => new Record($id, RecordType::DISK_TEARS, "Record Tears"));
+		self::register("ominous_bottle", fn(IID $id) => new OminousBottle($id, "Ominous Bottle"));
+		self::register("photo_item", fn(IID $id) => new EducationItem($id, "Photo Item", 64));
+		self::register("portfolio", fn(IID $id) => new EducationItem($id, "Portfolio", 1));
+		self::register("rapid_fertilizer", fn(IID $id) => new EducationItem($id, "Rapid Fertilizer", 64));
+		self::register("saddle", fn(IID $id) => new Saddle($id, "Saddle"));
+		self::register("sparkler", fn(IID $id) => (new EducationItem($id, "Sparkler", 1, 15))->setVariant(1));
+		self::register("sulfur_cube_bucket", fn(IID $id) => new MobBucket($id, "Bucket of Sulfur Cube"));
 	}
 
 }

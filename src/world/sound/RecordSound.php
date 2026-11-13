@@ -40,6 +40,8 @@ class RecordSound implements Sound{
 	public function encode(Vector3 $pos) : array{
 		return [
 			PlaySoundPacket::create(match ($this->recordType) {
+				RecordType::DISK_BOUNCE => LevelSoundEvent::RECORD_BOUNCE,
+				RecordType::DISK_TEARS => LevelSoundEvent::RECORD_TEARS,
 				RecordType::DISK_13 => LevelSoundEvent::RECORD_13,
 				RecordType::DISK_5 => LevelSoundEvent::RECORD_5,
 				RecordType::DISK_CAT => LevelSoundEvent::RECORD_CAT,

@@ -571,7 +571,28 @@ final class ItemTypeIds{
 	public const WARPED_FUNGUS_ON_A_STICK = 20526;
 	public const WIND_CHARGE = 20527;
 
-	public const FIRST_UNUSED_ITEM_ID = 20528;
+	public const BALLOON = 20528;
+	public const BOARD = 20529;
+	public const BOLT_ARMOR_TRIM_SMITHING_TEMPLATE = 20530;
+	public const CAMERA = 20531;
+	public const CARROT_ON_A_STICK = 20532;
+	public const ELYTRA = 20533;
+	public const ENDER_EYE = 20534;
+	public const FLOW_ARMOR_TRIM_SMITHING_TEMPLATE = 20535;
+	public const GLOW_STICK = 20536;
+	public const ICE_BALL = 20537;
+	public const LODESTONE_COMPASS = 20538;
+	public const RECORD_BOUNCE = 20539;
+	public const RECORD_TEARS = 20540;
+	public const OMINOUS_BOTTLE = 20541;
+	public const PHOTO_ITEM = 20542;
+	public const PORTFOLIO = 20543;
+	public const RAPID_FERTILIZER = 20544;
+	public const SADDLE = 20545;
+	public const SPARKLER = 20546;
+	public const SULFUR_CUBE_BUCKET = 20547;
+
+	public const FIRST_UNUSED_ITEM_ID = 20548;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 

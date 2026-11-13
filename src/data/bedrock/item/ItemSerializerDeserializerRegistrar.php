@@ -40,10 +40,12 @@ use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\SuspiciousStewTypeIdMap;
 use pocketmine\item\Banner;
 use pocketmine\item\Dye;
+use pocketmine\item\EducationItem;
 use pocketmine\item\FireworkStar;
 use pocketmine\item\GoatHorn;
 use pocketmine\item\Item;
 use pocketmine\item\Medicine;
+use pocketmine\item\OminousBottle;
 use pocketmine\item\Potion;
 use pocketmine\item\SplashPotion;
 use pocketmine\item\SuspiciousStew;
@@ -171,6 +173,21 @@ final class ItemSerializerDeserializerRegistrar{
 	 * Registers mappings for item IDs which directly correspond to PocketMine-MP items.
 	 */
 	private function register1to1ItemMappings() : void{
+		$this->map1to1Item(Ids::BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, Items::BOLT_ARMOR_TRIM_SMITHING_TEMPLATE());
+		$this->map1to1Item(Ids::CAMERA, Items::CAMERA());
+		$this->map1to1Item(Ids::CARROT_ON_A_STICK, Items::CARROT_ON_A_STICK());
+		$this->map1to1Item(Ids::ELYTRA, Items::ELYTRA());
+		$this->map1to1Item(Ids::ENDER_EYE, Items::ENDER_EYE());
+		$this->map1to1Item(Ids::FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, Items::FLOW_ARMOR_TRIM_SMITHING_TEMPLATE());
+		$this->map1to1Item(Ids::ICE_BALL, Items::ICE_BALL());
+		$this->map1to1Item(Ids::LODESTONE_COMPASS, Items::LODESTONE_COMPASS());
+		$this->map1to1Item(Ids::MUSIC_DISC_BOUNCE, Items::RECORD_BOUNCE());
+		$this->map1to1Item(Ids::MUSIC_DISC_TEARS, Items::RECORD_TEARS());
+		$this->map1to1Item(Ids::PHOTO_ITEM, Items::PHOTO_ITEM());
+		$this->map1to1Item(Ids::PORTFOLIO, Items::PORTFOLIO());
+		$this->map1to1Item(Ids::RAPID_FERTILIZER, Items::RAPID_FERTILIZER());
+		$this->map1to1Item(Ids::SADDLE, Items::SADDLE());
+		$this->map1to1Item(Ids::SULFUR_CUBE_BUCKET, Items::SULFUR_CUBE_BUCKET());
 		$this->map1to1Item(Ids::AXOLOTL_BUCKET, Items::AXOLOTL_BUCKET());
 		$this->map1to1Item(Ids::CHEST_MINECART, Items::CHEST_MINECART());
 		$this->map1to1Item(Ids::COD_BUCKET, Items::COD_BUCKET());
@@ -723,6 +740,62 @@ final class ItemSerializerDeserializerRegistrar{
 	 * in a unified manner.
 	 */
 	private function register1to1ItemWithMetaMappings() : void{
+		$this->map1to1ItemWithMeta(
+			Ids::OMINOUS_BOTTLE,
+			Items::OMINOUS_BOTTLE(),
+			function(OminousBottle $item, int $meta) : void{
+				if($meta < 0 || $meta > 4){
+					throw new ItemTypeDeserializeException("Invalid ominous_bottle metadata: $meta");
+				}
+				$item->setAmplifier($meta);
+			},
+			fn(OminousBottle $item) => $item->getAmplifier()
+		);
+		$this->map1to1ItemWithMeta(
+			Ids::GLOW_STICK,
+			Items::GLOW_STICK(),
+			function(EducationItem $item, int $meta) : void{
+				if($meta < 0 || $meta > 15){
+					throw new ItemTypeDeserializeException("Invalid glow_stick metadata: $meta");
+				}
+				$item->setVariant($meta);
+			},
+			fn(EducationItem $item) => $item->getVariant()
+		);
+		$this->map1to1ItemWithMeta(
+			Ids::SPARKLER,
+			Items::SPARKLER(),
+			function(EducationItem $item, int $meta) : void{
+				if($meta < 0 || $meta > 15){
+					throw new ItemTypeDeserializeException("Invalid sparkler metadata: $meta");
+				}
+				$item->setVariant($meta);
+			},
+			fn(EducationItem $item) => $item->getVariant()
+		);
+		$this->map1to1ItemWithMeta(
+			Ids::BOARD,
+			Items::BOARD(),
+			function(EducationItem $item, int $meta) : void{
+				if($meta < 0 || $meta > 2){
+					throw new ItemTypeDeserializeException("Invalid board metadata: $meta");
+				}
+				$item->setVariant($meta);
+			},
+			fn(EducationItem $item) => $item->getVariant()
+		);
+		$this->map1to1ItemWithMeta(
+			Ids::BALLOON,
+			Items::BALLOON(),
+			function(EducationItem $item, int $meta) : void{
+				if($meta < 0 || $meta > 15){
+					throw new ItemTypeDeserializeException("Invalid balloon metadata: $meta");
+				}
+				$item->setVariant($meta);
+			},
+			fn(EducationItem $item) => $item->getVariant()
+		);
+
 		$this->map1to1ItemWithMeta(
 			Ids::FIREWORK_STAR,
 			Items::FIREWORK_STAR(),

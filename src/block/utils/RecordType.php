@@ -32,6 +32,8 @@ use function spl_object_id;
  * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
  *  These are retained for backwards compatibility only.
  *
+ * @method static RecordType DISK_BOUNCE()
+ * @method static RecordType DISK_TEARS()
  * @method static RecordType DISK_11()
  * @method static RecordType DISK_13()
  * @method static RecordType DISK_5()
@@ -73,6 +75,8 @@ enum RecordType{
 	case DISK_WARD;
 	case DISK_11;
 	case DISK_WAIT;
+	case DISK_BOUNCE;
+	case DISK_TEARS;
 
 	/**
 	 * @phpstan-return TMetadata
@@ -82,6 +86,8 @@ enum RecordType{
 		static $cache = [];
 
 		return $cache[spl_object_id($this)] ??= match($this){
+			self::DISK_BOUNCE => ["Bounce", new Translatable("item.record_bounce.desc")],
+			self::DISK_TEARS => ["Tears", new Translatable("item.record_tears.desc")],
 			self::DISK_13 => ["C418 - 13", KnownTranslationFactory::item_record_13_desc()],
 			self::DISK_5 => ["Samuel Åberg - 5", KnownTranslationFactory::item_record_5_desc()],
 			self::DISK_CAT => ["C418 - cat", KnownTranslationFactory::item_record_cat_desc()],
