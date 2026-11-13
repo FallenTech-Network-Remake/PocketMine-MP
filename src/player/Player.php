@@ -44,6 +44,7 @@ use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
 use pocketmine\entity\NeverSavedWithChunkEntity;
+use pocketmine\entity\object\Cushion;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
@@ -130,6 +131,7 @@ use pocketmine\ServerProperties;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
+use pocketmine\utils\Utils;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
 use pocketmine\world\ChunkLoader;
@@ -578,6 +580,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	public function spawnTo(Player $player) : void{
 		if($this->isAlive() && $player->isAlive() && $player->canSee($this) && !$this->isSpectator()){
 			parent::spawnTo($player);
+			Cushion::getSeatFor($this)?->sendLink($player);
 		}
 	}
 
@@ -1382,6 +1385,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	}
 
 	private function actuallyHandleMovement(Vector3 $newPos) : void{
+		if(Cushion::getSeatFor($this) !== null){
+			return;
+		}
+
 		$this->moveRateLimit--;
 		if($this->moveRateLimit < 0){
 			return;
@@ -1492,11 +1499,19 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	}
 
 	public function jump() : void{
+		if(Cushion::getSeatFor($this) !== null){
+			return;
+		}
+
 		(new PlayerJumpEvent($this))->call();
 		parent::jump();
 	}
 
 	public function setMotion(Vector3 $motion) : bool{
+		if(Cushion::getSeatFor($this) !== null && $motion->lengthSquared() > 0){
+			return false;
+		}
+
 		if(parent::setMotion($motion)){
 			$this->broadcastMotion();
 			$this->getNetworkSession()->sendDataPacket(SetActorMotionPacket::create($this->id, $motion, tick: 0));
@@ -1540,7 +1555,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			Timings::$playerMove->startTiming();
 			$this->processMostRecentMovements();
 			$this->motion = Vector3::zero(); //TODO: HACK! (Fixes player knockback being messed up)
-			if($this->onGround){
+			if($this->onGround || Cushion::getSeatFor($this) !== null){
 				$this->inAirTicks = 0;
 			}else{
 				$this->inAirTicks += $tickDiff;
@@ -2111,6 +2126,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	}
 
 	public function toggleSneak(bool $sneak, bool $sneakPressed = true) : bool{
+		if($sneakPressed && ($seat = Cushion::getSeatFor($this)) !== null){
+			$seat->dismount();
+		}
+
 		if($sneak === $this->sneaking && $sneakPressed === $this->sneakPressed){
 			return true;
 		}
@@ -2452,6 +2471,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	}
 
 	protected function onDispose() : void{
+		Cushion::getSeatFor($this)?->dismount(false);
 		$this->disconnect("Player destroyed");
 		$this->cursorInventory->removeAllViewers();
 		$this->craftingGrid->removeAllViewers();
@@ -2527,6 +2547,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	}
 
 	protected function onDeath() : void{
+		Cushion::getSeatFor($this)?->dismount(false);
 		//Crafting grid must always be evacuated even if keep-inventory is true. This dumps the contents into the
 		//main inventory and drops the rest on the ground.
 		$this->removeCurrentWindow();
@@ -2718,6 +2739,32 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		parent::broadcastSound($sound, $targets);
 	}
 
+	public function getOffsetPosition(Vector3 $vector3) : Vector3{
+		if(Cushion::getSeatFor($this) !== null){
+			return $vector3->add(0, $this->getEyeHeight() * Cushion::SEATED_EYE_HEIGHT_FACTOR, 0);
+		}
+		return parent::getOffsetPosition($vector3);
+	}
+
+	/**
+	 * @internal Moves between a cushion and its nearby exit without triggering world teleport rules.
+	 */
+	public function repositionForCushion(Cushion $cushion, Vector3 $pos) : bool{
+		Utils::checkVector3NotInfOrNaN($pos);
+		if($cushion->getWorld() !== $this->getWorld() || ($pos instanceof Position && $pos->getWorld() !== $this->getWorld()) ||
+			$pos->distanceSquared($cushion->getPosition()) > 4 || !$this->getWorld()->isInLoadedTerrain($pos) || !$this->setPosition($pos)){
+			return false;
+		}
+		$this->motion = Vector3::zero();
+		$this->ySize = 0;
+		$this->resetFallDistance();
+		$this->blockBreakHandler = null;
+		$this->resetLastMovements();
+		$this->sendPosition($this->location, mode: MovePlayerPacket::MODE_RESET);
+		$this->broadcastMovement(true);
+		return true;
+	}
+
 	/**
 	 * TODO: remove this
 	 */
@@ -2729,6 +2776,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 
 	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null) : bool{
 		if(parent::teleport($pos, $yaw, $pitch)){
+			Cushion::getSeatFor($this)?->dismount(false);
 
 			$this->removeCurrentWindow();
 			$this->stopSleep();

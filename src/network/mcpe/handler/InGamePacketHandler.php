@@ -29,6 +29,7 @@ use pocketmine\block\tile\Sign;
 use pocketmine\block\utils\SignText;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\InvalidSkinException;
+use pocketmine\entity\object\Cushion;
 use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
@@ -645,6 +646,14 @@ class InGamePacketHandler extends PacketHandler{
 			//the inventory was closed when it wasn't.
 			//this is also sent whenever entity metadata updates, which can get really spammy.
 			//TODO: implement handling for this where it matters
+			return true;
+		}
+		if($packet->action === InteractPacket::ACTION_LEAVE_VEHICLE){
+			$seat = Cushion::getSeatFor($this->player);
+			if($seat === null || (!in_array($packet->targetActorRuntimeId, [0, $seat->getId(), $this->player->getId()], true))){
+				return false;
+			}
+			$seat->dismount();
 			return true;
 		}
 		$target = $this->player->getWorld()->getEntity($packet->targetActorRuntimeId);

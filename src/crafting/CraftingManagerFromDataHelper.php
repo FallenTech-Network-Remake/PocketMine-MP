@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
+use pocketmine\block\utils\DyeColor;
 use pocketmine\crafting\json\ItemStackData;
 use pocketmine\crafting\json\PotionContainerChangeRecipeData;
 use pocketmine\crafting\json\PotionTypeRecipeData;
@@ -36,9 +37,11 @@ use pocketmine\data\bedrock\item\SavedItemData;
 use pocketmine\data\bedrock\item\SavedItemStackData;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
+use pocketmine\item\Cushion;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
 use pocketmine\item\StringToItemParser;
+use pocketmine\item\VanillaItems;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
@@ -51,6 +54,7 @@ use function get_debug_type;
 use function is_array;
 use function is_object;
 use function json_decode;
+use function strtolower;
 
 final class CraftingManagerFromDataHelper{
 
@@ -330,6 +334,16 @@ final class CraftingManagerFromDataHelper{
 				$ingredient,
 				$outputId
 			));
+		}
+
+		// The bundled data contains slab recipes but omits the vanilla cushion recoloring recipes.
+		foreach(DyeColor::cases() as $resultColor){
+			foreach(DyeColor::cases() as $inputColor){
+				$result->registerShapelessRecipe(new ShapelessRecipe([
+					new MetaWildcardRecipeIngredient("minecraft:" . strtolower($inputColor->name) . "_cushion"),
+					new ExactRecipeIngredient(VanillaItems::DYE()->setColor($resultColor))
+				], [Cushion::forColor($resultColor)], ShapelessRecipeType::CRAFTING));
+			}
 		}
 
 		//TODO: smithing

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\utils\BannerPatternType;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\RecordType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\entity\Entity;
@@ -98,6 +99,9 @@ final class VanillaItemsInputs extends RegistrySource{
 		self::registerAdditionalEggsAndAnimalItems();
 		self::registerAdditionalUtilityItems();
 		self::registerAdditionalNativeItems();
+		foreach(DyeColor::cases() as $color){
+			self::register(strtolower($color->name) . "_cushion", fn(IID $id) => new Cushion($id, $color->getDisplayName() . " Cushion", $color));
+		}
 
 		//this doesn't use the regular register() because it doesn't have an item typeID
 		//in the future we'll probably want to dissociate this from the air block and make a proper null item

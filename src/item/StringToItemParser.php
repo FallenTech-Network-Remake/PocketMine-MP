@@ -1397,6 +1397,22 @@ final class StringToItemParser extends StringToTParser{
 
 	private static function registerItems(self $result) : void{
 
+		$result->register("white_cushion", fn() => Items::WHITE_CUSHION());
+		$result->register("orange_cushion", fn() => Items::ORANGE_CUSHION());
+		$result->register("magenta_cushion", fn() => Items::MAGENTA_CUSHION());
+		$result->register("light_blue_cushion", fn() => Items::LIGHT_BLUE_CUSHION());
+		$result->register("yellow_cushion", fn() => Items::YELLOW_CUSHION());
+		$result->register("lime_cushion", fn() => Items::LIME_CUSHION());
+		$result->register("pink_cushion", fn() => Items::PINK_CUSHION());
+		$result->register("gray_cushion", fn() => Items::GRAY_CUSHION());
+		$result->register("light_gray_cushion", fn() => Items::LIGHT_GRAY_CUSHION());
+		$result->register("cyan_cushion", fn() => Items::CYAN_CUSHION());
+		$result->register("purple_cushion", fn() => Items::PURPLE_CUSHION());
+		$result->register("blue_cushion", fn() => Items::BLUE_CUSHION());
+		$result->register("brown_cushion", fn() => Items::BROWN_CUSHION());
+		$result->register("green_cushion", fn() => Items::GREEN_CUSHION());
+		$result->register("red_cushion", fn() => Items::RED_CUSHION());
+		$result->register("black_cushion", fn() => Items::BLACK_CUSHION());
 		$result->register("balloon", fn() => Items::BALLOON());
 		$result->register("board", fn() => Items::BOARD());
 		$result->register("bolt_armor_trim_smithing_template", fn() => Items::BOLT_ARMOR_TRIM_SMITHING_TEMPLATE());

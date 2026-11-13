@@ -28,6 +28,7 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
+use pocketmine\entity\object\Cushion;
 use pocketmine\entity\object\EndCrystal;
 use pocketmine\event\entity\EntityCombustByEntityEvent;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
@@ -94,7 +95,7 @@ abstract class Projectile extends Entity{
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
-		return ($entity instanceof Living || $entity instanceof EndCrystal) && !$this->onGround;
+		return ($entity instanceof Living || $entity instanceof EndCrystal || $entity instanceof Cushion) && !$this->onGround;
 	}
 
 	public function canBeCollidedWith() : bool{

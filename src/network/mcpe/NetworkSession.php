@@ -1105,7 +1105,7 @@ class NetworkSession{
 				$yaw, //TODO: head yaw
 				$mode,
 				$this->player->onGround,
-				0, //TODO: riding entity ID
+				\pocketmine\entity\object\Cushion::getSeatFor($this->player)?->getId() ?? 0,
 				0 //TODO: tick
 			));
 

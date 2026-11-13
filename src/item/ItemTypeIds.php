@@ -592,7 +592,24 @@ final class ItemTypeIds{
 	public const SPARKLER = 20546;
 	public const SULFUR_CUBE_BUCKET = 20547;
 
-	public const FIRST_UNUSED_ITEM_ID = 20548;
+	public const WHITE_CUSHION = 20548;
+	public const ORANGE_CUSHION = 20549;
+	public const MAGENTA_CUSHION = 20550;
+	public const LIGHT_BLUE_CUSHION = 20551;
+	public const YELLOW_CUSHION = 20552;
+	public const LIME_CUSHION = 20553;
+	public const PINK_CUSHION = 20554;
+	public const GRAY_CUSHION = 20555;
+	public const LIGHT_GRAY_CUSHION = 20556;
+	public const CYAN_CUSHION = 20557;
+	public const PURPLE_CUSHION = 20558;
+	public const BLUE_CUSHION = 20559;
+	public const BROWN_CUSHION = 20560;
+	public const GREEN_CUSHION = 20561;
+	public const RED_CUSHION = 20562;
+	public const BLACK_CUSHION = 20563;
+
+	public const FIRST_UNUSED_ITEM_ID = 20564;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 
