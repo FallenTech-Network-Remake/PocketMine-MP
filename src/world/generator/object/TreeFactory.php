@@ -48,6 +48,7 @@ final class TreeFactory{
 			TreeType::MEGA_JUNGLE => new JungleTree(mega: true),
 			TreeType::JUNGLE_BUSH => new JungleTree(bush: true),
 			TreeType::ACACIA => new AcaciaTree(),
+			TreeType::DARK_OAK => new DarkOakTree(),
 			TreeType::BIRCH => new BirchTree($random->nextBoundedInt(39) === 0),
 			TreeType::TALL_BIRCH => new BirchTree(true),
 			TreeType::AZALEA => new AzaleaTree(),
