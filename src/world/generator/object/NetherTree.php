@@ -23,8 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\object;
 
+use pocketmine\block\Air;
 use pocketmine\block\Block;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\BlockTypeTags;
+use pocketmine\block\Fire;
+use pocketmine\block\Liquid;
 use pocketmine\block\NetherVines;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
@@ -47,7 +51,26 @@ class NetherTree extends Tree{
 	}
 
 	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
-		return true;
+		if(!$this->isAvailable($world, $x, $y - 1, $z) || !$this->isAvailable($world, $x, $y + $this->treeHeight, $z)) return false;
+		$nylium = $this->trunkBlock->getTypeId() === BlockTypeIds::CRIMSON_STEM ? BlockTypeIds::CRIMSON_NYLIUM : BlockTypeIds::WARPED_NYLIUM;
+		return $world->getBlockAt($x, $y - 1, $z)->getTypeId() === $nylium && $this->canOverride($world->getBlockAt($x, $y, $z));
+	}
+
+	public function getBlockTransaction(ChunkManager $world, int $x, int $y, int $z, Random $random) : ?BlockTransaction{
+		$this->beginPlacement($world);
+		$tx = parent::getBlockTransaction($world, $x, $y, $z, $random);
+		if($tx === null) return null;
+		// Include unchanged nylium so event-time substrate changes invalidate the whole growth.
+		$tx->addBlockAt($x, $y - 1, $z, $world->getBlockAt($x, $y - 1, $z));
+		return $this->finishTransaction($world, $tx);
+	}
+
+	private function canPlaceAt(BlockTransaction $transaction, int $x, int $y, int $z) : bool{
+		if(!$this->isAvailable($this->placementWorld, $x, $y, $z)){
+			$this->placementFailed = true;
+			return false;
+		}
+		return $this->canOverride($transaction->fetchBlockAt($x, $y, $z));
 	}
 
 	protected function placeTrunk(int $x, int $y, int $z, Random $random, int $trunkHeight, BlockTransaction $transaction) : void{
@@ -62,7 +85,7 @@ class NetherTree extends Tree{
 					$blockY = $y + $l;
 					$blockZ = $z + $k;
 
-					if((!$isCorner || $random->nextFloat() < 0.1) && $this->canOverride($transaction->fetchBlockAt($blockX, $blockY, $blockZ))){
+					if((!$isCorner || $random->nextFloat() < 0.1) && $this->canPlaceAt($transaction, $blockX, $blockY, $blockZ)){
 						$transaction->addBlockAt($blockX, $blockY, $blockZ, $this->trunkBlock);
 					}
 				}
@@ -98,7 +121,7 @@ class NetherTree extends Tree{
 					$blockY = $y + $k;
 					$blockZ = $z + $j1;
 
-					if($this->canOverride($transaction->fetchBlockAt($blockX, $blockY, $blockZ))){
+					if($this->canPlaceAt($transaction, $blockX, $blockY, $blockZ)){
 						if($isLowerSection){
 							if(!$isInner){
 								$this->placeHatDropBlock($blockX, $blockY, $blockZ, $random, $transaction, $isCrimson);
@@ -142,7 +165,7 @@ class NetherTree extends Tree{
 	protected function tryPlaceWeepingVines(int $x, int $y, int $z, Random $random, BlockTransaction $transaction) : void{
 		$currentY = $y - 1;
 
-		if($this->canOverride($transaction->fetchBlockAt($x, $currentY, $z))){
+		if($this->canPlaceAt($transaction, $x, $currentY, $z)){
 			$i = $random->nextBoundedInt(5) + 1;
 			if($random->nextBoundedInt(7) === 0){
 				$i *= 2;
@@ -153,11 +176,11 @@ class NetherTree extends Tree{
 
 			for($v = 0; $v < $i; ++$v){
 				$vy = $currentY - $v;
-				if($vy < 0){
+				if($vy < $this->placementWorld->getMinY()){
 					break;
 				}
 
-				if($this->canOverride($transaction->fetchBlockAt($x, $vy, $z))){
+				if($this->canPlaceAt($transaction, $x, $vy, $z)){
 					$vineAge = min($maxAge, $startAge + $v);
 					$transaction->addBlockAt($x, $vy, $z, VanillaBlocks::WEEPING_VINES()->setAge($vineAge));
 				}else{
@@ -168,7 +191,7 @@ class NetherTree extends Tree{
 	}
 
 	protected function canOverride(Block $block) : bool{
-		return $block->canBeReplaced() || $block->hasTypeTag(BlockTypeTags::HUGE_FUNGUS_REPLACEABLE);
+		return $block instanceof Air || (!$block instanceof Liquid && !$block instanceof Fire && ($block->canBeReplaced() || $block->hasTypeTag(BlockTypeTags::HUGE_FUNGUS_REPLACEABLE)));
 	}
 
 	protected function generateTrunkHeight(Random $random) : int{

@@ -26,6 +26,7 @@ namespace pocketmine\world\generator\populator;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\BlockTypeTags;
 use pocketmine\block\MossBlock;
+use pocketmine\block\NetherFungus;
 use pocketmine\block\Water;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
@@ -75,14 +76,16 @@ class Tree implements Populator{
 		}
 		$waterDepth = 0;
 		$mangrove = $this->type === TreeType::MANGROVE || $this->type === TreeType::TALL_MANGROVE;
-		$minY = $this->type === TreeType::SWAMP_OAK || $mangrove ? $world->getMinY() : 0;
+		$netherSoil = $this->type === TreeType::CRIMSON ? BlockTypeIds::CRIMSON_NYLIUM : null;
+		$minY = $this->type === TreeType::SWAMP_OAK || $mangrove || $netherSoil !== null ? $world->getMinY() : 0;
 		for($y = $highestBlock; $y >= $minY; --$y){
 			$b = $world->getBlockAt($x, $y, $z);
 			if(($this->type === TreeType::SWAMP_OAK || $mangrove) && $b instanceof Water){
 				if(++$waterDepth > ($mangrove ? 8 : 1)) return -1;
 				continue;
 			}
-			if($b->hasTypeTag(BlockTypeTags::DIRT) || $b->hasTypeTag(BlockTypeTags::MUD) || ($mangrove && ($b instanceof MossBlock || $b->getTypeId() === BlockTypeIds::CLAY))){
+			if($netherSoil !== null && $b instanceof NetherFungus) continue;
+			if($b->getTypeId() === $netherSoil || $b->hasTypeTag(BlockTypeTags::DIRT) || $b->hasTypeTag(BlockTypeTags::MUD) || ($mangrove && ($b instanceof MossBlock || $b->getTypeId() === BlockTypeIds::CLAY))){
 				return $y + 1;
 			}elseif($b->getTypeId() !== BlockTypeIds::AIR && $b->getTypeId() !== BlockTypeIds::SNOW_LAYER){
 				return -1;
