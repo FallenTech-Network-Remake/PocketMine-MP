@@ -26,11 +26,16 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\Random;
+use pocketmine\world\generator\object\TreeFactory;
+use pocketmine\world\generator\object\TreeType;
+use function mt_rand;
 
 class MangrovePropagule extends Flowable{
 	use StaticSupportTrait;
@@ -78,7 +83,33 @@ class MangrovePropagule extends Flowable{
 			$item->pop();
 			return true;
 		}
+		if(!$this->hanging && $item instanceof Fertilizer && $this->grow($player)){
+			$item->pop();
+			return true;
+		}
 		return false;
+	}
+
+	public function ticksRandomly() : bool{ return true; }
+
+	public function onRandomTick() : void{
+		if(mt_rand(1, 7) !== 1) return;
+		if($this->hanging){
+			if($this->age < self::MAX_AGE) BlockEventHelper::grow($this, (clone $this)->setAge($this->age + 1), null);
+		}elseif($this->position->getWorld()->getFullLightAt($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) >= 8){
+			$this->grow(null);
+		}
+	}
+
+	private function grow(?Player $player) : bool{
+		$random = new Random(mt_rand());
+		$tree = TreeFactory::get($random, TreeType::MANGROVE);
+		$pos = $this->position;
+		$tx = $tree?->getBlockTransaction($pos->getWorld(), $pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), $random);
+		if($tx === null) return false;
+		$event = new StructureGrowEvent($this, $tx, $player);
+		$event->call();
+		return !$event->isCancelled() && $tx->apply();
 	}
 
 	public function getFuelTime() : int{
