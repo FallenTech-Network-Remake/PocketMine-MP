@@ -46,6 +46,7 @@ final class TreeFactory{
 			TreeType::JUNGLE => new JungleTree(),
 			TreeType::ACACIA => new AcaciaTree(),
 			TreeType::BIRCH => new BirchTree($random->nextBoundedInt(39) === 0),
+			TreeType::TALL_BIRCH => new BirchTree(true),
 			TreeType::AZALEA => new AzaleaTree(),
 			TreeType::CRIMSON => new NetherTree(VanillaBlocks::CRIMSON_STEM(), VanillaBlocks::NETHER_WART_BLOCK(), VanillaBlocks::SHROOMLIGHT(), ($random->nextBoundedInt(9) + 4) * ($random->nextBoundedInt(12) === 0 ? 2 : 1), hasVines: true, huge: $random->nextFloat() < 0.06),
 			TreeType::WARPED => new NetherTree(VanillaBlocks::WARPED_STEM(), VanillaBlocks::WARPED_WART_BLOCK(), VanillaBlocks::SHROOMLIGHT(), ($random->nextBoundedInt(9) + 4) * ($random->nextBoundedInt(12) === 0 ? 2 : 1), hasVines: false, huge: $random->nextFloat() < 0.06),
@@ -62,6 +63,9 @@ final class TreeFactory{
 			return MegaConiferTree::findSaplingSquare($world, $x, $y, $z) !== null
 				? new MegaConiferTree($random->nextBoundedInt(2) === 0)
 				: new SpruceTree();
+		}
+		if($type === TreeType::BIRCH){
+			return new BirchTree();
 		}
 		return self::get($random, $type);
 	}

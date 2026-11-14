@@ -28,15 +28,19 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\BlockTypeTags;
 use pocketmine\block\Farmland;
+use pocketmine\block\Fire;
 use pocketmine\block\Leaves;
+use pocketmine\block\Liquid;
 use pocketmine\block\MossBlock;
 use pocketmine\block\Sapling;
+use pocketmine\block\utils\PillarRotation;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 use function abs;
+use function min;
 
 abstract class Tree{
 	protected bool $placementFailed = false;
@@ -168,4 +172,40 @@ abstract class Tree{
 	protected function canReplaceLeaf(Block $block) : bool{
 		return $block instanceof Air || $block instanceof Leaves;
 	}
+
+	protected function beginPlacement(ChunkManager $world) : void{
+		$this->placementWorld = $world;
+		$this->placementFailed = false;
+	}
+
+	protected function canReplaceForTree(Block $block) : bool{
+		return $block instanceof Air || $block instanceof Leaves || $block instanceof Sapling
+			|| ($block->canBeReplaced() && !$block instanceof Liquid && !$block instanceof Fire);
+	}
+
+	protected function placeLog(BlockTransaction $transaction, int $x, int $y, int $z, ?int $axis = null) : void{
+		if(!$this->isAvailable($this->placementWorld, $x, $y, $z)
+			|| !$this->canOverride($this->placementWorld->getBlockAt($x, $y, $z))){
+			$this->placementFailed = true;
+			return;
+		}
+		$log = clone $this->trunkBlock;
+		if($axis !== null && $log instanceof PillarRotation){
+			$log->setAxis($axis);
+		}
+		$transaction->addBlockAt($x, $y, $z, $log);
+	}
+
+	protected function placeLeafLayer(BlockTransaction $transaction, int $x, int $y, int $z, int $radius, bool $wide = false) : void{
+		for($dx = -$radius; $dx <= $radius + ($wide ? 1 : 0); ++$dx){
+			for($dz = -$radius; $dz <= $radius + ($wide ? 1 : 0); ++$dz){
+				$nx = $wide ? min(abs($dx), abs($dx - 1)) : abs($dx);
+				$nz = $wide ? min(abs($dz), abs($dz - 1)) : abs($dz);
+				if($nx * $nx + $nz * $nz <= $radius * $radius + $radius){
+					$this->placeLeaf($transaction, $x + $dx, $y, $z + $dz);
+				}
+			}
+		}
+	}
+
 }
