@@ -208,4 +208,26 @@ abstract class Tree{
 		}
 	}
 
+	public static function findSaplingSquareForType(ChunkManager $world, int $x, int $y, int $z, int $saplingTypeId) : ?\pocketmine\math\Vector3{
+		for($dx = 0; $dx >= -1; --$dx){
+			for($dz = 0; $dz >= -1; --$dz){
+				$complete = true;
+				for($sx = 0; $sx < 2; ++$sx){
+					for($sz = 0; $sz < 2; ++$sz){
+						$xx = $x + $dx + $sx;
+						$zz = $z + $dz + $sz;
+						if(!$world->isInWorld($xx, $y, $zz) || $world->getChunk($xx >> Chunk::COORD_BIT_SIZE, $zz >> Chunk::COORD_BIT_SIZE) === null
+							|| $world->getBlockAt($xx, $y, $zz)->getTypeId() !== $saplingTypeId){
+							$complete = false;
+						}
+					}
+				}
+				if($complete){
+					return new \pocketmine\math\Vector3($x + $dx, $y, $z + $dz);
+				}
+			}
+		}
+		return null;
+	}
+
 }

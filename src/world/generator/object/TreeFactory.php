@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\object;
 
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
@@ -44,6 +45,8 @@ final class TreeFactory{
 			TreeType::MEGA_SPRUCE => new MegaConiferTree(),
 			TreeType::MEGA_PINE => new MegaConiferTree(true),
 			TreeType::JUNGLE => new JungleTree(),
+			TreeType::MEGA_JUNGLE => new JungleTree(mega: true),
+			TreeType::JUNGLE_BUSH => new JungleTree(bush: true),
 			TreeType::ACACIA => new AcaciaTree(),
 			TreeType::BIRCH => new BirchTree($random->nextBoundedInt(39) === 0),
 			TreeType::TALL_BIRCH => new BirchTree(true),
@@ -63,6 +66,9 @@ final class TreeFactory{
 			return MegaConiferTree::findSaplingSquare($world, $x, $y, $z) !== null
 				? new MegaConiferTree($random->nextBoundedInt(2) === 0)
 				: new SpruceTree();
+		}
+		if($type === TreeType::JUNGLE){
+			return new JungleTree(mega: Tree::findSaplingSquareForType($world, $x, $y, $z, BlockTypeIds::JUNGLE_SAPLING) !== null, decorated: false);
 		}
 		if($type === TreeType::BIRCH){
 			return new BirchTree();
