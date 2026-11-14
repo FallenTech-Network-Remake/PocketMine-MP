@@ -78,9 +78,8 @@ class Azalea extends Flowable{
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{
-		//TODO: Moss block
 		$supportBlock = $block->getSide(Facing::DOWN);
-		return $supportBlock->getTypeId() === BlockTypeIds::CLAY ||
+		return $supportBlock instanceof MossBlock || $supportBlock->getTypeId() === BlockTypeIds::CLAY ||
 			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
 			$supportBlock->hasTypeTag(BlockTypeTags::MUD);
 	}

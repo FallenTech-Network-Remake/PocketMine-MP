@@ -27,12 +27,12 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\utils\DirtType;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\block\Water;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\ChunkManager;
-use pocketmine\world\World;
 use function count;
 use function max;
 use function min;
@@ -56,7 +56,9 @@ final class AzaleaTree extends Tree{
 	public function getBlockTransaction(ChunkManager $world, int $x, int $y, int $z, Random $random) : ?BlockTransaction{
 		$this->treeHeight = $random->nextBoundedInt(self::TREE_HEIGHT_RANDOM) + self::TREE_HEIGHT_BASE;
 		$this->foliageAttachments = [];
-		return parent::getBlockTransaction($world, $x, $y, $z, $random);
+		$this->beginPlacement($world);
+		$tx = parent::getBlockTransaction($world, $x, $y, $z, $random);
+		return $tx === null ? null : $this->finishTransaction($world, $tx);
 	}
 
 	protected function generateTrunkHeight(Random $random) : int{
@@ -87,9 +89,7 @@ final class AzaleaTree extends Tree{
 				$cz += Facing::OFFSET[$direction][2];
 			}
 
-			if($this->canOverride($transaction->fetchBlockAt($cx, $cy, $cz))){
-				$transaction->addBlockAt($cx, $cy, $cz, $this->trunkBlock);
-			}
+			$this->placeLog($transaction, $cx, $cy, $cz);
 
 			if($i >= self::MIN_HEIGHT_FOR_LEAVES){
 				$this->foliageAttachments[] = new Vector3($cx, $cy, $cz);
@@ -102,42 +102,42 @@ final class AzaleaTree extends Tree{
 	}
 
 	protected function placeCanopy(int $x, int $y, int $z, Random $random, BlockTransaction $transaction) : void{
-		$radius = 3;
-		$foliageHeight = 2;
-		$attempts = 50;
-
-		$visited = [];
 		foreach($this->foliageAttachments as $attachment){
-			$centerX = $attachment->getFloorX();
-			$centerY = $attachment->getFloorY();
-			$centerZ = $attachment->getFloorZ();
-
-			for($a = 0; $a < $attempts; ++$a){
-				$dx = $random->nextBoundedInt($radius) - $random->nextBoundedInt($radius);
-				$dy = $random->nextBoundedInt($foliageHeight) - $random->nextBoundedInt($foliageHeight);
-				$dz = $random->nextBoundedInt($radius) - $random->nextBoundedInt($radius);
-
-				$xx = $centerX + $dx;
-				$yy = $centerY + $dy;
-				$zz = $centerZ + $dz;
-
-				$hash = World::blockHash($xx, $yy, $zz);
-				if(isset($visited[$hash])){
-					continue;
-				}
-				$visited[$hash] = true;
-
-				$existing = $transaction->fetchBlockAt($xx, $yy, $zz);
-				if($existing->isTransparent()){
-					$leafBlock = ($random->nextBoundedInt(4) === 0) ? VanillaBlocks::FLOWERING_AZALEA_LEAVES() : VanillaBlocks::AZALEA_LEAVES();
-					$transaction->addBlockAt($xx, $yy, $zz, $leafBlock);
-				}
+			for($dy = -1; $dy <= 1; ++$dy){
+				$this->placeLeafLayer($transaction, $attachment->getFloorX(), $attachment->getFloorY() + $dy, $attachment->getFloorZ(), $dy === 1 ? 1 : 2);
+			}
+		}
+		// Flowering and plain bushes produce the same mix of flowering foliage.
+		foreach($transaction->getBlocks() as [$xx, $yy, $zz, $block]){
+			if($block->getTypeId() === BlockTypeIds::AZALEA_LEAVES && $random->nextBoundedInt(4) === 0){
+				$transaction->addBlockAt($xx, $yy, $zz, VanillaBlocks::FLOWERING_AZALEA_LEAVES());
 			}
 		}
 	}
 
+	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
+		if(!$this->isAvailable($world, $x, $y - 1, $z) || !$this->canGrowOn($world->getBlockAt($x, $y - 1, $z))) return false;
+		for($dy = 0; $dy <= 5; ++$dy){
+			$radius = $dy === 0 ? 0 : 1;
+			for($dx = -$radius; $dx <= $radius; ++$dx){
+				for($dz = -$radius; $dz <= $radius; ++$dz){
+					if(!$this->isAvailable($world, $x + $dx, $y + $dy, $z + $dz) || !$this->canOverride($world->getBlockAt($x + $dx, $y + $dy, $z + $dz))) return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	protected function canGrowOn(Block $block) : bool{
+		return parent::canGrowOn($block) || $block->getTypeId() === BlockTypeIds::CLAY;
+	}
+
+	protected function canReplaceLeaf(Block $block) : bool{
+		return parent::canReplaceLeaf($block) || $block instanceof Water;
+	}
+
 	protected function canOverride(Block $block) : bool{
-		return parent::canOverride($block)
+		return $this->canReplaceForTree($block) || $block instanceof Water
 			|| $block->getTypeId() === BlockTypeIds::AZALEA
 			|| $block->getTypeId() === BlockTypeIds::FLOWERING_AZALEA;
 	}
