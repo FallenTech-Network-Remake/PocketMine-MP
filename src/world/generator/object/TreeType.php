@@ -63,7 +63,9 @@ enum TreeType{
 	case JUNGLE_BUSH;
 	case MANGROVE;
 	case TALL_MANGROVE;
-	//TODO: cherry blossom, mangrove, poplar
+	case YELLOW_POPLAR;
+	case ORANGE_POPLAR;
+	case RED_POPLAR;
 	//TODO: perhaps huge mushrooms should be here too???
 
 	public function getDisplayName() : string{
@@ -90,6 +92,9 @@ enum TreeType{
 			self::MANGROVE => "Mangrove",
 			self::TALL_MANGROVE => "Tall Mangrove",
 			self::POPLAR => "Poplar",
+			self::YELLOW_POPLAR => "Yellow Poplar",
+			self::ORANGE_POPLAR => "Orange Poplar",
+			self::RED_POPLAR => "Red Poplar",
 			self::CHERRY => "Cherry",
 			self::PALE_OAK => "Pale Oak",
 		};

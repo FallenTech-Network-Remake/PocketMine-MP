@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\generator\object;
 
 use pocketmine\block\BlockTypeIds;
+use pocketmine\block\utils\LeavesType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
@@ -51,6 +52,10 @@ final class TreeFactory{
 			TreeType::DARK_OAK => new DarkOakTree(),
 			TreeType::CHERRY => new CherryTree(),
 			TreeType::PALE_OAK => new PaleOakTree(),
+			TreeType::POPLAR => new PoplarTree([LeavesType::YELLOW_POPLAR, LeavesType::ORANGE_POPLAR, LeavesType::RED_POPLAR][$random->nextBoundedInt(3)]),
+			TreeType::YELLOW_POPLAR => new PoplarTree(LeavesType::YELLOW_POPLAR),
+			TreeType::ORANGE_POPLAR => new PoplarTree(LeavesType::ORANGE_POPLAR),
+			TreeType::RED_POPLAR => new PoplarTree(LeavesType::RED_POPLAR),
 			TreeType::BIRCH => new BirchTree($random->nextBoundedInt(39) === 0),
 			TreeType::TALL_BIRCH => new BirchTree(true),
 			TreeType::AZALEA => new AzaleaTree(),
