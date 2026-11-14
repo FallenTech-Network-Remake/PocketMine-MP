@@ -64,7 +64,7 @@ class Tree implements Populator{
 				continue;
 			}
 			$tree = TreeFactory::get($random, $this->type);
-			$transaction = $tree?->getBlockTransaction($world, $x, $y, $z, $random);
+			$transaction = $tree->getBlockTransaction($world, $x, $y, $z, $random);
 			$transaction?->apply();
 		}
 	}
@@ -76,7 +76,11 @@ class Tree implements Populator{
 		}
 		$waterDepth = 0;
 		$mangrove = $this->type === TreeType::MANGROVE || $this->type === TreeType::TALL_MANGROVE;
-		$netherSoil = $this->type === TreeType::CRIMSON ? BlockTypeIds::CRIMSON_NYLIUM : null;
+		$netherSoil = match($this->type){
+			TreeType::CRIMSON => BlockTypeIds::CRIMSON_NYLIUM,
+			TreeType::WARPED => BlockTypeIds::WARPED_NYLIUM,
+			default => null
+		};
 		$minY = $this->type === TreeType::SWAMP_OAK || $mangrove || $netherSoil !== null ? $world->getMinY() : 0;
 		for($y = $highestBlock; $y >= $minY; --$y){
 			$b = $world->getBlockAt($x, $y, $z);

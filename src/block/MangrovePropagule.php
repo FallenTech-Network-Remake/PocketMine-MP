@@ -105,7 +105,7 @@ class MangrovePropagule extends Flowable{
 		$random = new Random(mt_rand());
 		$tree = TreeFactory::get($random, TreeType::MANGROVE);
 		$pos = $this->position;
-		$tx = $tree?->getBlockTransaction($pos->getWorld(), $pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), $random);
+		$tx = $tree->getBlockTransaction($pos->getWorld(), $pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), $random);
 		if($tx === null) return false;
 		$event = new StructureGrowEvent($this, $tx, $player);
 		$event->call();

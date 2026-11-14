@@ -34,7 +34,7 @@ final class TreeFactory{
 	/**
 	 * @param TreeType|null $type default oak
 	 */
-	public static function get(Random $random, ?TreeType $type = null) : ?Tree{
+	public static function get(Random $random, ?TreeType $type = null) : Tree{
 		return match($type){
 			null, TreeType::OAK => $random->nextBoundedInt(10) === 0 ? new FancyOakTree() : new OakTree(),
 			TreeType::FANCY_OAK => new FancyOakTree(),
@@ -62,13 +62,12 @@ final class TreeFactory{
 			TreeType::MANGROVE => new MangroveTree($random->nextBoundedInt(2) === 0),
 			TreeType::TALL_MANGROVE => new MangroveTree(true),
 			TreeType::CRIMSON => new NetherTree(VanillaBlocks::CRIMSON_STEM(), VanillaBlocks::NETHER_WART_BLOCK(), VanillaBlocks::SHROOMLIGHT(), ($random->nextBoundedInt(10) + 4) * ($random->nextBoundedInt(12) === 0 ? 2 : 1), hasVines: true, huge: $random->nextFloat() < 0.06),
-			TreeType::WARPED => new NetherTree(VanillaBlocks::WARPED_STEM(), VanillaBlocks::WARPED_WART_BLOCK(), VanillaBlocks::SHROOMLIGHT(), ($random->nextBoundedInt(9) + 4) * ($random->nextBoundedInt(12) === 0 ? 2 : 1), hasVines: false, huge: $random->nextFloat() < 0.06),
-			default => null,
+			TreeType::WARPED => new NetherTree(VanillaBlocks::WARPED_STEM(), VanillaBlocks::WARPED_WART_BLOCK(), VanillaBlocks::SHROOMLIGHT(), ($random->nextBoundedInt(10) + 4) * ($random->nextBoundedInt(12) === 0 ? 2 : 1), hasVines: false, huge: $random->nextFloat() < 0.06),
 		};
 	}
 
 	/** Selects sapling forms independently of the world-generation mix. */
-	public static function getForSapling(Random $random, TreeType $type, ChunkManager $world, int $x, int $y, int $z) : ?Tree{
+	public static function getForSapling(Random $random, TreeType $type, ChunkManager $world, int $x, int $y, int $z) : Tree{
 		if($type === TreeType::OAK && OakTree::hasFancyBrace($world, $x, $y, $z)){
 			return new FancyOakTree();
 		}

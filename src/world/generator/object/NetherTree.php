@@ -29,6 +29,7 @@ use pocketmine\block\BlockTypeIds;
 use pocketmine\block\BlockTypeTags;
 use pocketmine\block\Fire;
 use pocketmine\block\Liquid;
+use pocketmine\block\NetherFungus;
 use pocketmine\block\NetherVines;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
@@ -53,7 +54,10 @@ class NetherTree extends Tree{
 	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
 		if(!$this->isAvailable($world, $x, $y - 1, $z) || !$this->isAvailable($world, $x, $y + $this->treeHeight, $z)) return false;
 		$nylium = $this->trunkBlock->getTypeId() === BlockTypeIds::CRIMSON_STEM ? BlockTypeIds::CRIMSON_NYLIUM : BlockTypeIds::WARPED_NYLIUM;
-		return $world->getBlockAt($x, $y - 1, $z)->getTypeId() === $nylium && $this->canOverride($world->getBlockAt($x, $y, $z));
+		$plant = $world->getBlockAt($x, $y, $z);
+		$fungus = $nylium === BlockTypeIds::CRIMSON_NYLIUM ? BlockTypeIds::CRIMSON_FUNGUS : BlockTypeIds::WARPED_FUNGUS;
+		return $world->getBlockAt($x, $y - 1, $z)->getTypeId() === $nylium
+			&& (!$plant instanceof NetherFungus || $plant->getTypeId() === $fungus) && $this->canOverride($plant);
 	}
 
 	public function getBlockTransaction(ChunkManager $world, int $x, int $y, int $z, Random $random) : ?BlockTransaction{

@@ -101,7 +101,7 @@ class Sapling extends Flowable{
 			$this->position->getFloorY(),
 			$this->position->getFloorZ()
 		);
-		$transaction = $tree?->getBlockTransaction($this->position->getWorld(), $this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ(), $random);
+		$transaction = $tree->getBlockTransaction($this->position->getWorld(), $this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ(), $random);
 		if($transaction === null){
 			return false;
 		}
