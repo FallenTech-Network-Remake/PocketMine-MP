@@ -93,7 +93,14 @@ class Sapling extends Flowable{
 
 	private function grow(?Player $player) : bool{
 		$random = new Random(mt_rand());
-		$tree = TreeFactory::get($random, $this->saplingType->getTreeType());
+		$tree = TreeFactory::getForSapling(
+			$random,
+			$this->saplingType->getTreeType(),
+			$this->position->getWorld(),
+			$this->position->getFloorX(),
+			$this->position->getFloorY(),
+			$this->position->getFloorZ()
+		);
 		$transaction = $tree?->getBlockTransaction($this->position->getWorld(), $this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ(), $random);
 		if($transaction === null){
 			return false;

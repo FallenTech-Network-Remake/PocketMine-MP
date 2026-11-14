@@ -25,6 +25,7 @@ namespace pocketmine\world\generator\object;
 
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
+use pocketmine\world\ChunkManager;
 
 final class TreeFactory{
 
@@ -33,7 +34,10 @@ final class TreeFactory{
 	 */
 	public static function get(Random $random, ?TreeType $type = null) : ?Tree{
 		return match($type){
-			null, TreeType::OAK => new OakTree(), //TODO: big oak has a 1/10 chance
+			null, TreeType::OAK => $random->nextBoundedInt(10) === 0 ? new FancyOakTree() : new OakTree(),
+			TreeType::FANCY_OAK => new FancyOakTree(),
+			TreeType::BALLOON_OAK => new FancyOakTree(5),
+			TreeType::SWAMP_OAK => new SwampOakTree(),
 			TreeType::SPRUCE => new SpruceTree(),
 			TreeType::JUNGLE => new JungleTree(),
 			TreeType::ACACIA => new AcaciaTree(),
@@ -43,5 +47,13 @@ final class TreeFactory{
 			TreeType::WARPED => new NetherTree(VanillaBlocks::WARPED_STEM(), VanillaBlocks::WARPED_WART_BLOCK(), VanillaBlocks::SHROOMLIGHT(), ($random->nextBoundedInt(9) + 4) * ($random->nextBoundedInt(12) === 0 ? 2 : 1), hasVines: false, huge: $random->nextFloat() < 0.06),
 			default => null,
 		};
+	}
+
+	/** Selects oak braces here so world-generation selection stays independent of sapling surroundings. */
+	public static function getForSapling(Random $random, TreeType $type, ChunkManager $world, int $x, int $y, int $z) : ?Tree{
+		if($type === TreeType::OAK && OakTree::hasFancyBrace($world, $x, $y, $z)){
+			return new FancyOakTree();
+		}
+		return self::get($random, $type);
 	}
 }

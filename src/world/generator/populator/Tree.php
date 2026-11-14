@@ -25,6 +25,7 @@ namespace pocketmine\world\generator\populator;
 
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\BlockTypeTags;
+use pocketmine\block\Water;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
@@ -71,8 +72,14 @@ class Tree implements Populator{
 		if($highestBlock === null){
 			return -1;
 		}
-		for($y = $highestBlock; $y >= 0; --$y){
+		$waterDepth = 0;
+		$minY = $this->type === TreeType::SWAMP_OAK ? $world->getMinY() : 0;
+		for($y = $highestBlock; $y >= $minY; --$y){
 			$b = $world->getBlockAt($x, $y, $z);
+			if($this->type === TreeType::SWAMP_OAK && $b instanceof Water){
+				if(++$waterDepth > 1) return -1;
+				continue;
+			}
 			if($b->hasTypeTag(BlockTypeTags::DIRT) || $b->hasTypeTag(BlockTypeTags::MUD)){
 				return $y + 1;
 			}elseif($b->getTypeId() !== BlockTypeIds::AIR && $b->getTypeId() !== BlockTypeIds::SNOW_LAYER){

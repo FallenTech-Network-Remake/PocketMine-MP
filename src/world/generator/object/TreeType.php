@@ -51,12 +51,18 @@ enum TreeType{
 	case POPLAR;
 	case CHERRY;
 	case PALE_OAK;
+	case FANCY_OAK;
+	case SWAMP_OAK;
+	case BALLOON_OAK;
 	//TODO: cherry blossom, mangrove, poplar
 	//TODO: perhaps huge mushrooms should be here too???
 
 	public function getDisplayName() : string{
 		return match($this){
 			self::OAK => "Oak",
+			self::FANCY_OAK => "Fancy Oak",
+			self::SWAMP_OAK => "Swamp Oak",
+			self::BALLOON_OAK => "Balloon Oak",
 			self::SPRUCE => "Spruce",
 			self::BIRCH => "Birch",
 			self::JUNGLE => "Jungle",

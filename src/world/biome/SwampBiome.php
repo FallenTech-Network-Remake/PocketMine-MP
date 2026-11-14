@@ -23,10 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\world\biome;
 
+use pocketmine\world\generator\object\TreeType;
+use pocketmine\world\generator\populator\Tree;
+
 class SwampBiome extends GrassyBiome{
 
 	public function __construct(){
 		parent::__construct();
+
+		$trees = new Tree(TreeType::SWAMP_OAK);
+		$trees->setBaseAmount(3);
+		$trees->setRandomAmount(2);
+		$this->addPopulator($trees);
 
 		$this->setElevation(62, 63);
 
