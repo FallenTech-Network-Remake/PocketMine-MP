@@ -54,6 +54,10 @@ enum TreeType{
 	case FANCY_OAK;
 	case SWAMP_OAK;
 	case BALLOON_OAK;
+	case PINE;
+	case LOLLIPOP_PINE;
+	case MEGA_SPRUCE;
+	case MEGA_PINE;
 	//TODO: cherry blossom, mangrove, poplar
 	//TODO: perhaps huge mushrooms should be here too???
 
@@ -64,6 +68,10 @@ enum TreeType{
 			self::SWAMP_OAK => "Swamp Oak",
 			self::BALLOON_OAK => "Balloon Oak",
 			self::SPRUCE => "Spruce",
+			self::PINE => "Pine",
+			self::LOLLIPOP_PINE => "Lollipop Pine",
+			self::MEGA_SPRUCE => "Mega Spruce",
+			self::MEGA_PINE => "Mega Pine",
 			self::BIRCH => "Birch",
 			self::JUNGLE => "Jungle",
 			self::ACACIA => "Acacia",

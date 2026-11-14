@@ -23,6 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\object;
 
+use pocketmine\block\Air;
+use pocketmine\block\Block;
+use pocketmine\block\BlockTypeIds;
+use pocketmine\block\Fire;
+use pocketmine\block\Leaves;
+use pocketmine\block\Liquid;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
@@ -41,7 +47,7 @@ class SpruceTree extends Tree{
 
 	public function getBlockTransaction(ChunkManager $world, int $x, int $y, int $z, Random $random) : ?BlockTransaction{
 		$this->treeHeight = $random->nextBoundedInt(4) + 6;
-		return parent::getBlockTransaction($world, $x, $y, $z, $random);
+		return $this->createTransaction($world, $x, $y, $z, $random);
 	}
 
 	protected function placeCanopy(int $x, int $y, int $z, Random $random, BlockTransaction $transaction) : void{
@@ -62,9 +68,7 @@ class SpruceTree extends Tree{
 						continue;
 					}
 
-					if(!$transaction->fetchBlockAt($xx, $yyy, $zz)->isSolid()){
-						$transaction->addBlockAt($xx, $yyy, $zz, $this->leafBlock);
-					}
+					$this->placeLeaf($transaction, $xx, $yyy, $zz);
 				}
 			}
 
@@ -78,5 +82,41 @@ class SpruceTree extends Tree{
 				++$radius;
 			}
 		}
+	}
+
+	protected function createTransaction(ChunkManager $world, int $x, int $y, int $z, Random $random) : ?BlockTransaction{
+		$this->placementWorld = $world;
+		$this->placementFailed = false;
+		$transaction = parent::getBlockTransaction($world, $x, $y, $z, $random);
+		return $transaction === null ? null : $this->finishTransaction($world, $transaction);
+	}
+
+	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
+		if(!$this->isAvailable($world, $x, $y - 1, $z) || !$this->canGrowOn($world->getBlockAt($x, $y - 1, $z))){
+			return false;
+		}
+		for($dy = 0; $dy <= $this->treeHeight + 1; ++$dy){
+			// The lowest two levels may be enclosed; foliage needs a five-block-wide column above them.
+			$radius = $dy < 2 ? 0 : 2;
+			for($dx = -$radius; $dx <= $radius; ++$dx){
+				for($dz = -$radius; $dz <= $radius; ++$dz){
+					if(!$this->isAvailable($world, $x + $dx, $y + $dy, $z + $dz)
+						|| !$this->canOverride($world->getBlockAt($x + $dx, $y + $dy, $z + $dz))){
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	protected function canOverride(Block $block) : bool{
+		return $this->canReplaceLeaf($block) || $block->getTypeId() === BlockTypeIds::SPRUCE_SAPLING
+			|| ($block->canBeReplaced() && !$block instanceof Liquid && !$block instanceof Fire);
+	}
+
+	protected function canReplaceLeaf(Block $block) : bool{
+		return $block instanceof Air || $block instanceof Leaves
+			|| $block->getTypeId() === BlockTypeIds::SNOW_LAYER || $block->getTypeId() === BlockTypeIds::VINES;
 	}
 }

@@ -25,25 +25,19 @@ namespace pocketmine\world\generator\object;
 
 use pocketmine\block\Air;
 use pocketmine\block\Block;
-use pocketmine\block\BlockTypeIds;
 use pocketmine\block\BlockTypeTags;
-use pocketmine\block\Farmland;
 use pocketmine\block\Fire;
 use pocketmine\block\Leaves;
 use pocketmine\block\Liquid;
-use pocketmine\block\MossBlock;
 use pocketmine\block\Sapling;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Wood;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\ChunkManager;
-use pocketmine\world\format\Chunk;
 use function abs;
 
 class OakTree extends Tree{
-	protected bool $placementFailed = false;
-	protected ChunkManager $placementWorld;
 
 	public function __construct(){
 		parent::__construct(VanillaBlocks::OAK_LOG(), VanillaBlocks::OAK_LEAVES(), 4);
@@ -113,54 +107,9 @@ class OakTree extends Tree{
 		}
 	}
 
-	protected function canGrowOn(Block $block) : bool{
-		return $block->hasTypeTag(BlockTypeTags::DIRT) || $block->hasTypeTag(BlockTypeTags::MUD)
-			|| $block instanceof MossBlock || $block instanceof Farmland || $block->getTypeId() === BlockTypeIds::MUDDY_MANGROVE_ROOTS;
-	}
-
 	protected function canOverride(Block $block) : bool{
 		return $block instanceof Air || $block instanceof Leaves || $block instanceof Sapling || $block instanceof Wood
 			|| $block->hasTypeTag(BlockTypeTags::DIRT)
 			|| ($block->canBeReplaced() && !$block instanceof Liquid && !$block instanceof Fire);
-	}
-
-	protected function isAvailable(ChunkManager $world, int $x, int $y, int $z) : bool{
-		return $world->isInWorld($x, $y, $z) && $world->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE) !== null;
-	}
-
-	protected function placeLeaf(BlockTransaction $transaction, int $x, int $y, int $z) : void{
-		if(!$this->isAvailable($this->placementWorld, $x, $y, $z)){
-			$this->placementFailed = true;
-			return;
-		}
-		$existing = $transaction->fetchBlockAt($x, $y, $z);
-		if($existing instanceof Air || $existing instanceof Leaves){
-			$transaction->addBlockAt($x, $y, $z, $this->leafBlock);
-		}
-	}
-
-	protected function finishTransaction(ChunkManager $world, BlockTransaction $transaction) : ?BlockTransaction{
-		if($this->placementFailed){
-			return null;
-		}
-		$result = new BlockTransaction($world);
-		$original = [];
-		foreach($transaction->getBlocks() as [$x, $y, $z, $block]){
-			if(!$this->isAvailable($world, $x, $y, $z)){
-				return null;
-			}
-			$existing = $world->getBlockAt($x, $y, $z);
-			if($block instanceof Leaves && !$existing instanceof Air && !$existing instanceof Leaves){
-				// Foliage grows around solid obstacles, never through them or through liquids/containers.
-				continue;
-			}
-			$original[$x][$y][$z] = $existing->getStateId();
-			$result->addBlockAt($x, $y, $z, $block);
-		}
-		$result->addValidator(function(ChunkManager $world, int $x, int $y, int $z) use ($original) : bool{
-			return $this->isAvailable($world, $x, $y, $z)
-				&& (!isset($original[$x][$y][$z]) || $world->getBlockAt($x, $y, $z)->getStateId() === $original[$x][$y][$z]);
-		});
-		return $result;
 	}
 }

@@ -38,7 +38,11 @@ final class TreeFactory{
 			TreeType::FANCY_OAK => new FancyOakTree(),
 			TreeType::BALLOON_OAK => new FancyOakTree(5),
 			TreeType::SWAMP_OAK => new SwampOakTree(),
-			TreeType::SPRUCE => new SpruceTree(),
+			TreeType::SPRUCE => $random->nextBoundedInt(3) === 0 ? new PineTree($random->nextBoundedInt(10) === 0) : new SpruceTree(),
+			TreeType::PINE => new PineTree(),
+			TreeType::LOLLIPOP_PINE => new PineTree(true),
+			TreeType::MEGA_SPRUCE => new MegaConiferTree(),
+			TreeType::MEGA_PINE => new MegaConiferTree(true),
 			TreeType::JUNGLE => new JungleTree(),
 			TreeType::ACACIA => new AcaciaTree(),
 			TreeType::BIRCH => new BirchTree($random->nextBoundedInt(39) === 0),
@@ -49,10 +53,15 @@ final class TreeFactory{
 		};
 	}
 
-	/** Selects oak braces here so world-generation selection stays independent of sapling surroundings. */
+	/** Selects sapling forms independently of the world-generation mix. */
 	public static function getForSapling(Random $random, TreeType $type, ChunkManager $world, int $x, int $y, int $z) : ?Tree{
 		if($type === TreeType::OAK && OakTree::hasFancyBrace($world, $x, $y, $z)){
 			return new FancyOakTree();
+		}
+		if($type === TreeType::SPRUCE){
+			return MegaConiferTree::findSaplingSquare($world, $x, $y, $z) !== null
+				? new MegaConiferTree($random->nextBoundedInt(2) === 0)
+				: new SpruceTree();
 		}
 		return self::get($random, $type);
 	}
