@@ -23,13 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\object;
 
+use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\ChunkManager;
 use function abs;
-use function array_rand;
 
 final class AcaciaTree extends Tree{
 	private const MIN_HEIGHT = 5;
@@ -41,13 +43,37 @@ final class AcaciaTree extends Tree{
 		parent::__construct(
 			VanillaBlocks::ACACIA_LOG(),
 			VanillaBlocks::ACACIA_LEAVES(),
-			0 //we don't use this anyway - everything is overridden
+			0
 		);
 	}
 
+	public function getBlockTransaction(ChunkManager $world, int $x, int $y, int $z, Random $random) : ?BlockTransaction{
+		$this->treeHeight = self::MIN_HEIGHT + $random->nextBoundedInt(3) + $random->nextBoundedInt(3);
+		$this->mainBranchTip = $this->secondBranchTip = null;
+		$this->beginPlacement($world);
+		$tx = parent::getBlockTransaction($world, $x, $y, $z, $random);
+		return $tx === null ? null : $this->finishTransaction($world, $tx);
+	}
+
+	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
+		if(!$this->isAvailable($world, $x, $y - 1, $z) || !$this->canGrowOn($world->getBlockAt($x, $y - 1, $z))) return false;
+		for($dy = 0; $dy <= $this->treeHeight + 1; ++$dy){
+			$radius = $dy === 0 ? 0 : 1;
+			for($dx = -$radius; $dx <= $radius; ++$dx){
+				for($dz = -$radius; $dz <= $radius; ++$dz){
+					if(!$this->isAvailable($world, $x + $dx, $y + $dy, $z + $dz) || !$this->canOverride($world->getBlockAt($x + $dx, $y + $dy, $z + $dz))) return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	protected function canOverride(Block $block) : bool{
+		return $this->canReplaceForTree($block);
+	}
+
 	protected function generateTrunkHeight(Random $random) : int{
-		//50% chance of 2 extra blocks, 33% chance 1 or 3, 17% chance 0 or 4
-		return self::MIN_HEIGHT + $random->nextRange(0, 2) + $random->nextRange(0, 2);
+		return $this->treeHeight;
 	}
 
 	protected function placeTrunk(int $x, int $y, int $z, Random $random, int $trunkHeight, BlockTransaction $transaction) : void{
@@ -57,10 +83,10 @@ final class AcaciaTree extends Tree{
 		$firstBranchHeight = $trunkHeight - 1 - $random->nextRange(0, 3);
 
 		for($yy = 0; $yy <= $firstBranchHeight; ++$yy){
-			$transaction->addBlockAt($x, $y + $yy, $z, $this->trunkBlock);
+			$this->placeLog($transaction, $x, $y + $yy, $z);
 		}
 
-		$mainBranchFacing = Facing::HORIZONTAL[array_rand(Facing::HORIZONTAL)];
+		$mainBranchFacing = Facing::HORIZONTAL[$random->nextBoundedInt(4)];
 
 		//this branch may grow a second trunk if the diagonal length is less than the max length
 		$this->mainBranchTip = $this->placeBranch(
@@ -71,7 +97,7 @@ final class AcaciaTree extends Tree{
 			$trunkHeight - $firstBranchHeight
 		);
 
-		$secondBranchFacing = Facing::HORIZONTAL[array_rand(Facing::HORIZONTAL)];
+		$secondBranchFacing = Facing::HORIZONTAL[$random->nextBoundedInt(4)];
 		if($secondBranchFacing !== $mainBranchFacing){
 			$secondBranchLength = $random->nextRange(1, 3);
 			$this->secondBranchTip = $this->placeBranch(
@@ -94,7 +120,7 @@ final class AcaciaTree extends Tree{
 				$nextBlockPos = $nextBlockPos->getSide($branchFacing);
 				$diagonalPlaced++;
 			}
-			$transaction->addBlock($nextBlockPos, $this->trunkBlock);
+			$this->placeLog($transaction, $nextBlockPos->getFloorX(), $nextBlockPos->getFloorY(), $nextBlockPos->getFloorZ(), $yy < $maxDiagonal ? Facing::axis($branchFacing) : Axis::Y);
 		}
 
 		return $nextBlockPos;
@@ -108,10 +134,9 @@ final class AcaciaTree extends Tree{
 		for($x = $centerX - $radius; $x <= $centerX + $radius; ++$x){
 			for($z = $centerZ - $radius; $z <= $centerZ + $radius; ++$z){
 				if(
-					abs($x - $centerX) + abs($z - $centerZ) <= $maxTaxicabDistance &&
-					$transaction->fetchBlockAt($x, $centerY, $z)->canBeReplaced()
+					abs($x - $centerX) + abs($z - $centerZ) <= $maxTaxicabDistance
 				){
-					$transaction->addBlockAt($x, $centerY, $z, $this->leafBlock);
+					$this->placeLeaf($transaction, $x, $centerY, $z);
 				}
 			}
 		}
