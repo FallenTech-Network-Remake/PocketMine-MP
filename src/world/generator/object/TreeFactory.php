@@ -50,6 +50,7 @@ final class TreeFactory{
 			TreeType::ACACIA => new AcaciaTree(),
 			TreeType::DARK_OAK => new DarkOakTree(),
 			TreeType::CHERRY => new CherryTree(),
+			TreeType::PALE_OAK => new PaleOakTree(),
 			TreeType::BIRCH => new BirchTree($random->nextBoundedInt(39) === 0),
 			TreeType::TALL_BIRCH => new BirchTree(true),
 			TreeType::AZALEA => new AzaleaTree(),
@@ -70,6 +71,9 @@ final class TreeFactory{
 			return MegaConiferTree::findSaplingSquare($world, $x, $y, $z) !== null
 				? new MegaConiferTree($random->nextBoundedInt(2) === 0)
 				: new SpruceTree();
+		}
+		if($type === TreeType::PALE_OAK){
+			return new PaleOakTree(decorated: false);
 		}
 		if($type === TreeType::JUNGLE){
 			return new JungleTree(mega: Tree::findSaplingSquareForType($world, $x, $y, $z, BlockTypeIds::JUNGLE_SAPLING) !== null, decorated: false);
