@@ -1342,8 +1342,11 @@ class NetworkSession{
 		);
 	}
 
-	public function stopUsingChunk(int $chunkX, int $chunkZ) : void{
-
+	public function stopUsingChunk(int $chunkX, int $chunkZ, ?World $world = null) : void{
+		$world ??= $this->player?->getWorld();
+		if($world !== null){
+			ChunkCache::releaseUnusedChunk($world, $chunkX, $chunkZ);
+		}
 	}
 
 	public function onEnterWorld() : void{

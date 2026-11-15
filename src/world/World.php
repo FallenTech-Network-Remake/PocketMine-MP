@@ -310,6 +310,8 @@ class World implements ChunkManager{
 	 * @phpstan-var array<BlockPosHash, int>
 	 */
 	private array $scheduledBlockUpdateQueueIndex = [];
+	/** @var int[] Number of pending block updates in each chunk. */
+	private array $scheduledBlockUpdatesByChunk = [];
 
 	/** @phpstan-var \SplQueue<int> */
 	private \SplQueue $neighbourBlockUpdateQueue;
@@ -991,6 +993,10 @@ class World implements ChunkManager{
 		while($this->scheduledBlockUpdateQueue->count() > 0 && $this->scheduledBlockUpdateQueue->current()["priority"] <= $currentTick){
 			/** @var Vector3 $vec */
 			$vec = $this->scheduledBlockUpdateQueue->extract()["data"];
+			$scheduledChunkHash = World::chunkHash($vec->getFloorX() >> Chunk::COORD_BIT_SIZE, $vec->getFloorZ() >> Chunk::COORD_BIT_SIZE);
+			if(--$this->scheduledBlockUpdatesByChunk[$scheduledChunkHash] === 0){
+				unset($this->scheduledBlockUpdatesByChunk[$scheduledChunkHash]);
+			}
 			// Keep the pending entry while reading the block, so readStateFromWorld() cannot schedule a duplicate.
 			$block = $this->isInLoadedTerrain($vec) ? $this->getBlock($vec) : null;
 			unset($this->scheduledBlockUpdateQueueIndex[World::blockHash($vec->x, $vec->y, $vec->z)]);
@@ -1271,6 +1277,11 @@ class World implements ChunkManager{
 		$chunkPosHash = World::chunkHash($chunkX, $chunkZ);
 		$this->registeredTickingChunks[$chunkPosHash][spl_object_id($ticker)] = $ticker;
 		$this->recheckTickingChunks[$chunkPosHash] = $chunkPosHash;
+		for($x = $chunkX - 1; $x <= $chunkX + 1; ++$x){
+			for($z = $chunkZ - 1; $z <= $chunkZ + 1; ++$z){
+				$this->cancelUnloadChunkRequest($x, $z);
+			}
+		}
 	}
 
 	/**
@@ -1287,6 +1298,11 @@ class World implements ChunkManager{
 					$this->recheckTickingChunks[$chunkHash],
 					$this->validTickingChunks[$chunkHash]
 				);
+				for($x = $chunkX - 1; $x <= $chunkX + 1; ++$x){
+					for($z = $chunkZ - 1; $z <= $chunkZ + 1; ++$z){
+						$this->unloadChunkRequest($x, $z);
+					}
+				}
 			}else{
 				unset($this->registeredTickingChunks[$chunkHash][$tickerId]);
 			}
@@ -1514,6 +1530,8 @@ class World implements ChunkManager{
 		}
 		$this->scheduledBlockUpdateQueueIndex[$index] = $delay;
 		$this->scheduledBlockUpdateQueue->insert(new Vector3((int) $pos->x, (int) $pos->y, (int) $pos->z), $delay + $this->server->getTick());
+		$chunkHash = World::chunkHash($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE);
+		$this->scheduledBlockUpdatesByChunk[$chunkHash] = ($this->scheduledBlockUpdatesByChunk[$chunkHash] ?? 0) + 1;
 	}
 
 	private function tryAddToNeighbourUpdateQueue(int $x, int $y, int $z) : void{
@@ -2970,7 +2988,17 @@ class World implements ChunkManager{
 	}
 
 	public function isChunkInUse(int $x, int $z) : bool{
-		return isset($this->chunkLoaders[$index = World::chunkHash($x, $z)]) && count($this->chunkLoaders[$index]) > 0;
+		if(isset($this->chunkLoaders[World::chunkHash($x, $z)])){
+			return true;
+		}
+		for($cx = $x - 1; $cx <= $x + 1; ++$cx){
+			for($cz = $z - 1; $cz <= $z + 1; ++$cz){
+				if(isset($this->registeredTickingChunks[World::chunkHash($cx, $cz)])){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -3146,8 +3174,18 @@ class World implements ChunkManager{
 	}
 
 	public function unloadChunk(int $x, int $z, bool $safe = true, bool $trySave = true) : bool{
-		if($safe && $this->isChunkInUse($x, $z)){
+		if($safe && ($this->isChunkInUse($x, $z) || (!$this->getAutoSave() && $this->getChunkPlayers($x, $z) !== []))){
 			return false;
+		}
+		if($safe && $this->getChunkPlayers($x, $z) !== []){
+			if(isset($this->scheduledBlockUpdatesByChunk[World::chunkHash($x, $z)])){
+				return false;
+			}
+			foreach($this->getChunkEntities($x, $z) as $entity){
+				if(!$entity->canSaveWithChunk()){
+					return false;
+				}
+			}
 		}
 
 		if(!$this->isChunkLoaded($x, $z)){

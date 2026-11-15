@@ -79,6 +79,17 @@ class ChunkCache implements ChunkListener{
 		}
 	}
 
+	/** Releases packet caches when the last viewer leaves, including other compression formats. */
+	public static function releaseUnusedChunk(World $world, int $chunkX, int $chunkZ) : void{
+		if($world->getChunkPlayers($chunkX, $chunkZ) !== []){
+			return;
+		}
+		foreach(self::$instances[spl_object_id($world)] ?? [] as $cache){
+			$cache->destroy($chunkX, $chunkZ);
+			$world->unregisterChunkListener($cache, $chunkX, $chunkZ);
+		}
+	}
+
 	/**
 	 * @var CompressBatchPromise[]|string[]
 	 * @phpstan-var array<int, CompressBatchPromise|string>
@@ -203,6 +214,9 @@ class ChunkCache implements ChunkListener{
 	 * @see ChunkListener::onChunkUnloaded()
 	 */
 	public function onChunkUnloaded(int $chunkX, int $chunkZ, Chunk $chunk) : void{
+		if($this->world->getChunkPlayers($chunkX, $chunkZ) !== [] && is_string($this->caches[World::chunkHash($chunkX, $chunkZ)] ?? null)){
+			return;
+		}
 		$this->destroy($chunkX, $chunkZ);
 		$this->world->unregisterChunkListener($this, $chunkX, $chunkZ);
 	}
