@@ -46,6 +46,14 @@ trait MultiAnySupportTrait{
 	 */
 	abstract protected function getInitialPlaceFaces(Block $blockReplace) : array;
 
+	/**
+	 * FALLENTECH PATCH (kqg 2026-08-26): overridable so a specific block can widen what it
+	 * attaches to. Default is unchanged - FULL support only.
+	 */
+	protected function isValidMultiAnySupport(int $face) : bool{
+		return $this->getAdjacentSupportType($face) === SupportType::FULL;
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->faces = $this->getInitialPlaceFaces($blockReplace);
 		$availableFaces = $this->getAvailableFaces();
@@ -65,7 +73,7 @@ trait MultiAnySupportTrait{
 		$changed = false;
 
 		foreach($this->faces as $face){
-			if($this->getAdjacentSupportType($face) !== SupportType::FULL){
+			if(!$this->isValidMultiAnySupport($face)){
 				unset($this->faces[$face]);
 				$changed = true;
 			}
@@ -87,7 +95,7 @@ trait MultiAnySupportTrait{
 	private function getAvailableFaces() : array{
 		$faces = [];
 		foreach(Facing::ALL as $face){
-			if(!$this->hasFace($face) && $this->getAdjacentSupportType($face) === SupportType::FULL){
+			if(!$this->hasFace($face) && $this->isValidMultiAnySupport($face)){
 				$faces[$face] = $face;
 			}
 		}
