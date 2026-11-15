@@ -539,6 +539,11 @@ class Item implements \JsonSerializable{
 		return 0;
 	}
 
+	/** Chance of adding a compost layer, from 0.0 (not compostable) to 1.0. */
+	public function getCompostChance() : float{
+		return CompostChance::get($this);
+	}
+
 	/**
 	 * Returns an item after burning fuel
 	 */

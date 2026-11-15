@@ -46,6 +46,7 @@ use pocketmine\block\ChorusFlower;
 use pocketmine\block\ChorusPlant;
 use pocketmine\block\CocoaBlock;
 use pocketmine\block\CommandBlock;
+use pocketmine\block\Composter;
 use pocketmine\block\Copper;
 use pocketmine\block\CopperLantern;
 use pocketmine\block\Crafter;
@@ -669,7 +670,7 @@ final class VanillaBlockMappings{
 		$reg->mapModel(Model::create(Blocks::PALE_MOSS_CARPET(), Ids::PALE_MOSS_CARPET)->properties([new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(PaleMossCarpet $b) => $b->isUpper(), fn(PaleMossCarpet $b, bool $v) => $b->setUpper($v)),new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_EAST, IntFromRawStateMap::string([0 => "none", 1 => "short", 2 => "tall"]), fn(PaleMossCarpet $b) => $b->getSideHeight(0), fn(PaleMossCarpet $b, int $v) => $b->setSideHeight(0, $v)),new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_NORTH, IntFromRawStateMap::string([0 => "none", 1 => "short", 2 => "tall"]), fn(PaleMossCarpet $b) => $b->getSideHeight(1), fn(PaleMossCarpet $b, int $v) => $b->setSideHeight(1, $v)),new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_SOUTH, IntFromRawStateMap::string([0 => "none", 1 => "short", 2 => "tall"]), fn(PaleMossCarpet $b) => $b->getSideHeight(2), fn(PaleMossCarpet $b, int $v) => $b->setSideHeight(2, $v)),new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_WEST, IntFromRawStateMap::string([0 => "none", 1 => "short", 2 => "tall"]), fn(PaleMossCarpet $b) => $b->getSideHeight(3), fn(PaleMossCarpet $b, int $v) => $b->setSideHeight(3, $v))]));
 		$reg->mapModel(Model::create(Blocks::BEE_NEST(), Ids::BEE_NEST)->properties([$commonProperties->horizontalFacingSWNE, new IntProperty(StateNames::HONEY_LEVEL, 0, 5, fn(Beehive $b) => $b->getHoneyLevel(), fn(Beehive $b, int $v) => $b->setHoneyLevel($v))]));
 		$reg->mapModel(Model::create(Blocks::BEEHIVE(), Ids::BEEHIVE)->properties([$commonProperties->horizontalFacingSWNE, new IntProperty(StateNames::HONEY_LEVEL, 0, 5, fn(Beehive $b) => $b->getHoneyLevel(), fn(Beehive $b, int $v) => $b->setHoneyLevel($v))]));
-		$reg->mapModel(Model::create(Blocks::COMPOSTER(), Ids::COMPOSTER)->properties([new DummyProperty(StateNames::COMPOSTER_FILL_LEVEL, 0)]));
+		$reg->mapModel(Model::create(Blocks::COMPOSTER(), Ids::COMPOSTER)->properties([new IntProperty(StateNames::COMPOSTER_FILL_LEVEL, 0, Composter::READY_LEVEL, fn(Composter $b) => $b->getFillLevel(), fn(Composter $b, int $v) => $b->setFillLevel($v))]));
 		$reg->mapModel(Model::create(Blocks::CREAKING_HEART(), Ids::CREAKING_HEART)->properties([$commonProperties->pillarAxis, new DummyProperty(StateNames::CREAKING_HEART_STATE, "uprooted"), new DummyProperty(StateNames::NATURAL, false)]));
 		$reg->mapModel(Model::create(Blocks::DISPENSER(), Ids::DISPENSER)->properties([$commonProperties->anyFacingClassic, new DummyProperty(StateNames::TRIGGERED_BIT, false)]));
 		$reg->mapModel(Model::create(Blocks::DROPPER(), Ids::DROPPER)->properties([$commonProperties->anyFacingClassic, new DummyProperty(StateNames::TRIGGERED_BIT, false)]));

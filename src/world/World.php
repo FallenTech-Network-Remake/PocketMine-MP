@@ -991,12 +991,10 @@ class World implements ChunkManager{
 		while($this->scheduledBlockUpdateQueue->count() > 0 && $this->scheduledBlockUpdateQueue->current()["priority"] <= $currentTick){
 			/** @var Vector3 $vec */
 			$vec = $this->scheduledBlockUpdateQueue->extract()["data"];
+			// Keep the pending entry while reading the block, so readStateFromWorld() cannot schedule a duplicate.
+			$block = $this->isInLoadedTerrain($vec) ? $this->getBlock($vec) : null;
 			unset($this->scheduledBlockUpdateQueueIndex[World::blockHash($vec->x, $vec->y, $vec->z)]);
-			if(!$this->isInLoadedTerrain($vec)){
-				continue;
-			}
-			$block = $this->getBlock($vec);
-			$block->onScheduledUpdate();
+			$block?->onScheduledUpdate();
 		}
 		$this->timings->scheduledBlockUpdates->stopTiming();
 

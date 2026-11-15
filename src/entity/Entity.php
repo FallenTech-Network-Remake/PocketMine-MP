@@ -1274,6 +1274,15 @@ abstract class Entity{
 		Timings::$entityMove->stopTiming();
 	}
 
+	/** Moves clear of a rising block surface, respecting collisions above the entity. */
+	public function pushUp(float $distance) : void{
+		if(!($distance > 0 && $distance <= 1)){
+			throw new \InvalidArgumentException("Push distance must be greater than zero and at most one block");
+		}
+		$this->move(0, $distance, 0);
+		$this->resetFallDistance();
+	}
+
 	public function setStepHeight(float $stepHeight) : void{
 		$this->stepHeight = $stepHeight;
 	}

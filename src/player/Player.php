@@ -2792,6 +2792,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		$this->ySize = 0;
 	}
 
+	public function pushUp(float $distance) : void{
+		if($this->isSpectator()){
+			return;
+		}
+		parent::pushUp($distance);
+		$this->blockBreakHandler = null;
+		$this->resetLastMovements();
+		$this->sendPosition($this->location, mode: MovePlayerPacket::MODE_RESET);
+		$this->broadcastMovement(true);
+	}
+
 	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null) : bool{
 		if(parent::teleport($pos, $yaw, $pitch)){
 			Cushion::getSeatFor($this)?->dismount(false);
