@@ -28,6 +28,10 @@ use pocketmine\entity\Living;
 
 final class HoneyBottle extends Food{
 
+	public function getConsumptionDurationTicks() : int{
+		return 40;
+	}
+
 	public function getMaxStackSize() : int{
 		return 16;
 	}

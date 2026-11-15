@@ -658,6 +658,11 @@ class Item implements \JsonSerializable{
 		return false;
 	}
 
+	/** Default use time for consumable items, in server ticks. */
+	public function getConsumptionDurationTicks() : int{
+		return 32;
+	}
+
 	/**
 	 * Returns the number of ticks a player must wait before activating this item again.
 	 */

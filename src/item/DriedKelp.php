@@ -25,6 +25,10 @@ namespace pocketmine\item;
 
 class DriedKelp extends Food{
 
+	public function getConsumptionDurationTicks() : int{
+		return 16;
+	}
+
 	public function getFoodRestore() : int{
 		return 1;
 	}

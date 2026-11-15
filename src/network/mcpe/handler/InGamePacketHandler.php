@@ -502,16 +502,8 @@ class InGamePacketHandler extends PacketHandler{
 					if(!$this->player->consumeHeldItem()){
 						$hungerAttr = $this->player->getAttributeMap()->get(Attribute::HUNGER) ?? throw new AssumptionFailedError();
 						$hungerAttr->markSynchronized(false);
-						if($this->player->ftEatStillArmed){
-							// Refused only for being too early - leave the action running so
-							// the eat continues instead of restarting on every held repeat.
-							return true;
-						}
 					}
-					//TODO: workaround goat horns getting stuck in the "using item" state
-					//this timed-trigger behaviour is also used for other items apart from food
-					//in the future we'll generalise this logic and add proper hooks for it
-					$this->player->setUsingItem(false);
+
 					return true;
 				}
 				$this->player->useHeldItem();
@@ -735,8 +727,9 @@ class InGamePacketHandler extends PacketHandler{
 				$this->lastBlockAttacked = null;
 				break;
 			case PlayerAction::START_ITEM_USE_ON:
+				// A repeated start notification must not cancel an action already in progress.
+				return true;
 			case PlayerAction::STOP_ITEM_USE_ON:
-				//TODO: this has no obvious use and seems only used for analytics in vanilla - ignore it
 				break;
 			default:
 				$this->session->getLogger()->debug("Unhandled/unknown player action type " . $action);
