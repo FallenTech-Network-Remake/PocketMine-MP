@@ -48,12 +48,12 @@ use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeAut
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CreativeCreateStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\DeprecatedCraftingResultsStackRequestAction;
-use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\LoomStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\DestroyStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\DropStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequest;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequestSlotInfo;
+use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\LoomStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\MineBlockStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\PlaceStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\SwapStackRequestAction;
@@ -267,10 +267,6 @@ class ItemStackRequestExecutor{
 	}
 
 	/**
-	 * A loom adds one pattern to the banner in its banner slot, using the dye in its dye slot.
-	 * The inputs are consumed by the CraftingConsumeInput actions that follow, and LoomTransaction
-	 * checks the result against what was actually consumed.
-	 *
 	 * @throws ItemStackRequestProcessException
 	 */
 	protected function beginLoom(string $patternId) : void{
@@ -285,11 +281,17 @@ class ItemStackRequestExecutor{
 		if($type === null){
 			throw new ItemStackRequestProcessException("Unknown banner pattern: $patternId");
 		}
-		$output = LoomTransaction::craft($window->getItem(LoomInventory::SLOT_BANNER), $window->getItem(LoomInventory::SLOT_DYE), $type);
+		$inventory = $this->builder->getInventory($window);
+		$output = LoomTransaction::craft(
+			$inventory->getItem(LoomInventory::SLOT_BANNER),
+			$inventory->getItem(LoomInventory::SLOT_DYE),
+			$type,
+			$inventory->getItem(LoomInventory::SLOT_PATTERN)
+		);
 		if($output === null){
 			throw new ItemStackRequestProcessException("The loom's banner and dye can't make pattern $patternId");
 		}
-		$this->specialTransaction = new LoomTransaction($this->player, $type);
+		$this->specialTransaction = new LoomTransaction($this->player, $type, $window);
 		$this->setNextCreatedItem($output);
 	}
 

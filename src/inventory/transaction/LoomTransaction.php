@@ -23,45 +23,46 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction;
 
+use pocketmine\block\inventory\LoomInventory;
 use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\BannerPatternType;
+use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Banner;
+use pocketmine\item\BannerPattern;
 use pocketmine\item\Dye;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 use function count;
 use function in_array;
 
-/**
- * A loom adding one pattern layer to a banner: one banner and one dye go in, the patterned banner
- * comes out. The output is recomputed from the items actually consumed, so a client can't name
- * its own result.
- */
 class LoomTransaction extends InventoryTransaction{
 
 	public const MAX_PATTERNS = 6;
 
-	/**
-	 * Patterns that need a banner pattern item in the loom. The engine implements none of those
-	 * items, so these patterns can't be made.
-	 */
+	/** Patterns requiring a reusable template. */
 	public const ITEM_PATTERNS = [
 		BannerPatternType::CREEPER, BannerPatternType::SKULL, BannerPatternType::FLOWER, BannerPatternType::MOJANG,
 		BannerPatternType::GLOBE, BannerPatternType::PIGLIN, BannerPatternType::FLOW, BannerPatternType::GUSTER,
+		BannerPatternType::BRICKS, BannerPatternType::CURLY_BORDER,
 	];
 
 	public function __construct(
 		Player $source,
-		private readonly BannerPatternType $patternType
+		private readonly BannerPatternType $patternType,
+		private readonly LoomInventory $inventory
 	){
 		parent::__construct($source);
 	}
 
-	/**
-	 * The banner a loom makes from these inputs, or null if they can't make it.
-	 */
-	public static function craft(Item $banner, Item $dye, BannerPatternType $type) : ?Banner{
-		if(!$banner instanceof Banner || !$dye instanceof Dye || in_array($type, self::ITEM_PATTERNS, true)){
+	public static function craft(Item $banner, Item $dye, BannerPatternType $type, ?Item $pattern = null) : ?Banner{
+		if($banner->isNull() || $dye->isNull() || !$banner instanceof Banner || !$dye instanceof Dye){
+			return null;
+		}
+		if(in_array($type, self::ITEM_PATTERNS, true)){
+			if(!$pattern instanceof BannerPattern || $pattern->isNull() || $pattern->getPatternType() !== $type){
+				return null;
+			}
+		}elseif($pattern !== null && !$pattern->isNull()){
 			return null;
 		}
 		$patterns = $banner->getPatterns();
@@ -75,6 +76,10 @@ class LoomTransaction extends InventoryTransaction{
 	}
 
 	public function validate() : void{
+		if($this->source->getCurrentWindow() !== $this->inventory){
+			throw new TransactionValidationException("The loom is no longer open");
+		}
+		$this->squashDuplicateSlotChanges();
 		if(count($this->actions) < 1){
 			throw new TransactionValidationException("Transaction must have at least one action to be executable");
 		}
@@ -106,7 +111,13 @@ class LoomTransaction extends InventoryTransaction{
 		if(($outputCount = count($outputs)) !== 1){
 			throw new TransactionValidationException("Expected 1 output item, but received $outputCount");
 		}
-		$expected = self::craft($banner, $dye, $this->patternType);
+		$pattern = $this->inventory->getItem(LoomInventory::SLOT_PATTERN);
+		foreach($this->actions as $action){
+			if($action instanceof SlotChangeAction && $action->getInventory() === $this->inventory && $action->getSlot() === LoomInventory::SLOT_PATTERN){
+				$pattern = $action->getTargetItem();
+			}
+		}
+		$expected = self::craft($banner, $dye, $this->patternType, $pattern);
 		if($expected === null || !$outputs[0]->equalsExact($expected)){
 			throw new TransactionValidationException("Invalid loom output");
 		}
