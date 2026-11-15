@@ -29,6 +29,7 @@ use pocketmine\event\world\WorldLoadEvent;
 use pocketmine\event\world\WorldUnloadEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\player\ChunkSelector;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
@@ -47,7 +48,9 @@ use function floor;
 use function implode;
 use function intdiv;
 use function iterator_to_array;
+use function max;
 use function microtime;
+use function random_int;
 use function round;
 use function sprintf;
 use function strval;
@@ -66,12 +69,18 @@ class WorldManager{
 	private bool $autoSave = true;
 	private int $autoSaveTicks = self::TICKS_PER_AUTOSAVE;
 	private int $autoSaveTicker = 0;
+	/** @var array<int, int> world ID => next autosave tick */
+	private array $worldAutoSaveTicks = [];
+	/** @var \WeakMap<Player, int> */
+	private \WeakMap $playerAutoSaveTicks;
 
 	public function __construct(
 		private Server $server,
 		private string $dataPath,
 		private WorldProviderManager $providerManager
-	){}
+	){
+		$this->playerAutoSaveTicks = new \WeakMap();
+	}
 
 	public function getProviderManager() : WorldProviderManager{
 		return $this->providerManager;
@@ -158,7 +167,7 @@ class WorldManager{
 		if($world === $this->defaultWorld){
 			$this->defaultWorld = null;
 		}
-		unset($this->worlds[$world->getId()]);
+		unset($this->worlds[$world->getId()], $this->worldAutoSaveTicks[$world->getId()]);
 
 		$world->onUnload();
 		return true;
@@ -356,13 +365,9 @@ class WorldManager{
 			}
 		}
 
-		if($this->autoSave && ++$this->autoSaveTicker >= $this->autoSaveTicks){
-			$this->autoSaveTicker = 0;
-			$this->server->getLogger()->debug("[Auto Save] Saving worlds...");
-			$start = microtime(true);
+		if($this->autoSave){
+			++$this->autoSaveTicker;
 			$this->doAutoSave();
-			$time = microtime(true) - $start;
-			$this->server->getLogger()->debug("[Auto Save] Save completed in " . ($time >= 1 ? round($time, 3) . "s" : round($time * 1000) . "ms"));
 		}
 	}
 
@@ -388,17 +393,42 @@ class WorldManager{
 		if($autoSaveTicks <= 0){
 			throw new \InvalidArgumentException("Autosave ticks must be positive");
 		}
+		if($autoSaveTicks === $this->autoSaveTicks){
+			return;
+		}
+		$change = $autoSaveTicks - $this->autoSaveTicks;
+		foreach($this->worldAutoSaveTicks as $id => $nextSave){
+			$this->worldAutoSaveTicks[$id] = max($this->autoSaveTicker + 1, $nextSave + $change);
+		}
+		foreach($this->playerAutoSaveTicks as $player => $nextSave){
+			$this->playerAutoSaveTicks[$player] = max($this->autoSaveTicker + 1, $nextSave + $change);
+		}
 		$this->autoSaveTicks = $autoSaveTicks;
 	}
 
 	private function doAutoSave() : void{
-		foreach($this->worlds as $world){
+		foreach($this->worlds as $id => $world){
+			if(!isset($this->worlds[$id]) || !$this->autoSave){
+				continue;
+			}
+			$this->worldAutoSaveTicks[$id] ??= $this->autoSaveTicker + random_int(0, $this->autoSaveTicks - 1);
 			foreach($world->getPlayers() as $player){
 				if($player->spawned){
-					$player->save();
+					$nextSave = $this->playerAutoSaveTicks[$player] ??= $this->autoSaveTicker + random_int(0, $this->autoSaveTicks - 1);
+					if($nextSave <= $this->autoSaveTicker){
+						$this->playerAutoSaveTicks[$player] = $this->autoSaveTicker + $this->autoSaveTicks;
+						$player->save();
+					}
 				}
 			}
-			$world->save(false);
+			if(isset($this->worlds[$id]) && $this->getAutoSave() && $this->worldAutoSaveTicks[$id] <= $this->autoSaveTicker){
+				$this->worldAutoSaveTicks[$id] = $this->autoSaveTicker + $this->autoSaveTicks;
+				$world->getLogger()->debug("[Auto Save] Saving world...");
+				$start = microtime(true);
+				$world->save(false);
+				$time = microtime(true) - $start;
+				$world->getLogger()->debug("[Auto Save] Save completed in " . ($time >= 1 ? round($time, 3) . "s" : round($time * 1000) . "ms"));
+			}
 		}
 	}
 }
