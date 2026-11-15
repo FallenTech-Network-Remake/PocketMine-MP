@@ -46,17 +46,6 @@ class EndRod extends Flowable implements AnyFacing{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	/**
-	 * FALLENTECH PATCH (kqg 2026-08-26): candles could not be placed on top of an end rod.
-	 *
-	 * Candle::place() requires getAdjacentSupportType(DOWN)->hasCenterSupport(), and EndRod
-	 * inherited Flowable's SupportType::NONE, so a rod could never hold one. Fences and walls
-	 * already return CENTER for exactly this reason; this mirrors them.
-	 *
-	 * Gated on the rod being VERTICAL: a horizontal rod presents its side, not its flat end,
-	 * so it should not support anything. Scope is deliberately just this block - nothing else
-	 * changes about what end rods do.
-	 */
 	public function getSupportType(int $facing) : SupportType{
 		return Facing::axis($this->facing) === Axis::Y && Facing::axis($facing) === Axis::Y
 			? SupportType::CENTER
