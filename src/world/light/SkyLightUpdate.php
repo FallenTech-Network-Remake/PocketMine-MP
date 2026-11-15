@@ -30,9 +30,14 @@ use pocketmine\world\format\SubChunk;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use pocketmine\world\World;
+use function assert;
 use function max;
+use function min;
 
 class SkyLightUpdate extends LightUpdate{
+	/** @var array<int, array{int, int, int, \WeakReference<Chunk>}> */
+	private array $brightenedColumns = [];
+
 	/**
 	 * @param int[]  $lightFilters
 	 * @param true[] $directSkyLightBlockers
@@ -92,8 +97,254 @@ class SkyLightUpdate extends LightUpdate{
 			//recalculate light for the placed block from its surroundings - this avoids having to check effective light during propagation
 			$this->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentLight($x, $y, $z) - ($this->lightFilters[$source] ?? self::BASE_LIGHT_FILTER)));
 		}else{ //Heightmap decrease, block changed or removed, add sky light
+			assert($chunk !== null);
+			$this->brightenedColumns[World::chunkHash($x, $z)] = [$x, $z, $newHeightMap, \WeakReference::create($chunk)];
 			for($i = $y; $i >= $newHeightMap; --$i){
 				$this->setAndUpdateLight($x, $i, $z, 15);
+			}
+		}
+	}
+
+	/** @return array{int, array<int, array{int, int, Chunk}>}|null */
+	private function findEmptyRegion() : ?array{
+		if($this->brightenedColumns === [] || $this->subChunkExplorer->getMinSubChunkIndex() !== Chunk::MIN_SUBCHUNK_INDEX){
+			return null;
+		}
+		foreach($this->updateNodes as [$x, $y, $z, $level]){
+			$column = $this->brightenedColumns[World::chunkHash($x, $z)] ?? null;
+			if($level !== 15 || $column === null || $y < $column[2]){
+				return null;
+			}
+		}
+		$explorer = $this->subChunkExplorer->withMinSubChunkIndex(Chunk::MIN_SUBCHUNK_INDEX);
+		$wideShadow = false;
+		foreach($this->brightenedColumns as [$x, $z, $height, $expectedChunk]){
+			if($explorer->moveTo($x, World::Y_MIN, $z) === SubChunkExplorerStatus::INVALID){
+				return null;
+			}
+			$chunk = $explorer->currentChunk;
+			assert($chunk !== null);
+			if($chunk !== $expectedChunk->get() || $chunk->getHeightMap($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK) !== $height){
+				return null;
+			}
+			$subChunk = $explorer->currentSubChunk;
+			assert($subChunk !== null);
+			if($subChunk->getBlockSkyLightArray()->get($x & Chunk::COORD_MASK, 0, $z & Chunk::COORD_MASK) < 14){
+				$wideShadow = true;
+			}
+		}
+		if(!$wideShadow){
+			return null;
+		}
+
+		$chunks = [];
+		foreach($this->brightenedColumns as [$x, $z]){
+			$chunkX = $x >> Chunk::COORD_BIT_SIZE;
+			$chunkZ = $z >> Chunk::COORD_BIT_SIZE;
+			for($cx = $chunkX - 1; $cx <= $chunkX + 1; ++$cx){
+				for($cz = $chunkZ - 1; $cz <= $chunkZ + 1; ++$cz){
+					$hash = World::chunkHash($cx, $cz);
+					if(isset($chunks[$hash])){
+						continue;
+					}
+					if($explorer->moveToChunk($cx, 0, $cz) === SubChunkExplorerStatus::INVALID){
+						return null;
+					}
+					$chunk = $explorer->currentChunk;
+					assert($chunk !== null);
+					$chunks[$hash] = [$cx, $cz, $chunk];
+				}
+			}
+		}
+
+		$lowestTerrain = World::Y_MAX;
+		$checked = [];
+		foreach($chunks as [$chunkX, $chunkZ]){
+			for($cx = $chunkX - 1; $cx <= $chunkX + 1; ++$cx){
+				for($cz = $chunkZ - 1; $cz <= $chunkZ + 1; ++$cz){
+					$hash = World::chunkHash($cx, $cz);
+					if(isset($checked[$hash])){
+						continue;
+					}
+					$checked[$hash] = true;
+					if($explorer->moveToChunk($cx, 0, $cz) === SubChunkExplorerStatus::INVALID){
+						return null;
+					}
+					$chunk = $explorer->currentChunk;
+					assert($chunk !== null);
+					if($chunk->isLightPopulated() !== true){
+						return null;
+					}
+					$emptyState = $chunk->getSubChunk(Chunk::MIN_SUBCHUNK_INDEX)->getEmptyBlockId();
+					if(($this->lightFilters[$emptyState] ?? self::BASE_LIGHT_FILTER) !== self::BASE_LIGHT_FILTER){
+						return null;
+					}
+					foreach($chunk->getSubChunks() as $y => $subChunk){
+						if(!$subChunk->isEmptyFast()){
+							if($y < Chunk::MIN_SUBCHUNK_INDEX + 5){
+								return null;
+							}
+							$lowestTerrain = min($lowestTerrain, $y << SubChunk::COORD_BIT_SIZE);
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		// Below this buffer, nearby terrain cannot contribute attenuated light from above.
+		$bottom = $lowestTerrain - SubChunk::EDGE_LENGTH;
+		if($bottom < World::Y_MIN + 4 * SubChunk::EDGE_LENGTH){
+			return null;
+		}
+		foreach($this->brightenedColumns as [$x, $z]){
+			$chunk = $chunks[World::chunkHash($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)][2];
+			if($chunk->getHeightMap($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK) > $bottom){
+				continue;
+			}
+			for($sy = Chunk::MIN_SUBCHUNK_INDEX; $sy < ($bottom >> SubChunk::COORD_BIT_SIZE); ++$sy){
+				$light = $chunk->getSubChunk($sy)->getBlockSkyLightArray();
+				for($y = 0; $y < SubChunk::EDGE_LENGTH; ++$y){
+					if($light->get($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK) === 15){
+						return null;
+					}
+				}
+			}
+		}
+		foreach($this->updateNodes as [, $y]){
+			if($y < $bottom){
+				return [$bottom, $chunks];
+			}
+		}
+		return null;
+	}
+
+	public function execute() : int{
+		$region = $this->findEmptyRegion();
+		if($region === null){
+			return parent::execute();
+		}
+		[$bottom, $chunks] = $region;
+		$columns = $this->getEmptyColumnLight($bottom, $chunks);
+		if(!$this->canBrightenEmptyColumns($bottom, $chunks, $columns)){
+			return parent::execute();
+		}
+		$nodes = $this->updateNodes;
+		foreach($this->updateNodes as $hash => [, $y]){
+			if($y < $bottom){
+				unset($this->updateNodes[$hash]);
+			}
+		}
+		$explorer = $this->subChunkExplorer;
+		$this->subChunkExplorer = $explorer->withMinSubChunkIndex($bottom >> SubChunk::COORD_BIT_SIZE);
+		try{
+			$touched = parent::execute();
+		}finally{
+			$this->subChunkExplorer = $explorer;
+			$this->updateNodes = $nodes;
+		}
+
+		$this->brightenEmptyColumns($bottom, $chunks, $columns);
+		return $touched;
+	}
+
+	/**
+	 * @param array<int, array{int, int, Chunk}> $chunks
+	 * @return array<int, array<int, int>>
+	 */
+	private function getEmptyColumnLight(int $bottom, array $chunks) : array{
+		/** @var array<int, int> $levels */
+		$levels = [];
+		/** @var \SplQueue<array{int, int}> $queue */
+		$queue = new \SplQueue();
+		foreach($this->brightenedColumns as [$x, $z]){
+			$chunk = $chunks[World::chunkHash($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)][2];
+			if($chunk->getHeightMap($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK) <= $bottom){
+				$levels[World::chunkHash($x, $z)] = 15;
+				$queue->enqueue([$x, $z]);
+			}
+		}
+		/** @var array<int, array<int, int>> $columns */
+		$columns = [];
+		while(!$queue->isEmpty()){
+			[$x, $z] = $queue->dequeue();
+			$level = $levels[World::chunkHash($x, $z)];
+			$columns[World::chunkHash($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)][(($x & Chunk::COORD_MASK) << Chunk::COORD_BIT_SIZE) | ($z & Chunk::COORD_MASK)] = $level;
+			if($level <= 1){
+				continue;
+			}
+			foreach([[1, 0], [-1, 0], [0, 1], [0, -1]] as [$dx, $dz]){
+				$hash = World::chunkHash($x + $dx, $z + $dz);
+				if(($levels[$hash] ?? 0) < $level - 1){
+					$levels[$hash] = $level - 1;
+					$queue->enqueue([$x + $dx, $z + $dz]);
+				}
+			}
+		}
+
+		return $columns;
+	}
+
+	/**
+	 * @param array<int, array{int, int, Chunk}> $chunks
+	 * @param array<int, array<int, int>>        $columns
+	 */
+	private function canBrightenEmptyColumns(int $bottom, array $chunks, array $columns) : bool{
+		foreach($columns as $hash => $chunkColumns){
+			[$chunkX, $chunkZ, $chunk] = $chunks[$hash];
+			foreach($chunkColumns as $column => $level){
+				if($level <= 1){
+					continue;
+				}
+				$x = $column >> Chunk::COORD_BIT_SIZE;
+				$z = $column & Chunk::COORD_MASK;
+				$neighbours = [];
+				foreach([[1, 0], [-1, 0], [0, 1], [0, -1]] as [$dx, $dz]){
+					$nx = ($chunkX << Chunk::COORD_BIT_SIZE) + $x + $dx;
+					$nz = ($chunkZ << Chunk::COORD_BIT_SIZE) + $z + $dz;
+					$neighbourHash = World::chunkHash($nx >> Chunk::COORD_BIT_SIZE, $nz >> Chunk::COORD_BIT_SIZE);
+					$neighbourColumn = (($nx & Chunk::COORD_MASK) << Chunk::COORD_BIT_SIZE) | ($nz & Chunk::COORD_MASK);
+					if(($columns[$neighbourHash][$neighbourColumn] ?? 0) === $level - 1){
+						$neighbours[] = [$chunks[$neighbourHash][2], $nx & Chunk::COORD_MASK, $nz & Chunk::COORD_MASK];
+					}
+				}
+				for($sy = Chunk::MIN_SUBCHUNK_INDEX; $sy <= ($bottom >> SubChunk::COORD_BIT_SIZE); ++$sy){
+					$light = $chunk->getSubChunk($sy)->getBlockSkyLightArray();
+					$limit = ($sy === ($bottom >> SubChunk::COORD_BIT_SIZE)) ? 1 : SubChunk::EDGE_LENGTH;
+					foreach($neighbours as [$neighbour, $nx, $nz]){
+						$neighbourLight = $neighbour->getSubChunk($sy)->getBlockSkyLightArray();
+						for($y = 0; $y < $limit; ++$y){
+							// An unchanged bright cell must not hide a darker cell from the ordinary flood fill.
+							if($light->get($x, $y, $z) >= $level && $neighbourLight->get($nx, $y, $nz) < $level - 1){
+								return false;
+							}
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * @param array<int, array{int, int, Chunk}> $chunks
+	 * @param array<int, array<int, int>>        $columns
+	 */
+	private function brightenEmptyColumns(int $bottom, array $chunks, array $columns) : void{
+		// Only add the new columns' contribution; preserve any brighter preexisting light.
+		foreach($columns as $hash => $chunkColumns){
+			$chunk = $chunks[$hash][2];
+			for($sy = Chunk::MIN_SUBCHUNK_INDEX; $sy < ($bottom >> SubChunk::COORD_BIT_SIZE); ++$sy){
+				$light = $chunk->getSubChunk($sy)->getBlockSkyLightArray();
+				foreach($chunkColumns as $column => $level){
+					$x = $column >> Chunk::COORD_BIT_SIZE;
+					$z = $column & Chunk::COORD_MASK;
+					for($y = 0; $y < SubChunk::EDGE_LENGTH; ++$y){
+						if($light->get($x, $y, $z) < $level){
+							$light->set($x, $y, $z, $level);
+						}
+					}
+				}
 			}
 		}
 	}

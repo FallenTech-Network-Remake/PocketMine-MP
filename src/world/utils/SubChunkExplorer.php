@@ -34,6 +34,7 @@ class SubChunkExplorer{
 	protected int $currentX;
 	protected int $currentY;
 	protected int $currentZ;
+	private int $minSubChunkIndex = Chunk::MIN_SUBCHUNK_INDEX;
 
 	public function __construct(
 		protected ChunkManager $world
@@ -60,7 +61,7 @@ class SubChunkExplorer{
 		if($this->currentSubChunk === null || $this->currentY !== $newChunkY){
 			$this->currentY = $newChunkY;
 
-			if($this->currentY < Chunk::MIN_SUBCHUNK_INDEX || $this->currentY > Chunk::MAX_SUBCHUNK_INDEX){
+			if($this->currentY < $this->minSubChunkIndex || $this->currentY > Chunk::MAX_SUBCHUNK_INDEX){
 				$this->currentSubChunk = null;
 				return SubChunkExplorerStatus::INVALID;
 			}
@@ -85,6 +86,18 @@ class SubChunkExplorer{
 	 */
 	public function isValid() : bool{
 		return $this->currentSubChunk !== null;
+	}
+
+	public function getMinSubChunkIndex() : int{ return $this->minSubChunkIndex; }
+
+	public function withMinSubChunkIndex(int $minSubChunkIndex) : self{
+		if($minSubChunkIndex < Chunk::MIN_SUBCHUNK_INDEX || $minSubChunkIndex > Chunk::MAX_SUBCHUNK_INDEX){
+			throw new \InvalidArgumentException("Invalid minimum subchunk index $minSubChunkIndex");
+		}
+		$result = clone $this;
+		$result->minSubChunkIndex = $minSubChunkIndex;
+		$result->invalidate();
+		return $result;
 	}
 
 	public function invalidate() : void{
