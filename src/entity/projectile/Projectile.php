@@ -215,6 +215,7 @@ abstract class Projectile extends Entity{
 			$this->location->pitch
 		);
 		$this->recalculateBoundingBox();
+		$world->onEntityBoundingBoxChanged($this);
 
 		if($hitResult !== null){
 			[$objectHit, $rayTraceResult] = $hitResult;

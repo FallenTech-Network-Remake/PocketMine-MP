@@ -328,6 +328,7 @@ abstract class Entity{
 	protected function setSize(EntitySizeInfo $size) : void{
 		$this->size = $size;
 		$this->recalculateBoundingBox();
+		$this->getWorld()->onEntityBoundingBoxChanged($this);
 		$this->networkPropertiesDirty = true;
 	}
 

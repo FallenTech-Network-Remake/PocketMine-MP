@@ -108,6 +108,7 @@ use pocketmine\world\particle\BlockBreakParticle;
 use pocketmine\world\particle\Particle;
 use pocketmine\world\sound\BlockPlaceSound;
 use pocketmine\world\sound\Sound;
+use pocketmine\world\utils\EntitySpatialIndex;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\YmlServerProperties;
 use function abs;
@@ -197,6 +198,7 @@ class World implements ChunkManager{
 	 * @phpstan-var array<ChunkPosHash, array<int, Entity>>
 	 */
 	private array $entitiesByChunk = [];
+	private ?EntitySpatialIndex $entitySpatialIndex = null;
 
 	/**
 	 * @var Entity[] entity runtime ID => Entity
@@ -2463,24 +2465,7 @@ class World implements ChunkManager{
 	 * @phpstan-return array<int, Entity>
 	 */
 	public function getNearbyEntities(AxisAlignedBB $bb, ?Entity $entity = null) : array{
-		$nearby = [];
-
-		$minX = ((int) floor($bb->minX - 2)) >> Chunk::COORD_BIT_SIZE;
-		$maxX = ((int) floor($bb->maxX + 2)) >> Chunk::COORD_BIT_SIZE;
-		$minZ = ((int) floor($bb->minZ - 2)) >> Chunk::COORD_BIT_SIZE;
-		$maxZ = ((int) floor($bb->maxZ + 2)) >> Chunk::COORD_BIT_SIZE;
-
-		for($x = $minX; $x <= $maxX; ++$x){
-			for($z = $minZ; $z <= $maxZ; ++$z){
-				foreach($this->getChunkEntities($x, $z) as $ent){
-					if($ent !== $entity && $ent->boundingBox->intersectsWith($bb)){
-						$nearby[] = $ent;
-					}
-				}
-			}
-		}
-
-		return $nearby;
+		return $this->entitySpatialIndex?->getNearbyEntities($bb, $entity) ?? [];
 	}
 
 	/**
@@ -2838,6 +2823,7 @@ class World implements ChunkManager{
 			$this->players[$entity->getId()] = $entity;
 		}
 		$this->entities[$entity->getId()] = $entity;
+		($this->entitySpatialIndex ??= new EntitySpatialIndex())->update($entity, $pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE);
 	}
 
 	/**
@@ -2870,6 +2856,15 @@ class World implements ChunkManager{
 
 		unset($this->entities[$entity->getId()]);
 		unset($this->updateEntities[$entity->getId()]);
+		$this->entitySpatialIndex?->remove($entity);
+	}
+
+	/** @internal */
+	public function onEntityBoundingBoxChanged(Entity $entity) : void{
+		$pos = $this->entityLastKnownPositions[$entity->getId()] ?? null;
+		if($pos !== null){
+			$this->entitySpatialIndex?->update($entity, $pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE);
+		}
 	}
 
 	/**
@@ -2914,6 +2909,7 @@ class World implements ChunkManager{
 			$this->entitiesByChunk[$newChunkHash][$entity->getId()] = $entity;
 		}
 		$this->entityLastKnownPositions[$entity->getId()] = $newPosition->asVector3();
+		$this->entitySpatialIndex?->update($entity, $newChunkX, $newChunkZ);
 	}
 
 	/**
