@@ -46,10 +46,6 @@ trait MultiAnySupportTrait{
 	 */
 	abstract protected function getInitialPlaceFaces(Block $blockReplace) : array;
 
-	/**
-	 * FALLENTECH PATCH (kqg 2026-08-26): overridable so a specific block can widen what it
-	 * attaches to. Default is unchanged - FULL support only.
-	 */
 	protected function isValidMultiAnySupport(int $face) : bool{
 		return $this->getAdjacentSupportType($face) === SupportType::FULL;
 	}
