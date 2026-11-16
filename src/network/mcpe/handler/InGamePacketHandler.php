@@ -480,6 +480,18 @@ class InGamePacketHandler extends PacketHandler{
 
 				$blockPos = $data->getBlockPosition();
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
+				$heldBlockRuntimeId = $data->getItemInHand()->getItemStack()->getBlockRuntimeId();
+				if($heldBlockRuntimeId === ItemTranslator::NO_BLOCK_RUNTIME_ID && $data->getClientInteractPrediction() === PredictedResult::SUCCESS){
+					// Resolve before interaction consumes the last item in the stack.
+					$heldItem = $this->player->getInventory()->getItemInHand();
+					if(!$heldItem->isNull()){
+						$heldItemData = $this->session->getTypeConverter()->getItemTranslator()->toNetworkIdQuiet($heldItem);
+						$reportedItem = $data->getItemInHand()->getItemStack();
+						if($heldItemData !== null && $heldItemData[0] === $reportedItem->getId() && $heldItemData[1] === $reportedItem->getMeta()){
+							$heldBlockRuntimeId = $heldItemData[2] ?? ItemTranslator::NO_BLOCK_RUNTIME_ID;
+						}
+					}
+				}
 				$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos);
 				if($data->getClientInteractPrediction() === PredictedResult::SUCCESS){
 					//If the item has an associated blockstate ID, this means it will only place one block.
@@ -490,7 +502,7 @@ class InGamePacketHandler extends PacketHandler{
 					//"behind" the placed block, this shouldn't affect bridging or fast placement.
 					//This would be much easier if the client would just tell us which blocks it thinks changed...
 					$syncAdjacentFace = null;
-					if($data->getItemInHand()->getItemStack()->getBlockRuntimeId() === ItemTranslator::NO_BLOCK_RUNTIME_ID){
+					if($heldBlockRuntimeId === ItemTranslator::NO_BLOCK_RUNTIME_ID){
 						$this->session->getLogger()->debug("Placing held item might place multiple blocks client-side; doing full adjacent sync");
 						$syncAdjacentFace = $data->getFace();
 					}
