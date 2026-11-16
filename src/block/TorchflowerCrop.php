@@ -34,7 +34,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
-final class TorchflowerCrop extends Flowable{
+class TorchflowerCrop extends Flowable{
 	use StaticSupportTrait;
 
 	private bool $ready = false;

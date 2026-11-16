@@ -119,7 +119,8 @@ class Bamboo extends Transparent{
 		return gmp_intval(gmp_and($fullResult, 0xffffffff));
 	}
 
-	private static function getMaxHeight(int $x, int $z) : int{
+	// Farming overrides reuse the native height limit.
+	protected static function getMaxHeight(int $x, int $z) : int{
 		return 12 + (self::getOffsetSeed($x, 0, $z) % 5);
 	}
 
@@ -169,7 +170,8 @@ class Bamboo extends Transparent{
 		return false;
 	}
 
-	private function grow(int $maxHeight, int $growAmount, ?Player $player) : bool{
+	// Protected so farming overrides can reuse the native growth transaction.
+	protected function grow(int $maxHeight, int $growAmount, ?Player $player) : bool{
 		$world = $this->position->getWorld();
 		if(!$world->getBlock($this->position->up())->canBeReplaced()){
 			return false;

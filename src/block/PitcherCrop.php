@@ -39,7 +39,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-final class PitcherCrop extends Flowable implements Ageable{
+class PitcherCrop extends Flowable implements Ageable{
 	use AgeableTrait;
 	use StaticSupportTrait;
 
@@ -61,7 +61,8 @@ final class PitcherCrop extends Flowable implements Ageable{
 		];
 	}
 
-	private function grow(?Player $player) : bool{
+	// Protected so farming overrides can reuse the native growth transaction.
+	protected function grow(?Player $player) : bool{
 		if($this->age > self::MAX_AGE){
 			return false;
 		}

@@ -35,7 +35,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-final class BambooSapling extends Flowable{
+class BambooSapling extends Flowable{
 	use StaticSupportTrait;
 
 	private bool $ready = false;
@@ -71,7 +71,8 @@ final class BambooSapling extends Flowable{
 		return false;
 	}
 
-	private function grow(?Player $player) : bool{
+	// Protected so farming overrides can reuse the native growth transaction.
+	protected function grow(?Player $player) : bool{
 		$world = $this->position->getWorld();
 		if(!$world->getBlock($this->position->up())->canBeReplaced()){
 			return false;

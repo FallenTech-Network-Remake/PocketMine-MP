@@ -38,7 +38,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-final class DoublePitcherCrop extends DoublePlant implements Ageable{
+class DoublePitcherCrop extends DoublePlant implements Ageable{
 	use AgeableTrait {
 		describeBlockOnlyState as describeAge;
 	}
@@ -65,7 +65,8 @@ final class DoublePitcherCrop extends DoublePlant implements Ageable{
 		];
 	}
 
-	private function grow(?Player $player) : bool{
+	// Protected so farming overrides can reuse the native growth transaction.
+	protected function grow(?Player $player) : bool{
 		if($this->age >= self::MAX_AGE){
 			return false;
 		}
