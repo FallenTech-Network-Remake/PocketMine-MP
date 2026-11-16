@@ -44,6 +44,10 @@ class Bow extends Tool implements Releasable{
 		return 385;
 	}
 
+	public function getMinUseDuration() : int{
+		return 5;
+	}
+
 	public function onReleaseUsing(Player $player, array &$returnedItems) : ItemUseResult{
 		$arrow = VanillaItems::ARROW();
 		$inventory = match(true){

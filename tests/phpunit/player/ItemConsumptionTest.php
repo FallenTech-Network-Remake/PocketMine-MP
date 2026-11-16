@@ -44,6 +44,8 @@ use pocketmine\item\ConsumableItem;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIdentifier;
 use pocketmine\item\ItemTypeIds;
+use pocketmine\item\ItemUseResult;
+use pocketmine\item\Releasable;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\handler\InGamePacketHandler;
@@ -65,6 +67,7 @@ final class ItemConsumptionTest extends TestCase{
 	private int $events = 0;
 	private bool $cooldown = false;
 	private bool $canConsume = true;
+	private bool $canEat = true;
 	/** @var list<RegisteredListener<PlayerItemConsumeEvent>> */
 	private array $listeners = [];
 
@@ -96,7 +99,7 @@ final class ItemConsumptionTest extends TestCase{
 		$player->method("hasFiniteResources")->willReturn(true);
 		$player->method("hasItemCooldown")->willReturnCallback(fn() => $this->cooldown);
 		$player->method("isSpectator")->willReturn(false);
-		$player->method("canEat")->willReturn(true);
+		$player->method("canEat")->willReturnCallback(fn() => $this->canEat);
 		$effects = self::createStub(EffectManager::class);
 		$effects->method("has")->willReturn(true);
 		$player->method("getEffects")->willReturn($effects);
@@ -190,7 +193,7 @@ final class ItemConsumptionTest extends TestCase{
 			self::assertTrue($player->isUsingItem());
 			self::assertSame($tick - 100, $player->getItemUseDuration());
 			self::assertSame(0, $this->consumptionCount());
-			self::assertTrue($player->getAttributeMap()->get(Attribute::HUNGER)?->isDesynchronized());
+			self::assertFalse($player->getAttributeMap()->get(Attribute::HUNGER)?->isDesynchronized());
 		}
 		$this->tick = 132;
 		$this->clickAir($player);
@@ -345,5 +348,87 @@ final class ItemConsumptionTest extends TestCase{
 		}
 		self::assertFalse($player->isUsingItem());
 		self::assertSame(1, $player->getInventory()->getItemInHand()->getCount());
+	}
+
+	public function testReleasableMinUseDurationEnforced() : void{
+		$released = false;
+		$releasable = new class(new ItemIdentifier(ItemTypeIds::BOW), "Test Releasable", $released) extends Item implements Releasable{
+			public function __construct(ItemIdentifier $ident, string $name, private bool &$releasedRef){
+				parent::__construct($ident, $name);
+			}
+
+			public function canStartUsingItem(Player $player) : bool{ return true; }
+
+			public function getMinUseDuration() : int{ return 10; }
+
+			public function onReleaseUsing(Player $player, array &$returnedItems) : ItemUseResult{
+				$this->releasedRef = true;
+				return ItemUseResult::SUCCESS;
+			}
+		};
+
+		$player = $this->player($releasable);
+		self::assertTrue($player->useHeldItem());
+		$this->tick += 9;
+		self::assertFalse($player->releaseHeldItem());
+		self::assertFalse($released, "Must not release before min use duration");
+		self::assertFalse($player->isUsingItem());
+
+		// Start using again and wait until duration is met
+		self::assertTrue($player->useHeldItem());
+		$this->tick += 10;
+		self::assertTrue($player->releaseHeldItem());
+		self::assertTrue($released, "Must release once min use duration is met");
+		self::assertFalse($player->isUsingItem());
+	}
+
+	public function testBowAndTridentMinUseDurationValues() : void{
+		self::assertSame(5, VanillaItems::BOW()->getMinUseDuration());
+		self::assertSame(14, VanillaItems::TRIDENT()->getMinUseDuration());
+		self::assertSame(0, VanillaItems::SPYGLASS()->getMinUseDuration());
+		self::assertSame(0, VanillaItems::GOAT_HORN()->getMinUseDuration());
+
+		$player = $this->player(VanillaItems::BOW());
+		$player->getInventory()->setItem(1, VanillaItems::ARROW());
+		self::assertTrue($player->useHeldItem());
+		$this->tick += 4;
+		// Bow release before 5 ticks must be rejected before reaching onReleaseUsing
+		self::assertFalse($player->releaseHeldItem());
+		self::assertFalse($player->isUsingItem());
+
+		$tridentPlayer = $this->player(VanillaItems::TRIDENT());
+		self::assertTrue($tridentPlayer->useHeldItem());
+		$this->tick += 13;
+		// Trident release before 14 ticks must be rejected before reaching onReleaseUsing
+		self::assertFalse($tridentPlayer->releaseHeldItem());
+		self::assertFalse($tridentPlayer->isUsingItem());
+	}
+
+	public function testGoldenAppleCanBeConsumedAtFullHungerWithoutDesync() : void{
+		$this->canEat = false; // Player is completely full, cannot eat regular food
+		$regularFood = VanillaItems::APPLE();
+		$playerRegular = $this->player($regularFood);
+		$playerRegular->useHeldItem();
+		self::assertFalse($playerRegular->isUsingItem(), "Regular food cannot start using item when full");
+
+		$gapple = VanillaItems::GOLDEN_APPLE();
+		$player = $this->player($gapple);
+		$player->useHeldItem();
+		self::assertTrue($player->isUsingItem(), "Golden Apple can start using item even when full");
+
+		// Simulate client sending periodic CLICK_AIR packets during eating
+		foreach([106, 112, 118, 124, 130] as $tick){
+			$this->tick = $tick;
+			$this->clickAir($player);
+			self::assertTrue($player->isUsingItem());
+			self::assertSame($tick - 100, $player->getItemUseDuration());
+			self::assertSame(0, $this->consumptionCount());
+			self::assertFalse($player->getAttributeMap()->get(Attribute::HUNGER)?->isDesynchronized(), "Hunger must not desync during eating");
+		}
+
+		$this->tick = 132;
+		$this->clickAir($player);
+		self::assertSame(1, $this->consumptionCount());
+		self::assertFalse($player->isUsingItem());
 	}
 }

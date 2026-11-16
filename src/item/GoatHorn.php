@@ -62,6 +62,10 @@ class GoatHorn extends Item implements Releasable{
 		return true;
 	}
 
+	public function getMinUseDuration() : int{
+		return 0;
+	}
+
 	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
 		$position = $player->getPosition();
 		$position->getWorld()->addSound($position, new GoatHornSound($this->goatHornType));

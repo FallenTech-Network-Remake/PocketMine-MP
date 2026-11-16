@@ -663,9 +663,14 @@ class Item implements \JsonSerializable{
 		return false;
 	}
 
+	/** Minimum uninterrupted use duration in server ticks before release or consumption. */
+	public function getMinUseDuration() : int{
+		return $this->getConsumptionDurationTicks();
+	}
+
 	/** Default use time for consumable items, in server ticks. */
 	public function getConsumptionDurationTicks() : int{
-		return 32;
+		return 0;
 	}
 
 	/**

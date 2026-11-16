@@ -47,4 +47,8 @@ class MilkBucket extends Item implements ConsumableItem{
 	public function canStartUsingItem(Player $player) : bool{
 		return true;
 	}
+
+	public function getConsumptionDurationTicks() : int{
+		return 32;
+	}
 }

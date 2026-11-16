@@ -36,6 +36,7 @@ use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionCancelledException;
 use pocketmine\inventory\transaction\TransactionValidationException;
+use pocketmine\item\Releasable;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WritableBookPage;
@@ -511,6 +512,12 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:
 				if($this->player->isUsingItem()){
+					$heldItem = $this->player->getInventory()->getItemInHand();
+					if($heldItem instanceof Releasable && $this->player->getItemUseDuration() < $heldItem->getMinUseDuration()){
+						// Repeated CLICK_AIR sent by client while the action is still in progress.
+						// Leaving the action armed without resyncing hunger prevents interrupting the client.
+						return true;
+					}
 					if(!$this->player->consumeHeldItem()){
 						$hungerAttr = $this->player->getAttributeMap()->get(Attribute::HUNGER) ?? throw new AssumptionFailedError();
 						$hungerAttr->markSynchronized(false);

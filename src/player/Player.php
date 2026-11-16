@@ -1780,7 +1780,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			$this->setUsingItem(false);
 			return false;
 		}
-		if($this->getItemUseDuration() < $slot->getConsumptionDurationTicks()){
+		if($this->getItemUseDuration() < $slot->getMinUseDuration()){
 			// This is an unfinished action, not a new use or a terminal failure.
 			return false;
 		}
@@ -1820,6 +1820,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		try{
 			$item = $this->inventory->getItemInHand();
 			if(!$this->isUsingItem() || $this->hasItemCooldown($item)){
+				return false;
+			}
+			if($item instanceof Releasable && $this->getItemUseDuration() < $item->getMinUseDuration()){
 				return false;
 			}
 

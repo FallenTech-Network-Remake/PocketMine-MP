@@ -41,4 +41,8 @@ interface Releasable{
 	 */
 	public function canStartUsingItem(Player $player) : bool;
 
+	/**
+	 * Returns the minimum uninterrupted use duration in ticks required before this item can be released or consumed.
+	 */
+	public function getMinUseDuration() : int;
 }

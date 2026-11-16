@@ -39,6 +39,10 @@ class Trident extends Tool implements Releasable{
 		return 251;
 	}
 
+	public function getMinUseDuration() : int{
+		return 14;
+	}
+
 	public function onReleaseUsing(Player $player, array &$returnedItems) : ItemUseResult{
 		$location = $player->getLocation();
 
