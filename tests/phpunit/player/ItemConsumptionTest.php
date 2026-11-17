@@ -143,19 +143,19 @@ final class ItemConsumptionTest extends TestCase{
 		self::assertTrue((new \ReflectionMethod(InGamePacketHandler::class, "handleUseItemTransaction"))->invoke($handler, $data));
 	}
 
-	/** @return iterable<string, array{\Closure(): Item, int}> */
+	/** @return iterable<string, array{\Closure(): Item, int, int}> */
 	public static function consumables() : iterable{
-		yield "food" => [static fn() => VanillaItems::APPLE(), 32];
-		yield "fast food" => [static fn() => VanillaItems::DRIED_KELP(), 16];
-		yield "honey" => [static fn() => VanillaItems::HONEY_BOTTLE(), 40];
-		yield "milk" => [static fn() => VanillaItems::MILK_BUCKET(), 32];
-		yield "potion" => [static fn() => VanillaItems::POTION(), 32];
-		yield "medicine" => [static fn() => VanillaItems::MEDICINE(), 32];
+		yield "food" => [static fn() => VanillaItems::APPLE(), 32, 28];
+		yield "fast food" => [static fn() => VanillaItems::DRIED_KELP(), 16, 16];
+		yield "honey" => [static fn() => VanillaItems::HONEY_BOTTLE(), 40, 28];
+		yield "milk" => [static fn() => VanillaItems::MILK_BUCKET(), 32, 32];
+		yield "potion" => [static fn() => VanillaItems::POTION(), 32, 32];
+		yield "medicine" => [static fn() => VanillaItems::MEDICINE(), 32, 32];
 	}
 
 	/** @param \Closure(): Item $create */
 	#[DataProvider("consumables")]
-	public function testConsumptionWaitsForItemDuration(\Closure $create, int $duration) : void{
+	public function testConsumptionWaitsForItemDuration(\Closure $create, int $duration, int $expectedFloor) : void{
 		$item = $create();
 		self::assertInstanceOf(ConsumableItem::class, $item);
 		self::assertSame($duration, $item->getConsumptionDurationTicks());
@@ -164,7 +164,7 @@ final class ItemConsumptionTest extends TestCase{
 		$this->onConsume(function() : void{ ++$this->events; });
 		self::assertFalse($player->consumeHeldItem(), "No active use must not bypass duration validation");
 		self::assertTrue($player->useHeldItem());
-		$this->tick += $duration - 1;
+		$this->tick += $expectedFloor - 1;
 		self::assertFalse($player->consumeHeldItem());
 		self::assertTrue($player->isUsingItem());
 		self::assertSame(0, $this->eventCount());
@@ -187,15 +187,16 @@ final class ItemConsumptionTest extends TestCase{
 	public function testRepeatedNetworkClicksDoNotRestartOrFinishEatingEarly() : void{
 		$player = $this->player(VanillaItems::APPLE()->setCount(3));
 		$this->clickAir($player);
-		foreach([106, 112, 118, 124, 130] as $tick){
+		foreach([106, 112, 118, 124] as $tick){
 			$this->tick = $tick;
 			$this->clickAir($player);
 			self::assertTrue($player->isUsingItem());
+			self::assertTrue($player->ftEatStillArmed);
 			self::assertSame($tick - 100, $player->getItemUseDuration());
 			self::assertSame(0, $this->consumptionCount());
 			self::assertFalse($player->getAttributeMap()->get(Attribute::HUNGER)?->isDesynchronized());
 		}
-		$this->tick = 132;
+		$this->tick = 128;
 		$this->clickAir($player);
 		self::assertSame(1, $this->consumptionCount());
 		self::assertSame(2, $player->getInventory()->getItemInHand()->getCount());
@@ -225,8 +226,33 @@ final class ItemConsumptionTest extends TestCase{
 		self::assertTrue($method->invoke($handler, PlayerAction::STOP_ITEM_USE_ON, new BlockPosition(0, 0, 0), 0));
 		self::assertFalse($player->isUsingItem());
 		$player->useHeldItem();
-		$this->tick += 31;
+		$this->tick += 27;
 		self::assertFalse($player->consumeHeldItem());
+		++$this->tick;
+		self::assertTrue($player->consumeHeldItem());
+	}
+
+	public function testEnchantedGoldenAppleConsumptionWithRepeatedClicksAndFullHunger() : void{
+		$this->canEat = false; // Player is at full hunger
+		$player = $this->player(VanillaItems::ENCHANTED_GOLDEN_APPLE()->setCount(2));
+		$this->clickAir($player);
+		self::assertTrue($player->isUsingItem(), "Egap can be eaten even when hunger is full");
+
+		// Simulate Bedrock client sending repeated ACTION_CLICK_AIR packets while held
+		foreach([106, 112, 118, 124] as $tick){
+			$this->tick = $tick;
+			$this->clickAir($player);
+			self::assertTrue($player->isUsingItem(), "Action stays armed across repeated network clicks");
+			self::assertTrue($player->ftEatStillArmed, "Premature consume attempt marks ftEatStillArmed");
+			self::assertSame(0, $this->consumptionCount(), "Egap not consumed before floor");
+		}
+
+		// At tick 128 (28 ticks since start tick 100), consumption succeeds
+		$this->tick = 128;
+		$this->clickAir($player);
+		self::assertSame(1, $this->consumptionCount(), "Egap consumed after reaching 28-tick floor");
+		self::assertFalse($player->isUsingItem(), "Action is disarmed after consumption");
+		self::assertSame(1, $player->getInventory()->getItemInHand()->getCount(), "One egap consumed from stack");
 	}
 
 	public function testRearmingPreservesBowAndFoodUseTime() : void{
@@ -417,7 +443,7 @@ final class ItemConsumptionTest extends TestCase{
 		self::assertTrue($player->isUsingItem(), "Golden Apple can start using item even when full");
 
 		// Simulate client sending periodic CLICK_AIR packets during eating
-		foreach([106, 112, 118, 124, 130] as $tick){
+		foreach([106, 112, 118, 124] as $tick){
 			$this->tick = $tick;
 			$this->clickAir($player);
 			self::assertTrue($player->isUsingItem());
@@ -426,7 +452,7 @@ final class ItemConsumptionTest extends TestCase{
 			self::assertFalse($player->getAttributeMap()->get(Attribute::HUNGER)?->isDesynchronized(), "Hunger must not desync during eating");
 		}
 
-		$this->tick = 132;
+		$this->tick = 128;
 		$this->clickAir($player);
 		self::assertSame(1, $this->consumptionCount());
 		self::assertFalse($player->isUsingItem());

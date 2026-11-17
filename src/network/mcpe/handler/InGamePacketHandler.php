@@ -512,17 +512,18 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:
 				if($this->player->isUsingItem()){
-					$heldItem = $this->player->getInventory()->getItemInHand();
-					if($heldItem instanceof Releasable && $this->player->getItemUseDuration() < $heldItem->getMinUseDuration()){
-						// Repeated CLICK_AIR sent by client while the action is still in progress.
-						// Leaving the action armed without resyncing hunger prevents interrupting the client.
-						return true;
-					}
 					if(!$this->player->consumeHeldItem()){
+						if($this->player->ftEatStillArmed){
+							// Refused only for being too early - leave the action running so
+							// the eat continues instead of restarting on every held repeat.
+							return true;
+						}
 						$hungerAttr = $this->player->getAttributeMap()->get(Attribute::HUNGER) ?? throw new AssumptionFailedError();
 						$hungerAttr->markSynchronized(false);
 					}
-
+					//workaround goat horns getting stuck in the "using item" state
+					//this timed-trigger behaviour is also used for other items apart from food
+					$this->player->setUsingItem(false);
 					return true;
 				}
 				$this->player->useHeldItem();
